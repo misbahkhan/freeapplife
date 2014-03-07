@@ -2,7 +2,7 @@
 //  freeAppLifeAppDelegate.h
 //  webview
 //
-//  Created by Adrian D'Urso on 1/11/14.
+//  Created by Misbah Khan on 1/11/14.
 //  Copyright (c) 2014 Adrian D'Urso. All rights reserved.
 //
 
