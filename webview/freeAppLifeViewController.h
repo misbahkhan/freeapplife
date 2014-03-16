@@ -16,5 +16,6 @@
 @property (weak, nonatomic) IBOutlet UIView *waitView;
 @property (strong, nonatomic) IBOutlet UIProgressView *progress;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (strong, nonatomic) UILabel *pointsLabel; 
 
 @end

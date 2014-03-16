@@ -12,7 +12,6 @@
 #import <ifaddrs.h>
 #import <arpa/inet.h>
 #import <CommonCrypto/CommonHMAC.h>
-#import "CXAlertView.h"
 #import <dlfcn.h>
 #import "API.h"
 #import "rewardCell.h"
@@ -27,10 +26,13 @@
     NSMutableArray *sponsorData, *imageLinks, *images;
     int redirects;
     BOOL refreshing;
+    BOOL outdated;
     UITextField *referralBox; 
     IBOutlet UILabel *points;
     IBOutlet UILabel *referral_count;
     CustomIOS7AlertView *sponsorClicked;
+    UIAlertView *referralAlert;
+    UIAlertView *versionAlert;
     API *sharedInstance;
 }
 
@@ -64,29 +66,7 @@
     [_tableView addSubview:refreshControl];
     [_tableView registerClass:[rewardCell class] forCellReuseIdentifier:@"rewardCell"];
     
-    defaults = [NSUserDefaults standardUserDefaults];
-//    BOOL activated = [defaults boolForKey:@"activated"];
-//    BOOL activated = TRUE; 
-//    if(activated){
-//        _waitView.hidden = YES;
-//        NSLog(@"activated");
-////        [self getSponsorPay];
-//    }else{
-//        advertisingIdentifier = [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString];
-//        isAdvertisingTrackingEnabled = (NSClassFromString(@"ASIdentifierManager") && [[ASIdentifierManager sharedManager] isAdvertisingTrackingEnabled]) ? @"YES" : @"NO";
-//        NSURL *url = [NSURL URLWithString:[NSString stringWithFormat: @"https://www.freeapplife.com/fal/activate.php?APIKey=%@&enabled=%@", advertisingIdentifier, isAdvertisingTrackingEnabled]];
-//        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
-//        [request setHTTPMethod:@"GET"];
-//        [request setAllHTTPHeaderFields:@{@"User-Agent": [_webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"]}];
-//        NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-//        [connection start];
-//    }
-//    NSLog(@"idfa: %@", [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]);
-    [sharedInstance user]; 
-    [self getSponsorPay];
-    [self.view addSubview:[sharedInstance topBar]];
-    
-    UIImageView *featured = [[UIImageView alloc] initWithFrame:CGRectMake(20, 44, 280, 100)];
+    UIButton *featured = [[UIButton alloc] initWithFrame:CGRectMake(20, 44, 280, 100)];
     [self.view addSubview:featured];
     
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://freeapplife.com/fal/png/featured.png"]];
@@ -94,10 +74,46 @@
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){
             UIImage *image = [UIImage imageWithData:data];
-            [featured setImage:image];
+            [featured setBackgroundImage:image forState:UIControlStateNormal];
+            [featured addTarget:self action:@selector(changeTab) forControlEvents:UIControlEventTouchUpInside];
             [featured setContentMode:UIViewContentModeScaleAspectFit];
             featured.layer.cornerRadius = 5.0f;
             [featured setClipsToBounds:YES];
+        }
+    }];
+    
+    NSLog(@"advertising: %@", [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]);
+    
+    UIView *topBar = [sharedInstance getBar];
+    [self.view addSubview:topBar];
+    
+    _pointsLabel = [sharedInstance getPoints];
+    [self.view addSubview:_pointsLabel];
+    
+    UIButton *refresh = [[UIButton alloc]initWithFrame:CGRectMake(5, 23, 34, 19)];
+    [refresh setBackgroundImage:[UIImage imageNamed:@"button.png"] forState:UIControlStateNormal];
+    [refresh addTarget:sharedInstance action:@selector(clear) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:refresh];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dataUpdated:) name:[sharedInstance notificationName] object:nil];
+
+    [self registerUser];
+    NSString *postString = [NSString stringWithFormat:@"u=%@&v=%@", [sharedInstance md5ForString:[sharedInstance serialNumber]], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];
+    NSLog(@"%@", postString);
+    NSMutableURLRequest *request2 = [sharedInstance requestForEndpoint:@"version" andBody:postString];
+    [NSURLConnection sendAsynchronousRequest:request2 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        if([data length] > 0){
+            NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+            NSLog(@"data: %@", strData);
+            
+            NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+            if([[json objectForKey:@"error"] isEqualToString:@"wrong version"]){
+                outdated = YES;
+                versionAlert = [[UIAlertView alloc] initWithTitle:@"Old Version" message:@"You're currently running an outdated version of FreeAppLife, please update now." delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Update", nil];
+                [versionAlert show];
+            }else{
+                [self newAarki];
+            }
         }
     }];
 }
@@ -105,33 +121,88 @@
 - (void) viewDidAppear:(BOOL)animated
 {
     [sharedInstance user];
-    [self.view addSubview:[sharedInstance topBar]];
-//    NSLog(@"Appeared");
 //    [_tableView reloadData];
+}
+
+- (void) dataUpdated:(id)sender
+{
+    _pointsLabel.text = [sharedInstance currentPoints];
 }
 
 - (void)refresh:(UIRefreshControl *)refreshControl {
     NSLog(@"refresh: %d", refreshing);
     if(refreshing == FALSE){
         NSLog(@"REFRESHED");
-        [self getSponsorPay];
+        [self newAarki];
     }
     [refreshControl endRefreshing];
 }
 
+- (void) changeTab{
+    NSLog(@"change tab");
+    int tab = [[[sharedInstance userData] objectForKey:@"tab"] intValue];
+    [self.tabBarController setSelectedIndex:tab];
+}
+
 - (void) alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-    if(buttonIndex == 1){
-        NSLog(@"%@", [referralBox text]); 
-        [sharedInstance refer:[referralBox text]];
+    if(alertView == referralAlert){
+        if(buttonIndex == 1){
+            NSLog(@"%@", [referralBox text]);
+            [sharedInstance refer:[referralBox text]];
+        }
+    }else if(alertView == versionAlert){
+        if(buttonIndex == 0){
+            [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+            exit(0);
+        }else if(buttonIndex == 1){
+            [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString: [sharedInstance appURL]]];
+        }
     }
+}
+
+- (void) registerUser
+{
+    //    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://freeapplife.com/api/register"]];
+    //    [request setAllHTTPHeaderFields:@{@"User-Agent": @"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"}];
+    //    [request setHTTPMethod:@"POST"];
+    //    [request setHTTPBody:[postString dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    NSArray *a = [sharedInstance makeForData:[sharedInstance serialNumber]];
+    NSString *postString = [NSString stringWithFormat:@"sn=%@&a=%@&t=%@", [sharedInstance serialNumber], [a objectAtIndex:0], [a objectAtIndex:1]];
+    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"register" andBody:postString];
+    
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        if([data length] > 0){
+            NSLog(@"%@", response);
+            NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+            NSLog(@"%@", strData);
+            //            NSError *error;
+            NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+            if([json objectForKey:@"status"]){
+                referralAlert = [[UIAlertView alloc] initWithTitle:@"Get More Points!" message:@"Add a referral code and you and the person you are referring get more points!" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Add!", nil];
+                referralAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
+                referralBox = [referralAlert textFieldAtIndex:0];
+                [referralAlert show];
+            }
+        }
+    }];
+    
 }
 
 - (void) getAarki
 {
     refreshing = TRUE;
-    [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://ar.aarki.net/garden?src=F0DD2C0C7EB3DCD6AA&advertising_id=10B36851-5C1C-4C1C-9973-B9B525A6598D&user_id=5bb186539e2729bb29950bc67a0c7435&offer_type=install"]] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+//    NSString *SponsorPayURL = [NSString stringWithFormat:@"http://freeapplife.com/api/offers?userID=%@&idfa=%@", [self serialNumber], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
+//    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"register" andBody:@"aarki"];
+    
+    NSString *postString = [NSString stringWithFormat:@"userID=%@&idfa=%@", [sharedInstance md5ForString: [sharedInstance serialNumber]], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
+    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"aarki" andBody:postString];
+    
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){
+            //B3C14AA3-862C-4120-ADA1-295FC5250092
             NSArray *dataArray = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
             NSLog(@"%@", dataArray);
             [sponsorData addObjectsFromArray:dataArray];
@@ -139,7 +210,7 @@
         [sponsorData removeAllObjects];
         [images removeAllObjects];
         [imageLinks removeAllObjects];
-//        [_tableView reloadData];
+        [_tableView reloadData];
         [self getSponsorPay];
         
         // This will get the NSURLResponse into NSHTTPURLResponse format
@@ -150,6 +221,44 @@
         
         //Just to make sure, it works or not
         NSLog(@"Status Code :: %d", responseStatusCode);
+    }];
+}
+
+- (void) getSponsorPay
+{
+    refreshing = TRUE;
+    NSLog(@"getting sponsorpay");
+    //    [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://freeapplife.com"]]];
+    
+    NSString *postString = [NSString stringWithFormat:@"userID=%@&idfa=%@", [sharedInstance md5ForString: [sharedInstance serialNumber]], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
+    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"offers" andBody:postString];
+
+    
+//    NSString *SponsorPayURL = [NSString stringWithFormat:@"http://freeapplife.com/api/offers?userID=%@&idfa=%@", [self serialNumber], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
+    
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+        NSLog(@"%@", dataDictionary);
+        // This will get the NSURLResponse into NSHTTPURLResponse format
+        NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+        
+        // This will Fetch the status code from NSHTTPURLResponse object
+        int responseStatusCode = [httpResponse statusCode];
+        
+        //Just to make sure, it works or not
+        NSLog(@"Status Code :: %d", responseStatusCode);
+        [images removeAllObjects];
+        [imageLinks removeAllObjects];
+        if(responseStatusCode == 200){
+//            [sponsorData addObjectsFromArray:d[dataDictionary objectForKey:@"offers"]];
+            NSMutableArray *tmp = [[NSMutableArray alloc] initWithArray:[dataDictionary objectForKey:@"offers"]];
+            [tmp addObjectsFromArray:sponsorData];
+            sponsorData = [tmp mutableCopy];
+            [_tableView reloadData];
+        }else{
+            refreshing = FALSE;
+        }
+        [self getImages];
     }];
 }
 
@@ -177,7 +286,45 @@
     // Free memory
     freeifaddrs(interfaces);
     return address;
+}
+
+- (void) newAarki
+{
+    refreshing = TRUE;
+    NSLog(@"getting aarki");
     
+    NSString *postString = [NSString stringWithFormat:@"userID=%@&idfa=%@", [sharedInstance md5ForString: [sharedInstance serialNumber]], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
+    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"aarki" andBody:postString];
+    
+//    NSString *aarki = [NSString stringWithFormat:@"http://freeapplife.com/api/aarki?userID=%@&idfa=%@", [self serialNumber], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
+    
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        
+        NSArray *dataArray = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+        
+        NSLog(@"%@", dataArray);
+        // This will get the NSURLResponse into NSHTTPURLResponse format
+        NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+        
+        // This will Fetch the status code from NSHTTPURLResponse object
+        int responseStatusCode = [httpResponse statusCode];
+        
+        //Just to make sure, it works or not
+        NSLog(@"Status Code :: %d", responseStatusCode);
+        
+        [sponsorData removeAllObjects];
+        [images removeAllObjects];
+        [imageLinks removeAllObjects];
+        
+        if(responseStatusCode == 200){
+            [sponsorData addObjectsFromArray:dataArray];
+        }else{
+            [sponsorData removeAllObjects];
+            refreshing = FALSE;
+        }
+        [_tableView reloadData];
+        [self getSponsorPay];
+    }];
 }
 
 -(NSString*) sha1:(NSString*)input
@@ -225,47 +372,6 @@
 	return serialNumber;
 }
 
-- (void) getSponsorPay
-{
-    refreshing = TRUE;
-    NSLog(@"getting sponsorpay");
-    [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://freeapplife.com"]]];
-//    NSString *API = @"0642980c502cfff5b6d2909b6c1420187872aec5";
-
-//    NSString *queryString = [NSString stringWithFormat:@"appid=17956&apple_idfa=%@&apple_idzfa_tracking_enabled=YES&device=phone&ip=%@&locale=en&offer_types=101&timestamp=%.0f&uid=asdf&", [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString], [self getIPAddress], [[NSDate date] timeIntervalSince1970]];
-    
-//    NSString *finalString = [queryString stringByAppendingString:[@"&hashkey=" stringByAppendingString:[self sha1:[queryString stringByAppendingString:API]]]];
-    
-//    NSString *SponsorPayURL = [NSString stringWithFormat:@"http://api.sponsorpay.com/feed/v1/offers.json?%@", finalString];
-    
-    
-    NSString *SponsorPayURL = [NSString stringWithFormat:@"http://freeapplife.com/api/offers?userID=%@&idfa=%@", [self serialNumber], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
-    
-    [NSURLConnection sendAsynchronousRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:SponsorPayURL]] queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-        NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-        NSLog(@"%@", dataDictionary);
-        // This will get the NSURLResponse into NSHTTPURLResponse format
-        NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
-        
-        // This will Fetch the status code from NSHTTPURLResponse object
-        int responseStatusCode = [httpResponse statusCode];
-        
-        //Just to make sure, it works or not
-        NSLog(@"Status Code :: %d", responseStatusCode);
-        if(responseStatusCode == 200){
-            [sponsorData removeAllObjects];
-            [images removeAllObjects];
-            [imageLinks removeAllObjects];
-        
-            [sponsorData addObjectsFromArray:[dataDictionary objectForKey:@"offers"]];
-            [_tableView reloadData];
-            [self getImages];
-        }else{
-            refreshing = FALSE;
-        }
-    }];
-}
-
 - (void) getImages{
     for(int i = 0; i<[sponsorData count]; i++){
         NSDictionary *thisOne = [sponsorData objectAtIndex:i];
@@ -306,10 +412,35 @@
 //        NSString *CellIdentifier = @"app";
 //        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
+    BOOL isAarki = false;
+    
     NSDictionary *currentData = [sponsorData objectAtIndex:indexPath.row];
     NSString *title = ([currentData objectForKey:@"title"] > [currentData objectForKey:@"name"] ? [currentData objectForKey:@"title"] : [currentData objectForKey:@"name"]);
 
-    title = [NSString stringWithFormat:@"%@\n%@ points", title, [currentData objectForKey:@"payout"]];
+    if([title length]>17){
+        title = [title substringToIndex: MIN(17, [title length])];
+        title = [title stringByAppendingString:@"..."];
+    }
+    
+    if([currentData objectForKey:@"url"] > 0){
+        NSString *url = [currentData objectForKey:@"url"];
+        NSError  *error  = NULL;
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"aarki" options:0 error:&error];
+        NSRange range   = [regex rangeOfFirstMatchInString:url options:0 range:NSMakeRange(0, [url length])];
+        NSString *result = [url substringWithRange:range];
+        
+        if ([result length]>0) {
+            isAarki = true;
+        }
+    }
+    
+    if(isAarki){
+        title = [NSString stringWithFormat:@"%@\n%@", title, [currentData objectForKey:@"reward"]];
+    }else{
+        title = [NSString stringWithFormat:@"%@\n%@ points", title, [currentData objectForKey:@"payout"]];
+    }
+    
+
 //        return cell;
     
     rewardCell *cell = [tableView dequeueReusableCellWithIdentifier:@"rewardCell" forIndexPath:indexPath];
@@ -339,11 +470,26 @@
     [cellView setBackgroundColor:[UIColor clearColor]];
     [cellView addSubview:progressView];
 
-    NSString *title = [currentCell.data objectForKey:@"title"];
-    NSString *instruct = [currentCell.data objectForKey:@"required_actions"];
+    NSString *title;
+    if([currentCell.data objectForKey:@"name"] > 0){
+        title = [currentCell.data objectForKey:@"name"];
+    }else{
+        title = [currentCell.data objectForKey:@"title"];
+    }
+    
+    NSString *instruct;
+    
+    if([currentCell.data objectForKey:@"ad_copy"] > 0){
+        instruct = [currentCell.data objectForKey:@"ad_copy"];
+    }else{
+        instruct = [currentCell.data objectForKey:@"required_actions"];
+    }
+
     instruct = [NSString stringWithFormat:@"Instructions: %@", instruct];
     
-    NSString *guide = @"Make sure to keep the app open for 30 seconds and not switch networks (e.g. WiFi > 3G).";
+    NSString *guide = @"Remember to open the app for a minimum of 30 seconds and do not switch networks (e.g. 3G, LTE > Wi-Fi). Some offers may take up to 24 hours to credit to your account.";
+    
+    NSString *credit = @"Some offers may take up to 24 hours to credit to your account.";
     
     UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(89, 20, 160, 20)];
     [titleLabel setText:title];
@@ -366,10 +512,10 @@
     [instructions sizeToFit];
     [cellView addSubview:instructions];
     
-    UILabel *guidelines = [[UILabel alloc] initWithFrame:CGRectMake(20, titleFrame.size.height+80, 240, 120)];
+    UILabel *guidelines = [[UILabel alloc] initWithFrame:CGRectMake(20, titleFrame.size.height+100, 240, 120)];
     [guidelines setText:guide];
     [guidelines setNumberOfLines:5];
-    [guidelines setFont: [UIFont fontWithName:@"Helvetica Neue" size:15.0f]];
+    [guidelines setFont: [UIFont fontWithName:@"Helvetica Neue" size:13.0f]];
     [guidelines setTextAlignment:NSTextAlignmentCenter];
     [guidelines sizeToFit];
     [cellView addSubview:guidelines];
@@ -390,7 +536,15 @@
     [sponsorClicked setContainerView:cellView];
     [sponsorClicked setUseMotionEffects:TRUE];
     UIWebView *web = _webView;
-    NSString *URL = [[sponsorData objectAtIndex:indexPath.row] objectForKey:@"link"];
+    
+    NSString *URL;
+    
+    if([[sponsorData objectAtIndex:indexPath.row] objectForKey:@"link"] > 0){
+        URL = [[sponsorData objectAtIndex:indexPath.row] objectForKey:@"link"];
+    }else{
+        URL = [[sponsorData objectAtIndex:indexPath.row] objectForKey:@"url"];
+    }
+    
     [sponsorClicked show];
     [sponsorClicked setOnButtonTouchUpInside:^(CustomIOS7AlertView *alertView, int buttonIndex) {
         if(buttonIndex == 0){
@@ -454,12 +608,15 @@
 - (BOOL) webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     NSError *error = NULL;
-    
+
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"itunes.apple.com" options:NSRegularExpressionCaseInsensitive error:&error];
+    
+    
     if (error)
     {
         NSLog(@"Couldn't create regex with given string and options");
     }
+    
     NSUInteger regexNums = [regex numberOfMatchesInString:[[request URL] absoluteString] options:0 range:NSMakeRange(0, [[[request URL] absoluteString] length])];
 //    NSLog(@"request: %@", [request URL]);
     if(regexNums > 0){
@@ -468,6 +625,11 @@
     redirects++;
     [_progress setProgress:redirects*0.15];
     return YES;
+}
+
+- (void) dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)didReceiveMemoryWarning

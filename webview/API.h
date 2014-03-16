@@ -10,16 +10,25 @@
 
 @interface API : NSObject
 
-@property (nonatomic, strong) NSDictionary *userData;
-@property (nonatomic, strong) UIView *topBar;
+@property (nonatomic, strong) NSMutableDictionary *userData;
+@property (nonatomic, strong) NSString *baseURL; 
+@property (nonatomic, strong) UIImageView *topBar;
 @property (nonatomic, strong) UILabel *points;
 @property (nonatomic, strong) UILabel *referrals; 
+@property (nonatomic, strong) NSString *notificationName;
+@property (nonatomic, strong) NSString *appURL;
 
 + (id)sharedInstance;
 
 - (void) user;
+- (void) clear; 
 - (void) refer:(NSString *)person;
 - (void) stuff;
+- (UILabel *) getPoints;
+- (NSString *) currentPoints;
+- (NSString *) md5ForString:(NSString *)string;
+- (UIView *) getBar;
+- (NSMutableURLRequest *) requestForEndpoint:(NSString *)endPoint andBody:(NSString *)postString;
 - (NSString *)serialNumber;
 - (NSArray *) makeForData:(NSString *)data;
 

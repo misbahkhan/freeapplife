@@ -7,8 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <FacebookSDK/FacebookSDK.h>
+#import "CustomIOS7AlertView.h"
 
-@interface settingsViewController : UIViewController <FBLoginViewDelegate, UITableViewDataSource, UITableViewDelegate>
-
+@interface settingsViewController : UIViewController <UITableViewDataSource, UITableViewDelegate, CustomIOS7AlertViewDelegate, UITextFieldDelegate>
+@property (nonatomic, strong) UILabel *pointsLabel; 
 @end

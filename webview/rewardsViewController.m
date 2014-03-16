@@ -12,7 +12,6 @@
 #import <mach/port.h>
 #import <mach/kern_return.h>
 #import <CommonCrypto/CommonHMAC.h>
-#import "CXAlertView.h"
 #import "API.h"
 #import "CustomIOS7AlertView.h"
 
@@ -65,7 +64,20 @@
     defaults = [[NSUserDefaults alloc] init];
     
 //    opened = 0;
-    [self registerUser];
+    
+    UIView *topBar = [sharedInstance getBar];
+    [self.view addSubview:topBar];
+    
+    _pointsLabel = [sharedInstance getPoints];
+    [self.view addSubview:_pointsLabel];
+
+    UIButton *refresh = [[UIButton alloc]initWithFrame:CGRectMake(5, 23, 34, 19)];
+    [refresh setBackgroundImage:[UIImage imageNamed:@"button.png"] forState:UIControlStateNormal];
+    [refresh addTarget:sharedInstance action:@selector(clear) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:refresh];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dataUpdated:) name:[sharedInstance notificationName] object:nil];
+
 }
 
 - (void) alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
@@ -78,12 +90,16 @@
 - (void) viewDidAppear:(BOOL)animated
 {
     [sharedInstance user];
-    [self.view addSubview:[sharedInstance topBar]];
 }
 
 - (void) viewDidDisappear:(BOOL)animated
 {
     NSLog(@"disappeared");
+}
+
+- (void) dataUpdated:(id)sender
+{
+    _pointsLabel.text = [sharedInstance currentPoints];
 }
 
 - (void) categorySelect:(id)sender
@@ -260,32 +276,6 @@
     return @[someString, epoch];
 }
 
-- (void) registerUser
-{
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://freeapplife.com/api/register"]];
-    [request setAllHTTPHeaderFields:@{@"User-Agent": @"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"}];
-    [request setHTTPMethod:@"POST"];
-    NSArray *a = [self makeForData:[sharedInstance serialNumber]];
-    NSString *postString = [NSString stringWithFormat:@"sn=%@&a=%@&t=%@", [sharedInstance serialNumber], [a objectAtIndex:0], [a objectAtIndex:1]];
-    [request setHTTPBody:[postString dataUsingEncoding:NSUTF8StringEncoding]];
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-        if([data length] > 0){
-            NSLog(@"%@", response);
-            NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-            NSLog(@"%@", strData);
-//            NSError *error;
-            NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-            if([json objectForKey:@"status"]){
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Get More Points!" message:@"Add a referral code and you and the person you are referring get more points!" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Add!", nil];
-                alert.alertViewStyle = UIAlertViewStylePlainTextInput;
-                referralBox = [alert textFieldAtIndex:0];
-                [alert show];
-            }
-        }
-    }];
-
-}
-
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
 {
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 49)];
@@ -384,7 +374,10 @@
                         [alert setButtonTitles:[NSMutableArray arrayWithObjects:@"Cancel", @"Claim Reward", nil]];
                         [alert setOnButtonTouchUpInside:^(CustomIOS7AlertView *alertView, int buttonIndex) {
                             if(buttonIndex == 1){
-                                 UIButton *button = (UIButton *)[[[[alertView subviews] objectAtIndex:0] subviews] objectAtIndex:3];
+                                UIButton *button = (UIButton *)[[[[alertView subviews] objectAtIndex:0] subviews] objectAtIndex:3];
+                                if([button.titleLabel.text isEqualToString:@"Okay"]){
+                                    [alertView close];
+                                }
                                 if(![button.titleLabel.text isEqualToString:@"Open in App Store"]){
                                     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://freeapplife.com/api/redeem"]];
                                      [request setAllHTTPHeaderFields:@{@"User-Agent": @"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"}];
@@ -404,12 +397,20 @@
                                              NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
                                              //NSLog(@"%@", response);
                                              NSLog(@"redeem: %@", json);
-                                             if(responseStatusCode == 200){
+                                             if(responseStatusCode == 200 && [[_segmentedControl titleForSegmentAtIndex:[_segmentedControl selectedSegmentIndex]] isEqualToString:@"Apps"]){
                                                  actualCode = [json objectForKey:@"code"];
                                                  [code setText:[NSString stringWithFormat:@"Code: %@", [json objectForKey:@"code"]]];
                                                  UIButton *button = (UIButton *)[[[[alertView subviews] objectAtIndex:0] subviews] objectAtIndex:3];
                                                  if(![button.titleLabel.text isEqualToString:@"Open in App Store"]){
                                                      [button setTitle:@"Open in App Store" forState:UIControlStateNormal];
+                                                 }
+                                             }
+                                             if(responseStatusCode == 200 && [[_segmentedControl titleForSegmentAtIndex:[_segmentedControl selectedSegmentIndex]] isEqualToString:@"Giftcards"]){
+                                                 actualCode = [json objectForKey:@"code"];
+                                                 [code setText:[NSString stringWithFormat:@"%@", [json objectForKey:@"code"]]];
+                                                 UIButton *button = (UIButton *)[[[[alertView subviews] objectAtIndex:0] subviews] objectAtIndex:3];
+                                                 if(![button.titleLabel.text isEqualToString:@"Okay"]){
+                                                     [button setTitle:@"Okay" forState:UIControlStateNormal];
                                                  }
                                              }
                                              if(responseStatusCode == 400){
@@ -465,11 +466,11 @@
 //                        [label sizeToFit];
 //                        [cellView addSubview:label];
                     }else{
-//                        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(70, 0, 190, 120)];
-//                        label.text = [NSString stringWithFormat:@"%@\n%@ points\nOut of stock.", description, points];
-//                        [label setNumberOfLines:4];
-//                        [label sizeToFit];
+                        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(20, 90, 190, 120)];
+                        label.text = @"Out of stock.";
+                        [label sizeToFit];
                         [cellView addSubview:label];
+                        [alert setContainerView:cellView];
                     }
                     dispatch_async(dispatch_get_main_queue(), ^{
                         [alert show];
@@ -487,6 +488,11 @@
     }else{
         return 0;
     }
+}
+
+- (void) dealloc
+{
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)didReceiveMemoryWarning

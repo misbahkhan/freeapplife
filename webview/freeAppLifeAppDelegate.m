@@ -7,6 +7,7 @@
 //
 
 #import "freeAppLifeAppDelegate.h"
+#import "API.h"
 
 @implementation freeAppLifeAppDelegate
 
@@ -24,10 +25,14 @@
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken{
 	NSLog(@"deviceToken: %@", deviceToken);
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ALERT" message:[NSString stringWithFormat:@"%@", deviceToken] delegate:Nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil];
+    [alert show];
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error{
 	NSLog(@"Failed to register with error : %@", error);
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ERROR" message:[NSString stringWithFormat:@"%@", error] delegate:Nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil];
+    [alert show];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {

@@ -13,5 +13,5 @@
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *segmentedControl;
-
+@property (strong, nonatomic) UILabel *pointsLabel;
 @end

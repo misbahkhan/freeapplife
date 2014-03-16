@@ -7,9 +7,7 @@
 //
 
 #import "settingsViewController.h"
-#import <FacebookSDK/FacebookSDK.h>
-#import <Social/Social.h>
-#import <Accounts/Accounts.h>
+#import "CustomIOS7AlertView.h"
 #import "API.h"
 #import "rewardCell.h"
 
@@ -19,6 +17,10 @@
     API *sharedInstance;
     UITableView *history;
     NSMutableArray *historyData;
+    UITextField *email;
+    UITextField *referral;
+    UITextField *password;
+    IBOutlet UIButton *restore_button;
 }
 
 @end
@@ -37,28 +39,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    FBLoginView *loginView = [[FBLoginView alloc] initWithPublishPermissions:@[@"publish_actions"] defaultAudience:FBSessionDefaultAudienceEveryone];
-    loginView.delegate = self;
-    CGRect loginFrame = loginView.frame;
-    loginFrame.origin = CGPointMake(50, 150);
-    loginView.frame = loginFrame;
-    [self.view addSubview:loginView];
-    
-    NSURL* url = [NSURL URLWithString:@"https://developers.facebook.com/ios"];
-    [FBDialogs presentShareDialogWithLink:url
-                                  handler:^(FBAppCall *call, NSDictionary *results, NSError *error) {
-                                      if(error) {
-                                          NSLog(@"Error: %@", error.description);
-                                      } else {
-                                          NSLog(@"Success!");
-                                      }
-                                  }];
 //    accountStore = [[ACAccountStore alloc] init];
 	// Do any additional setup after loading the view.
     sharedInstance = [API sharedInstance];
-    [sharedInstance user];
-    [self.view addSubview:[sharedInstance topBar]];
     
     
     history = [[UITableView alloc] initWithFrame:CGRectMake(0, 100, 320, 400)];
@@ -67,6 +50,32 @@
     [history setSeparatorStyle:UITableViewCellSeparatorStyleNone];
     [self.view addSubview:history];
     
+    UIView *topBar = [sharedInstance getBar];
+    [self.view addSubview:topBar];
+    _pointsLabel = [sharedInstance getPoints];
+    [self.view addSubview:_pointsLabel];
+    
+    UIButton *refresh = [[UIButton alloc]initWithFrame:CGRectMake(5, 23, 34, 19)];
+    [refresh setBackgroundImage:[UIImage imageNamed:@"button.png"] forState:UIControlStateNormal];
+    [refresh addTarget:sharedInstance action:@selector(clear) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:refresh];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dataUpdated:) name:[sharedInstance notificationName] object:nil];
+    
+}
+
+- (void) dataUpdated:(id)sender
+{
+    _pointsLabel.text = [sharedInstance currentPoints];
+    historyData = [[sharedInstance userData] objectForKey:@"reward_history"];
+    [history reloadData];
+    
+    if([[[sharedInstance userData] objectForKey:@"migrated"] intValue] == 0){
+        NSLog(@"not migrated");
+        [restore_button setHidden:NO]; 
+    }else{
+        [restore_button setHidden:YES]; 
+    }
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -95,290 +104,112 @@
     return cell;
 }
 
-- (IBAction)post:(id)sender {
-//    NSMutableDictionary *params =
-//    [NSMutableDictionary dictionaryWithObjectsAndKeys:
-//     @"Shit", @"message",
-//     @"Facebook SDK for iOS", @"name",
-//     @"Build great social apps and get more installs.", @"caption",
-//     @"The Facebook SDK for iOS makes it easier and faster to develop Facebook integrated iOS apps.", @"description",
-//     @"https://developers.facebook.com/ios", @"link",
-//     @"https://raw.github.com/fbsamples/ios-3.x-howtos/master/Images/iossdk_logo.png", @"picture",
-//     nil];
-//
-//    
-//    [FBWebDialogs presentFeedDialogModallyWithSession:nil
-//                                           parameters:params
-//                                              handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {}
-//     ];
-    NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-                            @"This is a test message", @"message",
-                            @"https://developers.facebook.com/ios", @"link",
-                            nil
-                            ];
-    /* make the API call */
-    [FBRequestConnection startWithGraphPath:@"/me/feed"
-                                 parameters:params
-                                 HTTPMethod:@"POST"
-                          completionHandler:^(
-                                              FBRequestConnection *connection,
-                                              id result,
-                                              NSError *error
-                                              ) {
-                              /* handle the result */
-                          }];
-}
-
 - (void) viewDidAppear:(BOOL)animated
 {
     [sharedInstance user];
-    [self.view addSubview:[sharedInstance topBar]];
-    historyData = [[sharedInstance userData] objectForKey:@"reward_history"];
-    [history reloadData];
 //    [history registerClass:[rewardCell class] forCellReuseIdentifier:@"rewardCell"];
 }
 
-- (void)fetchTimelineForUser:(NSString *)username
+
+- (void)customIOS7dialogButtonTouchUpInside: (CustomIOS7AlertView *)alertView clickedButtonAtIndex: (NSInteger)buttonIndex
 {
-    //  Step 0: Check that the user has local Twitter accounts
-    if ([self userHasAccessToTwitter]) {
-        ACAccountStore *accountStore = [[ACAccountStore alloc] init];
-        //  Step 1:  Obtain access to the user's Twitter accounts
-        ACAccountType *twitterAccountType =
-        [accountStore accountTypeWithAccountTypeIdentifier:
-         ACAccountTypeIdentifierTwitter];
-        
-        [accountStore
-         requestAccessToAccountsWithType:twitterAccountType
-         options:NULL
-         completion:^(BOOL granted, NSError *error) {
-             if (granted) {
-                 //  Step 2:  Create a request
-                 NSArray *twitterAccounts =
-                 [accountStore accountsWithAccountType:twitterAccountType];
-                 NSURL *url = [NSURL URLWithString:@"https://api.twitter.com"
-                               @"/1.1/friendships/create.json"];
-                 NSDictionary *params = @{@"screen_name" : @"freeapplife",
-                                          @"follow" : @"true"};
-                 SLRequest *request =
-                 [SLRequest requestForServiceType:SLServiceTypeTwitter
-                                    requestMethod:SLRequestMethodPOST
-                                              URL:url
-                                       parameters:params];
-                 
-                 //  Attach an account to the request
-                 [request setAccount:[twitterAccounts lastObject]];
-                 
-                 //  Step 3:  Execute the request
-                 [request performRequestWithHandler:
-                  ^(NSData *responseData,
-                    NSHTTPURLResponse *urlResponse,
-                    NSError *error) {
-                      
-                      if (responseData) {
-                          if (urlResponse.statusCode >= 200 &&
-                              urlResponse.statusCode < 300) {
-                              
-                              NSError *jsonError;
-                              NSDictionary *timelineData =
-                              [NSJSONSerialization
-                               JSONObjectWithData:responseData
-                               options:NSJSONReadingAllowFragments error:&jsonError];
-                              if (timelineData) {
-//                                  NSLog(@"Timeline Response: %@\n", timelineData);
-                                  [self retweet:[[timelineData objectForKey:@"status"] objectForKey:@"id_str"]];
-                                  NSLog(@"%@", [[timelineData objectForKey:@"status"] objectForKey:@"id"]);
-                              }
-                              else {
-                                  // Our JSON deserialization went awry
-                                  NSLog(@"JSON Error: %@", [jsonError localizedDescription]);
-                              }
-                          }
-                          else {
-                              // The server did not respond ... were we rate-limited?
-                              NSLog(@"The response status code is %d",
-                                    urlResponse.statusCode);
-                          }
-                      }
-                  }];
-             }
-             else {
-                 // Access was not granted, or an error occurred
-                 NSLog(@"%@", [error localizedDescription]);
-             }
-         }];
+    if(buttonIndex == 0){
+        [alertView close];
     }
 }
 
-- (void)retweet:(NSString *)tweetId
+- (BOOL) textFieldShouldReturn:(UITextField *)textField
 {
-    //  Step 0: Check that the user has local Twitter accounts
-    if ([self userHasAccessToTwitter]) {
-        ACAccountStore *accountStore = [[ACAccountStore alloc] init];
-        //  Step 1:  Obtain access to the user's Twitter accounts
-        ACAccountType *twitterAccountType =
-        [accountStore accountTypeWithAccountTypeIdentifier:
-         ACAccountTypeIdentifierTwitter];
-        
-        [accountStore
-         requestAccessToAccountsWithType:twitterAccountType
-         options:NULL
-         completion:^(BOOL granted, NSError *error) {
-             if (granted) {
-                 //  Step 2:  Create a request
-                 NSArray *twitterAccounts =
-                 [accountStore accountsWithAccountType:twitterAccountType];
-                 NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://api.twitter.com"
-                               @"/1.1/statuses/retweet/%@.json", tweetId]];
-//                 NSDictionary *params = @{@"screen_name" : @"freeapplife",
-//                                          @"follow" : @"true"};
-                 SLRequest *request =
-                 [SLRequest requestForServiceType:SLServiceTypeTwitter
-                                    requestMethod:SLRequestMethodPOST
-                                              URL:url
-                                       parameters:nil];
-                 
-                 //  Attach an account to the request
-                 [request setAccount:[twitterAccounts lastObject]];
-                 
-                 //  Step 3:  Execute the request
-                 [request performRequestWithHandler:
-                  ^(NSData *responseData,
-                    NSHTTPURLResponse *urlResponse,
-                    NSError *error) {
-                      
-                      if (responseData) {
-                          if (urlResponse.statusCode >= 200 &&
-                              urlResponse.statusCode < 300) {
-                              
-                              NSError *jsonError;
-                              NSDictionary *timelineData =
-                              [NSJSONSerialization
-                               JSONObjectWithData:responseData
-                               options:NSJSONReadingAllowFragments error:&jsonError];
-                              if (timelineData) {
-                                  NSLog(@"Timeline Response: %@\n", timelineData);
-                                  NSLog(@"%@", [[timelineData objectForKey:@"status"] objectForKey:@"id"]);
-                              }
-                              else {
-                                  // Our JSON deserialization went awry
-                                  NSLog(@"JSON Error: %@", [jsonError localizedDescription]);
-                              }
-                          }
-                          else {
-                              // The server did not respond ... were we rate-limited?
-                              NSLog(@"The response status code is %d",
-                                    urlResponse.statusCode);
-                          }
-                      }
-                  }];
-             }
-             else {
-                 // Access was not granted, or an error occurred
-                 NSLog(@"%@", [error localizedDescription]);
-             }
-         }];
-    }
+    [textField resignFirstResponder];
+    return YES;
 }
 
-- (void)fetchTime:(NSString *)username
+- (IBAction)restore:(id)sender
 {
-    //  Step 0: Check that the user has local Twitter accounts
-    if ([self userHasAccessToTwitter]) {
-        ACAccountStore *accountStore = [[ACAccountStore alloc] init];
-        //  Step 1:  Obtain access to the user's Twitter accounts
-        ACAccountType *twitterAccountType =
-        [accountStore accountTypeWithAccountTypeIdentifier:
-         ACAccountTypeIdentifierTwitter];
-        
-        [accountStore
-         requestAccessToAccountsWithType:twitterAccountType
-         options:NULL
-         completion:^(BOOL granted, NSError *error) {
-             if (granted) {
-                 //  Step 2:  Create a request
-                 NSArray *twitterAccounts =
-                 [accountStore accountsWithAccountType:twitterAccountType];
-                 NSURL *url = [NSURL URLWithString:@"https://api.twitter.com"
-                               @"/1.1/statuses/user_timeline.json"];
-                 NSDictionary *params = @{@"screen_name" : @"freeapplife"};
-                 SLRequest *request =
-                 [SLRequest requestForServiceType:SLServiceTypeTwitter
-                                    requestMethod:SLRequestMethodGET
-                                              URL:url
-                                       parameters:params];
-                 
-                 //  Attach an account to the request
-                 [request setAccount:[twitterAccounts lastObject]];
-                 
-                 //  Step 3:  Execute the request
-                 [request performRequestWithHandler:
-                  ^(NSData *responseData,
-                    NSHTTPURLResponse *urlResponse,
-                    NSError *error) {
-                      
-                      if (responseData) {
-                          if (urlResponse.statusCode >= 200 &&
-                              urlResponse.statusCode < 300) {
-                              
-                              NSError *jsonError;
-                              NSDictionary *timelineData =
-                              [NSJSONSerialization
-                               JSONObjectWithData:responseData
-                               options:NSJSONReadingAllowFragments error:&jsonError];
-                              if (timelineData) {
-                                  NSLog(@"Timeline Response: %@\n", timelineData);
-                              }
-                              else {
-                                  // Our JSON deserialization went awry
-                                  NSLog(@"JSON Error: %@", [jsonError localizedDescription]);
-                              }
-                          }
-                          else {
-                              // The server did not respond ... were we rate-limited?
-                              NSLog(@"The response status code is %d",
-                                    urlResponse.statusCode);
-                          }
-                      }
-                  }];
-             }
-             else {
-                 // Access was not granted, or an error occurred
-                 NSLog(@"%@", [error localizedDescription]);
-             }
-         }];
-    }
+    CustomIOS7AlertView *alert = [[CustomIOS7AlertView alloc] init];
+    
+    UIView *restoreView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 280, 230)];
+    [restoreView setBackgroundColor:[UIColor clearColor]];
+    
+    UILabel *restoreViewTitle = [[UILabel alloc] initWithFrame:CGRectMake(20, 10, 240, 100)];
+    [restoreViewTitle setText:@"To restore your points from your previous FAL 2.0 account, type in your crednetials below!"];
+    [restoreViewTitle setNumberOfLines:4];
+    [restoreViewTitle setTextAlignment:NSTextAlignmentCenter];
+    
+    email = [[UITextField alloc] initWithFrame:CGRectMake(20, 110, 240, 32)];
+    [email setBorderStyle:UITextBorderStyleRoundedRect];
+    [email setDelegate:self];
+    [email setPlaceholder:@"Email Address"];
+    
+    password = [[UITextField alloc] initWithFrame:CGRectMake(20, 152, 240, 32)];
+    [password setBorderStyle:UITextBorderStyleRoundedRect];
+    [password setSecureTextEntry:YES];
+    [password setDelegate:self];
+    [password setPlaceholder:@"Password"];
+    
+    [restoreView addSubview:restoreViewTitle];
+    [restoreView addSubview:email];
+    [restoreView addSubview:password]; 
+    
+    [alert setDelegate:self];
+    [alert setContainerView:restoreView];
+    [alert setButtonTitles:[NSMutableArray arrayWithObjects:@"Cancel", @"Migrate", nil]];
+    [alert show];
+    
+    [alert setOnButtonTouchUpInside:^(CustomIOS7AlertView *alertView, int buttonIndex) {
+        if(buttonIndex == 1){
+//            NSLog(@"migrate");
+            NSLog(@"%@", [email text]);
+            NSLog(@"%@", [password text]);
+            NSString *postString = [NSString stringWithFormat:@"userID=%@&email=%@&password=%@",[sharedInstance md5ForString:[sharedInstance serialNumber]], [email text], [password text]];
+            NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"regainData" andBody:postString];
+            
+            [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+                NSLog(@"%@", response);
+                NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+                NSLog(@"user: %@", strData);
+                
+                NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+                int responseStatusCode = [httpResponse statusCode];
+                NSLog(@"%d", responseStatusCode);
+                
+                if(responseStatusCode == 204){
+                    UILabel *error = [[UILabel alloc] initWithFrame:CGRectMake(20, 180, 240, 50)];
+                    [error setText:@"Error, wrong credentials or already migrated."];
+                    [error setTextAlignment:NSTextAlignmentCenter];
+                    [error setNumberOfLines:2];
+                    [restoreView addSubview:error];
+                    [alertView setContainerView:restoreView];
+                }
+                
+                if([data length] > 0){
+                    if ([[json objectForKey:@"status"] isEqualToString:@"Failed"] || responseStatusCode == 204) {
+                        UILabel *error = [[UILabel alloc] initWithFrame:CGRectMake(20, 180, 240, 50)];
+                        [error setText:@"Error, wrong credentials or already migrated."];
+                        [error setTextAlignment:NSTextAlignmentCenter];
+                        [error setNumberOfLines:2];
+                        [restoreView addSubview:error];
+                        [alertView setContainerView:restoreView];
+                    }else{
+                        [alertView close];
+                        [sharedInstance user];
+                        [restore_button setHidden:YES];
+                    }
+                }
+
+            }];
+        }else{
+            
+        }
+    }];
+
+    
 }
 
-- (IBAction)fetch:(id)sender {
-    NSLog(@"fetch");
-    [self fetchTime:@"freeapplife"];
-//    [self fetchTimelineForUser:@"themisbahkhan"];
-//    [self getTwitterAccountInformation];
-}
-
-//- (void)getTwitterAccountInformation
-//{
-//    ACAccountStore *accountStore = [[ACAccountStore alloc] init];
-//    ACAccountType *accountType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
-//    
-//    [accountStore requestAccessToAccountsWithType:accountType options:nil completion:^(BOOL granted, NSError *error) {
-//        if(granted) {
-//            NSArray *accountsArray = [accountStore accountsWithAccountType:accountType];
-//            
-//            if ([accountsArray count] > 0) {
-//                ACAccount *twitterAccount = [accountsArray objectAtIndex:0];
-//                NSLog(@"%@",twitterAccount.username);
-//                NSLog(@"%@",twitterAccount.accountType);
-//            }
-//        }
-//    }];
-//}
-
-- (BOOL)userHasAccessToTwitter
+- (void) dealloc
 {
-    return [SLComposeViewController
-            isAvailableForServiceType:SLServiceTypeTwitter];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)didReceiveMemoryWarning
