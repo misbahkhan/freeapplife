@@ -203,9 +203,25 @@
             
         }
     }];
-
-    
 }
+
+- (IBAction)troubleshoot:(id)sender {
+    CustomIOS7AlertView *alert = [[CustomIOS7AlertView alloc] init];
+    
+    UIView *troubleshootView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 280, 290)];
+    [troubleshootView setBackgroundColor:[UIColor clearColor]];
+    
+    UITextView *text = [[UITextView alloc] initWithFrame:CGRectMake(0, 0, 280, 290) textContainer:nil];
+    [text setBackgroundColor:[UIColor clearColor]];
+    [text setEditable:NO];
+    [text setText:@"1. Leave apps open for 60+ seconds.\n2. If you already have an app installed and you're attempting to claim points for it, delete the app first and then attempt to download said app again from the Get Points section.\n3. Pull down on the sponsored wall to refresh the listings and ensure that your device has access to the latest offers.\n4. If you've installed an offer from a similar service within the past 30 days, your device may no longer be eligible for said offer - switch to a new device if possible.\n5. Wi-Fi will speed the process up.\n6. Navigate to the Settings app, tap General, followed by Profiles and delete all non-essential Profiles, as they could conflict with FreeAppLife.\n7. Refer to the pop-ups; some offers require additional steps to complete.\n8. Select offers may take an upwards of 48 hours to credit your account."];
+    [troubleshootView addSubview:text];
+    [alert setDelegate:self];
+    [alert setContainerView:troubleshootView];
+    [alert setButtonTitles:[NSMutableArray arrayWithObjects:@"Close", nil]];
+    [alert show];
+}
+
 
 - (void) dealloc
 {

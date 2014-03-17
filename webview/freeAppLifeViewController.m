@@ -477,16 +477,6 @@
         title = [currentCell.data objectForKey:@"title"];
     }
     
-    NSString *instruct;
-    
-    if([currentCell.data objectForKey:@"ad_copy"] > 0){
-        instruct = [currentCell.data objectForKey:@"ad_copy"];
-    }else{
-        instruct = [currentCell.data objectForKey:@"required_actions"];
-    }
-
-    instruct = [NSString stringWithFormat:@"Instructions: %@", instruct];
-    
     NSString *guide = @"Remember to open the app for a minimum of 30 seconds and do not switch networks (e.g. 3G, LTE > Wi-Fi). Some offers may take up to 24 hours to credit to your account.";
     
     NSString *credit = @"Some offers may take up to 24 hours to credit to your account.";
@@ -507,8 +497,17 @@
     [cellView addSubview:imageView];
     
     UILabel *instructions = [[UILabel alloc] initWithFrame:CGRectMake(90, titleFrame.size.height+20, 190, 120)];
-    [instructions setText:instruct];
     [instructions setNumberOfLines:3];
+    NSString *instruct;
+    if([currentCell.data objectForKey:@"ad_copy"] > 0){
+        instruct = [currentCell.data objectForKey:@"ad_copy"];
+        [instructions setNumberOfLines:6];
+        [instructions setFont: [UIFont fontWithName:@"Helvetica Neue" size:11.0f]];
+    }else{
+        instruct = [currentCell.data objectForKey:@"required_actions"];
+    }
+    instruct = [NSString stringWithFormat:@"Instructions: %@", instruct];
+    [instructions setText:instruct];
     [instructions sizeToFit];
     [cellView addSubview:instructions];
     

@@ -31,8 +31,6 @@
     [NSURLConnection sendAsynchronousRequest:request3 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         
     }];
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ALERT" message:[NSString stringWithFormat:@"%@, %@", deviceToken, postString2] delegate:Nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil];
-    [alert show];
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error{
@@ -43,13 +41,28 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     application.applicationIconBadgeNumber = 0;
-    NSString *msg = [NSString stringWithFormat:@"%@", userInfo];
-    NSLog(@"%@",msg);
-    [self createAlert:msg];
+    NSString *goTo = [NSString stringWithFormat:@"%@", [[userInfo objectForKey:@"data"] objectForKey:@"tab"]];
+    NSString *showMsg = [NSString stringWithFormat:@"%@", [[userInfo objectForKey:@"data"] objectForKey:@"popup"]];
+    int page = [goTo integerValue];
+    int popUp = [showMsg integerValue];
+    
+    UITabBarController *tab = (UITabBarController *)self.window.rootViewController;
+    tab.selectedIndex = page;
+    
+    if(popUp){
+        [self createAlert:[NSString stringWithFormat:@"%@", [[userInfo objectForKey:@"aps"] objectForKey:@"alert"]]];
+    }
+//    NSError *e;
+//    NSDictionary *JSON =
+//    [NSJSONSerialization JSONObjectWithData: [msg dataUsingEncoding:NSUTF8StringEncoding]
+//                                    options: NSJSONReadingMutableContainers
+//                                      error: &e];
+//    msg = [JSON objectForKey:@"data"];
+//    [self createAlert:msg];
 }
 
 - (void)createAlert:(NSString *)msg {
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Message Received" message:[NSString stringWithFormat:@"%@", msg]delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"FreeAppLife" message:[NSString stringWithFormat:@"%@", msg]delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
     [alertView show];
 }
 
