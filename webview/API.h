@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface API : NSObject
+@interface API : NSObject <UIAlertViewDelegate>
 
 @property (nonatomic, strong) NSMutableDictionary *userData;
 @property (nonatomic, strong) NSString *baseURL; 
@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UILabel *referrals; 
 @property (nonatomic, strong) NSString *notificationName;
 @property (nonatomic, strong) NSString *appURL;
+@property (nonatomic, strong) NSData *token;
 
 + (id)sharedInstance;
 

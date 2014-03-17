@@ -99,7 +99,7 @@
 
     [self registerUser];
     NSString *postString = [NSString stringWithFormat:@"u=%@&v=%@", [sharedInstance md5ForString:[sharedInstance serialNumber]], [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"]];
-    NSLog(@"%@", postString);
+//    NSLog(@"%@", postString);
     NSMutableURLRequest *request2 = [sharedInstance requestForEndpoint:@"version" andBody:postString];
     [NSURLConnection sendAsynchronousRequest:request2 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){

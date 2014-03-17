@@ -25,7 +25,13 @@
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken{
 	NSLog(@"deviceToken: %@", deviceToken);
-    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ALERT" message:[NSString stringWithFormat:@"%@", deviceToken] delegate:Nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil];
+    API *sharedInstance = [API sharedInstance];
+    NSString *postString2 = [NSString stringWithFormat:@"userID=%@&token=%@", [sharedInstance md5ForString:[sharedInstance serialNumber]], [NSString stringWithFormat:@"%@", deviceToken]];
+    NSMutableURLRequest *request3 = [sharedInstance requestForEndpoint:@"push" andBody:postString2];
+    [NSURLConnection sendAsynchronousRequest:request3 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        
+    }];
+    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ALERT" message:[NSString stringWithFormat:@"%@, %@", deviceToken, postString2] delegate:Nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil];
     [alert show];
 }
 

@@ -93,6 +93,11 @@
     [self user]; 
 }
 
+- (void) alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    [self user];
+}
+
 - (void) user
 {
     
@@ -109,6 +114,10 @@
             _userData = [json mutableCopy];
 //            if(![_userData isEqual:json]){
                 [[NSNotificationCenter defaultCenter] postNotificationName:_notificationName object:self];
+            if([[json objectForKey:@"maint_mode"] boolValue] == TRUE) {
+                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Maintenence Mode" message:@"FreeAppLife is currently in maintenance mode. We will return shortly!" delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+                [alert show];
+            }
 //            }
             [_points setText:[NSString stringWithFormat:@"%@", [json objectForKey:@"points"]]];
 //            [_referrals setText:[NSString stringWithFormat:@"Referrals: %@", [json objectForKey:@"referrals_count"]]];

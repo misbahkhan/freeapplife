@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "3133049F1882441800F7DB73"
-               BuildableName = "webview.app"
+               BuildableName = "FreeAppLife.app"
                BlueprintName = "webview"
                ReferencedContainer = "container:webview.xcodeproj">
             </BuildableReference>
@@ -43,7 +43,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3133049F1882441800F7DB73"
-            BuildableName = "webview.app"
+            BuildableName = "FreeAppLife.app"
             BlueprintName = "webview"
             ReferencedContainer = "container:webview.xcodeproj">
          </BuildableReference>
@@ -62,7 +62,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3133049F1882441800F7DB73"
-            BuildableName = "webview.app"
+            BuildableName = "FreeAppLife.app"
             BlueprintName = "webview"
             ReferencedContainer = "container:webview.xcodeproj">
          </BuildableReference>
@@ -80,7 +80,7 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "3133049F1882441800F7DB73"
-            BuildableName = "webview.app"
+            BuildableName = "FreeAppLife.app"
             BlueprintName = "webview"
             ReferencedContainer = "container:webview.xcodeproj">
          </BuildableReference>

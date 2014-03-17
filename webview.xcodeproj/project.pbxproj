@@ -68,7 +68,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		313304A01882441800F7DB73 /* webview.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = webview.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		313304A01882441800F7DB73 /* FreeAppLife.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FreeAppLife.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		313304A31882441800F7DB73 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		313304A51882441800F7DB73 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		313304A71882441800F7DB73 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -182,7 +182,7 @@
 		313304A11882441800F7DB73 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				313304A01882441800F7DB73 /* webview.app */,
+				313304A01882441800F7DB73 /* FreeAppLife.app */,
 				313304C41882441800F7DB73 /* webviewTests.xctest */,
 			);
 			name = Products;
@@ -332,7 +332,7 @@
 			);
 			name = webview;
 			productName = webview;
-			productReference = 313304A01882441800F7DB73 /* webview.app */;
+			productReference = 313304A01882441800F7DB73 /* FreeAppLife.app */;
 			productType = "com.apple.product-type.application";
 		};
 		313304C31882441800F7DB73 /* webviewTests */ = {
@@ -589,7 +589,7 @@
 				GCC_PREFIX_HEADER = "webview/webview-Prefix.pch";
 				INFOPLIST_FILE = "webview/webview-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = FreeAppLife;
 				PROVISIONING_PROFILE = "B92E774F-DDDF-4012-BAED-826BFFF60ABC";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
@@ -612,7 +612,7 @@
 				GCC_PREFIX_HEADER = "webview/webview-Prefix.pch";
 				INFOPLIST_FILE = "webview/webview-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = FreeAppLife;
 				PROVISIONING_PROFILE = "B92E774F-DDDF-4012-BAED-826BFFF60ABC";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
