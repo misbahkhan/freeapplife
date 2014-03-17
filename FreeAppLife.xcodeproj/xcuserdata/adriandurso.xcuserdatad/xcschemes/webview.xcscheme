@@ -33,7 +33,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "313304C31882441800F7DB73"
-               BuildableName = "webviewTests.xctest"
+               BuildableName = "FreeAppLifeTests.xctest"
                BlueprintName = "FreeAppLifeTests"
                ReferencedContainer = "container:FreeAppLife.xcodeproj">
             </BuildableReference>
