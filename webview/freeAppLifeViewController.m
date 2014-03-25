@@ -37,6 +37,7 @@
     UIWebView *video;
     NSString *sponsorPayHelp;
     NSString *aarkiHelp;
+    NSString *videoCode;
 }
 
 @end
@@ -117,6 +118,13 @@
             }else{
                 [self newAarki];
             }
+        }
+    }];
+    
+    NSMutableURLRequest *request3 = [sharedInstance requestForEndpoint:@"video" andBody:postString];
+    [NSURLConnection sendAsynchronousRequest:request3 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        if([data length] > 0){
+            videoCode = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
         }
     }];
 }
@@ -553,6 +561,7 @@
     }else{
         UIButton *helpLabel = [[UIButton alloc] initWithFrame:CGRectMake(20, titleFrame.size.height+180, 240, 20)];
         [helpLabel setTitle:@"Missing Points? Tap for Help!" forState:UIControlStateNormal];
+        [helpLabel setTitleColor:[UIColor blueColor] forState:UIControlStateNormal]; 
         [helpLabel addTarget:self action:@selector(sponsorPayHelpClicked:) forControlEvents:UIControlEventTouchUpInside];
         [cellView addSubview:helpLabel];
         
@@ -616,11 +625,11 @@
                                    </script>\
                                    <iframe id='playerId' type='text/html' width='%d' height='%d' src='http://www.youtube.com/embed/%@?enablejsapi=1&rel=0&playsinline=1&autoplay=1' frameborder='0'>\
                                    </body>\
-                                   </html>", 280, 158, @"OlHeQpzxtTM"];
+                                   </html>", 280, 158, videoCode];
             [video loadHTMLString:embedHTML baseURL:nil];
             
             CGRect oldFrame = cellView.frame;
-            oldFrame.size.height = cellView.frame.size.height+20;
+            oldFrame.size.height = cellView.frame.size.height-30;
             cellView.frame = oldFrame;
             [cellView addSubview:video];
         }
