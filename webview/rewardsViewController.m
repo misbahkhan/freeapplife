@@ -142,7 +142,7 @@
                 [images addObject:[[NSMutableArray alloc] init]];
                 [imageLinks addObject:[[NSMutableArray alloc] init]];
                 [names addObject:[[categories objectAtIndex:i] objectForKey:@"Name"]];
-                UITableView *table = [[UITableView alloc] initWithFrame:CGRectMake(0, 88, 320, 480)];
+                UITableView *table = [[UITableView alloc] initWithFrame:CGRectMake(0, 128, 320, 440)];
                 table.tag = 10+i;
                 [self.view addSubview:table];
                 table.delegate = self;
@@ -153,6 +153,10 @@
                 [table registerClass:[rewardCell class] forCellReuseIdentifier:@"rewardCell"];
                 [tables addObject:table];
             }
+            UILabel *warning = [[UILabel alloc] initWithFrame:CGRectMake(0, 90, 320, 28)];
+            [warning setText:@"Rewards are currently US-exclusive."];
+            [warning setTextAlignment:NSTextAlignmentCenter];
+            [self.view addSubview:warning];
             [_segmentedControl setSelectedSegmentIndex:0];
             _segmentedControl.hidden = NO;
             [self categorySelect:self]; 

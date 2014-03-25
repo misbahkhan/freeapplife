@@ -34,6 +34,9 @@
     UIAlertView *referralAlert;
     UIAlertView *versionAlert;
     API *sharedInstance;
+    UIWebView *video;
+    NSString *sponsorPayHelp;
+    NSString *aarkiHelp;
 }
 
 @end
@@ -122,6 +125,11 @@
 {
     [sharedInstance user];
 //    [_tableView reloadData];
+}
+
+- (void) viewDidDisappear:(BOOL)animated
+{
+    [sponsorClicked close];
 }
 
 - (void) dataUpdated:(id)sender
@@ -249,15 +257,20 @@
         NSLog(@"Status Code :: %d", responseStatusCode);
         [images removeAllObjects];
         [imageLinks removeAllObjects];
+        
         if(responseStatusCode == 200){
 //            [sponsorData addObjectsFromArray:d[dataDictionary objectForKey:@"offers"]];
+            sponsorPayHelp = [[dataDictionary objectForKey:@"information"] objectForKey:@"support_url"];
             NSMutableArray *tmp = [[NSMutableArray alloc] initWithArray:[dataDictionary objectForKey:@"offers"]];
             [tmp addObjectsFromArray:sponsorData];
             sponsorData = [tmp mutableCopy];
+            NSDictionary *popUp = [[NSDictionary alloc] initWithObjectsAndKeys:@"popup", @"link", @"0", @"payout", @"WATCH", @"required_actions", @"Install Tutorial", @"title", @"https://freeapplife.com/fal/png/store.png", @"image_url", nil];
+            [sponsorData insertObject:popUp atIndex:0];
             [_tableView reloadData];
         }else{
             refreshing = FALSE;
         }
+        
         [self getImages];
     }];
 }
@@ -297,12 +310,14 @@
     NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"aarki" andBody:postString];
     
 //    NSString *aarki = [NSString stringWithFormat:@"http://freeapplife.com/api/aarki?userID=%@&idfa=%@", [self serialNumber], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
-    
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         
         NSArray *dataArray = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
         
-        NSLog(@"%@", dataArray);
+        NSMutableArray *filteredData = [dataArray mutableCopy];
+        NSMutableArray *toRemove = [[NSMutableArray alloc] init];
+        
+        NSLog(@"%@", filteredData);
         // This will get the NSURLResponse into NSHTTPURLResponse format
         NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
         
@@ -317,7 +332,16 @@
         [imageLinks removeAllObjects];
         
         if(responseStatusCode == 200){
-            [sponsorData addObjectsFromArray:dataArray];
+            for(int i = 0; i<[filteredData count]; i++){
+                if([[[filteredData objectAtIndex:i] objectForKey:@"purchase"] integerValue] == 1){
+                    [toRemove addObject:[NSString stringWithFormat:@"%d", i]];
+                }
+            }
+            
+            for(int i = 0; i<[toRemove count]; i++){
+                [filteredData removeObjectAtIndex:[[toRemove objectAtIndex:i] integerValue]];
+            }
+            [sponsorData addObjectsFromArray:filteredData];
         }else{
             [sponsorData removeAllObjects];
             refreshing = FALSE;
@@ -385,9 +409,19 @@
     }
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^(void) {
         for (int i = 0; i<[imageLinks count]; i++){
-            NSData *tempImageData = [NSData dataWithContentsOfURL:[imageLinks objectAtIndex:i]];
-            UIImage *image = [UIImage imageWithData:tempImageData];
-            [images addObject:image];
+            if([[[imageLinks objectAtIndex:i] absoluteString] isEqualToString:@"https://freeapplife.com/fal/png/store.png"]){
+                NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[imageLinks objectAtIndex:i]];
+                [request setAllHTTPHeaderFields:@{@"User-Agent": @"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"}];
+                NSURLResponse *response;
+                NSError *error = nil;
+                NSData* data = [NSURLConnection sendSynchronousRequest:request  returningResponse:&response error:&error];
+                UIImage *image = [UIImage imageWithData:data];
+                [images addObject:image];
+            }else{
+                NSData *tempImageData = [NSData dataWithContentsOfURL:[imageLinks objectAtIndex:i]];
+                UIImage *image = [UIImage imageWithData:tempImageData];
+                [images addObject:image];
+            }
             dispatch_async(dispatch_get_main_queue(), ^{
                 [_tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:i inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
             });
@@ -440,6 +474,13 @@
         title = [NSString stringWithFormat:@"%@\n%@ points", title, [currentData objectForKey:@"payout"]];
     }
     
+    if([currentData objectForKey:@"link"]>0){
+        if([[currentData objectForKey:@"link"] isEqualToString:@"popup"]){
+            NSLog(@"is popup");
+            title = [NSString stringWithFormat:@"%@", [currentData objectForKey:@"title"]];
+        }
+    }
+    
 
 //        return cell;
     
@@ -455,18 +496,23 @@
     return cell;
 }
 
+- (void) sponsorPayHelpClicked:(id)sender
+{
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:sponsorPayHelp]];
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     redirects = 0;
     [_tableView deselectRowAtIndexPath:indexPath animated:NO];
     rewardCell *currentCell = (rewardCell *)[_tableView cellForRowAtIndexPath:indexPath];
     
-    _progress = [[UIProgressView alloc] initWithFrame:CGRectMake(20, 210, 240, 10)];
+    _progress = [[UIProgressView alloc] initWithFrame:CGRectMake(20, 240, 240, 10)];
     [_progress setProgress:0.0f];
     UIView *progressView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 280, 20)];
     [progressView addSubview:_progress];
     
-    UIView *cellView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 280, 225)];
+    UIView *cellView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 280, 275)];
     [cellView setBackgroundColor:[UIColor clearColor]];
     [cellView addSubview:progressView];
 
@@ -499,13 +545,20 @@
     UILabel *instructions = [[UILabel alloc] initWithFrame:CGRectMake(90, titleFrame.size.height+20, 190, 120)];
     [instructions setNumberOfLines:3];
     NSString *instruct;
+    
     if([currentCell.data objectForKey:@"ad_copy"] > 0){
         instruct = [currentCell.data objectForKey:@"ad_copy"];
         [instructions setNumberOfLines:6];
         [instructions setFont: [UIFont fontWithName:@"Helvetica Neue" size:11.0f]];
     }else{
+        UIButton *helpLabel = [[UIButton alloc] initWithFrame:CGRectMake(20, titleFrame.size.height+180, 240, 20)];
+        [helpLabel setTitle:@"Missing Points? Tap for Help!" forState:UIControlStateNormal];
+        [helpLabel addTarget:self action:@selector(sponsorPayHelpClicked:) forControlEvents:UIControlEventTouchUpInside];
+        [cellView addSubview:helpLabel];
+        
         instruct = [currentCell.data objectForKey:@"required_actions"];
     }
+    
     instruct = [NSString stringWithFormat:@"Instructions: %@", instruct];
     [instructions setText:instruct];
     [instructions sizeToFit];
@@ -532,6 +585,48 @@
     sponsorClicked = [[CustomIOS7AlertView alloc] init];
     sponsorClicked.delegate = self;
     [sponsorClicked setButtonTitles:[NSMutableArray arrayWithObjects:@"Cancel", @"Continue", nil]];
+    
+    
+    if([currentCell.data objectForKey:@"link"]>0){
+        if([[currentCell.data objectForKey:@"link"] isEqualToString:@"popup"]){
+            [guidelines removeFromSuperview];
+            [progressView removeFromSuperview];
+            [sponsorClicked setButtonTitles:[NSMutableArray arrayWithObjects:@"Get Started", nil]];
+            video = [[UIWebView alloc] initWithFrame:CGRectMake(0, 90, 280, 158)];
+            
+//            [video loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"https://freeapplife.com/fal/video.html"]]];
+//            [video loadHTMLString:@"<style type=\"text/css\">body{margin:0;padding:0;}</style><iframe width=“280” height=“158” src=\"http://www.youtube.com/embed/OlHeQpzxtTM?rel=0\" frameborder=\"0\" allowfullscreen></iframe>" baseURL:nil];
+            
+            [video setAllowsInlineMediaPlayback:YES];
+            [video setMediaPlaybackRequiresUserAction:NO];
+            [video.scrollView setScrollEnabled:NO];
+            NSString* embedHTML = [NSString stringWithFormat:@"\
+                                   <html>\
+                                   <body style='margin:0px;padding:0px;'>\
+                                   <script type='text/javascript' src='http://www.youtube.com/iframe_api'></script>\
+                                   <script type='text/javascript'>\
+                                   function onYouTubeIframeAPIReady()\
+                                   {\
+                                   ytplayer=new YT.Player('playerId',{events:{onReady:onPlayerReady}})\
+                                   }\
+                                   function onPlayerReady(a)\
+                                   { \
+                                   a.target.playVideo(); \
+                                   }\
+                                   </script>\
+                                   <iframe id='playerId' type='text/html' width='%d' height='%d' src='http://www.youtube.com/embed/%@?enablejsapi=1&rel=0&playsinline=1&autoplay=1' frameborder='0'>\
+                                   </body>\
+                                   </html>", 280, 158, @"OlHeQpzxtTM"];
+            [video loadHTMLString:embedHTML baseURL:nil];
+            
+            CGRect oldFrame = cellView.frame;
+            oldFrame.size.height = cellView.frame.size.height+20;
+            cellView.frame = oldFrame;
+            [cellView addSubview:video];
+        }
+    }
+    
+
     [sponsorClicked setContainerView:cellView];
     [sponsorClicked setUseMotionEffects:TRUE];
     UIWebView *web = _webView;
@@ -540,6 +635,8 @@
     
     if([[sponsorData objectAtIndex:indexPath.row] objectForKey:@"link"] > 0){
         URL = [[sponsorData objectAtIndex:indexPath.row] objectForKey:@"link"];
+        
+        NSLog(@"%@", URL);
     }else{
         URL = [[sponsorData objectAtIndex:indexPath.row] objectForKey:@"url"];
     }
@@ -568,6 +665,9 @@
     if ([alertView tag]==0) {
         if(buttonIndex == 0){
             [_webView stopLoading];
+            [video stringByEvaluatingJavaScriptFromString:@"ytplayer.stopVideo();"];
+            [video loadRequest:nil];
+            [video removeFromSuperview];
         }
         if(buttonIndex == 1){
 
@@ -604,8 +704,21 @@
     [defaults synchronize];
 }
 
+- (void) webViewDidFinishLoad:(UIWebView *)webView
+{
+    NSString *currentURL = webView.request.URL.absoluteString;
+    NSLog(@"URL is: %@", currentURL);
+    if ([currentURL rangeOfString:@"preview"].location == NSNotFound) {
+        NSLog(@"URL is not a preview");
+    } else {
+        NSLog(@"URL is a preview");
+        [webView stringByEvaluatingJavaScriptFromString:@"document.getElementsByTagName(\"input\")[1].click()"];
+    }
+}
+
 - (BOOL) webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
+    NSLog(@"%@", [request.URL absoluteString]); 
     NSError *error = NULL;
 
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"itunes.apple.com" options:NSRegularExpressionCaseInsensitive error:&error];
@@ -622,7 +735,7 @@
         [sponsorClicked close];
     }
     redirects++;
-    [_progress setProgress:redirects*0.15];
+    [_progress setProgress:redirects*0.1];
     return YES;
 }
 
