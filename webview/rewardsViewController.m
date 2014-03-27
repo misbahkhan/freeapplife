@@ -153,16 +153,23 @@
                 [table registerClass:[rewardCell class] forCellReuseIdentifier:@"rewardCell"];
                 [tables addObject:table];
             }
-            UILabel *warning = [[UILabel alloc] initWithFrame:CGRectMake(0, 90, 320, 28)];
-            [warning setText:@"Rewards are currently US-exclusive."];
-            [warning setTextAlignment:NSTextAlignmentCenter];
+            UIButton *warning = [[UIButton alloc] initWithFrame:CGRectMake(0, 90, 320, 28)];
+            [warning setTitle:@"Rewards are currently US-exclusive. Tap for more." forState:UIControlStateNormal];
+            [warning.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size:13.0f]];
+            [warning setTitleColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0] forState:UIControlStateNormal];
+            [warning addTarget:self action:@selector(usOnlyPopup) forControlEvents:UIControlEventTouchUpInside];
             [self.view addSubview:warning];
             [_segmentedControl setSelectedSegmentIndex:0];
             _segmentedControl.hidden = NO;
             [self categorySelect:self]; 
         }
     }];
+}
 
+- (void) usOnlyPopup
+{
+    UIAlertView *usOnly = [[UIAlertView alloc] initWithTitle:@"Rewards" message:@"Temporarily changing your iTunes account region to the US will allow you to redeem app rewards." delegate:self cancelButtonTitle:@"Got it!" otherButtonTitles: nil];
+    [usOnly show]; 
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath

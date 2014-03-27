@@ -121,7 +121,7 @@
         }
     }];
     
-    NSMutableURLRequest *request3 = [sharedInstance requestForEndpoint:@"video" andBody:postString];
+    NSMutableURLRequest *request3 = [sharedInstance requestForEndpoint:@"video" andBody:nil];
     [NSURLConnection sendAsynchronousRequest:request3 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){
             videoCode = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
@@ -197,7 +197,7 @@
             //            NSError *error;
             NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
             if([json objectForKey:@"status"]){
-                referralAlert = [[UIAlertView alloc] initWithTitle:@"Get More Points!" message:@"Add a referral code and you and the person you are referring get more points!" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Add!", nil];
+                referralAlert = [[UIAlertView alloc] initWithTitle:@"Get More Points!" message:@"If you were referred to FreeAppLife by a friend, input their referral code now and earn an excess of 400 points to be rewarded." delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Add!", nil];
                 referralAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
                 referralBox = [referralAlert textFieldAtIndex:0];
                 [referralAlert show];
@@ -342,12 +342,12 @@
         if(responseStatusCode == 200){
             for(int i = 0; i<[filteredData count]; i++){
                 if([[[filteredData objectAtIndex:i] objectForKey:@"purchase"] integerValue] == 1){
-                    [toRemove addObject:[NSString stringWithFormat:@"%d", i]];
+                    [toRemove addObject:[filteredData objectAtIndex:i]];
                 }
             }
             
             for(int i = 0; i<[toRemove count]; i++){
-                [filteredData removeObjectAtIndex:[[toRemove objectAtIndex:i] integerValue]];
+                [filteredData removeObject:[toRemove objectAtIndex:i]];
             }
             [sponsorData addObjectsFromArray:filteredData];
         }else{
@@ -484,7 +484,6 @@
     
     if([currentData objectForKey:@"link"]>0){
         if([[currentData objectForKey:@"link"] isEqualToString:@"popup"]){
-            NSLog(@"is popup");
             title = [NSString stringWithFormat:@"%@", [currentData objectForKey:@"title"]];
         }
     }
@@ -561,7 +560,8 @@
     }else{
         UIButton *helpLabel = [[UIButton alloc] initWithFrame:CGRectMake(20, titleFrame.size.height+180, 240, 20)];
         [helpLabel setTitle:@"Missing Points? Tap for Help!" forState:UIControlStateNormal];
-        [helpLabel setTitleColor:[UIColor blueColor] forState:UIControlStateNormal]; 
+        [helpLabel.titleLabel setFont: [UIFont fontWithName:@"Helvetica Neue" size:13.0f]];
+        [helpLabel setTitleColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0] forState:UIControlStateNormal];
         [helpLabel addTarget:self action:@selector(sponsorPayHelpClicked:) forControlEvents:UIControlEventTouchUpInside];
         [cellView addSubview:helpLabel];
         

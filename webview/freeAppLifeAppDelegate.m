@@ -16,9 +16,10 @@
     [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
      (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound | UIRemoteNotificationTypeAlert)];
     if(launchOptions!=nil){
-        NSString *msg = [NSString stringWithFormat:@"%@", launchOptions];
-        NSLog(@"%@",msg);
-        [self createAlert:msg];
+        NSDictionary *msg = [launchOptions objectForKey:@"UIApplicationLaunchOptionsRemoteNotificationKey"];
+        [self handleMsg:msg];
+//        NSString *msg = [NSString stringWithFormat:@"%@", launchOptions];
+//        [self createAlert:msg];
     }
     return YES;
 }
@@ -47,6 +48,17 @@
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     application.applicationIconBadgeNumber = 0;
+    [self handleMsg:userInfo];
+//    NSError *e;
+//    NSDictionary *JSON =
+//    [NSJSONSerialization JSONObjectWithData: [msg dataUsingEncoding:NSUTF8StringEncoding]
+//                                    options: NSJSONReadingMutableContainers
+//                                      error: &e];
+//    msg = [JSON objectForKey:@"data"];
+//    [self createAlert:msg];
+}
+
+- (void) handleMsg:(NSDictionary *)userInfo{
     NSString *goTo = [NSString stringWithFormat:@"%@", [[userInfo objectForKey:@"data"] objectForKey:@"tab"]];
     NSString *showMsg = [NSString stringWithFormat:@"%@", [[userInfo objectForKey:@"data"] objectForKey:@"popup"]];
     int page = [goTo integerValue];
@@ -58,13 +70,6 @@
     if(popUp){
         [self createAlert:[NSString stringWithFormat:@"%@", [[userInfo objectForKey:@"aps"] objectForKey:@"alert"]]];
     }
-//    NSError *e;
-//    NSDictionary *JSON =
-//    [NSJSONSerialization JSONObjectWithData: [msg dataUsingEncoding:NSUTF8StringEncoding]
-//                                    options: NSJSONReadingMutableContainers
-//                                      error: &e];
-//    msg = [JSON objectForKey:@"data"];
-//    [self createAlert:msg];
 }
 
 - (void)createAlert:(NSString *)msg {

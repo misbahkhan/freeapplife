@@ -129,14 +129,9 @@
 		D05D7E49189880ED006593A9 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		D066162A18CAAA620022B8DB /* topBar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = topBar.png; sourceTree = "<group>"; };
 		D066162C18CBF70D0022B8DB /* button.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = button.png; sourceTree = "<group>"; };
-		D0AC37B218C85520002B50F5 /* ios_distribution-1.cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ios_distribution-1.cer"; sourceTree = "<group>"; };
-		D0AC37B518C859B7002B50F5 /* iOS_Team_Provisioning_Profile_comfreeapplifewebview.mobileprovision */ = {isa = PBXFileReference; lastKnownFileType = file; path = iOS_Team_Provisioning_Profile_comfreeapplifewebview.mobileprovision; sourceTree = "<group>"; };
-		D0AC37B618C910C1002B50F5 /* ios_distribution (1).cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ios_distribution (1).cer"; sourceTree = "<group>"; };
 		D0C7530518CC691D00BDD9A6 /* twitter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = twitter.png; sourceTree = "<group>"; };
 		D0C7530718CC6AAA00BDD9A6 /* facebook.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = facebook.png; sourceTree = "<group>"; };
 		D0C7530918CC6B5300BDD9A6 /* Main_iPhone.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main_iPhone.storyboard; sourceTree = "<group>"; };
-		D0C7530D18CD3BFA00BDD9A6 /* ios_distribution (4).cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ios_distribution (4).cer"; sourceTree = "<group>"; };
-		D0C7530E18CD3BFF00BDD9A6 /* ios_distribution (3).cer */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ios_distribution (3).cer"; sourceTree = "<group>"; };
 		D0FB51EB18C0055E009C92D7 /* topBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = topBar.h; sourceTree = "<group>"; };
 		D0FB51EC18C0055E009C92D7 /* topBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = topBar.m; sourceTree = "<group>"; };
 		D0FB51EE18C04977009C92D7 /* CustomIOS7AlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomIOS7AlertView.h; sourceTree = "<group>"; };
@@ -235,11 +230,6 @@
 				D05D7E441897A576006593A9 /* settingsViewController.m */,
 				D03A1A8F18A42B0B00D47B16 /* popup.h */,
 				D03A1A9018A42B0B00D47B16 /* popup.m */,
-				D0C7530E18CD3BFF00BDD9A6 /* ios_distribution (3).cer */,
-				D0C7530D18CD3BFA00BDD9A6 /* ios_distribution (4).cer */,
-				D0AC37B618C910C1002B50F5 /* ios_distribution (1).cer */,
-				D0AC37B518C859B7002B50F5 /* iOS_Team_Provisioning_Profile_comfreeapplifewebview.mobileprovision */,
-				D0AC37B218C85520002B50F5 /* ios_distribution-1.cer */,
 				31AE574B18D6E153004F8D4C /* LaunchImage.png */,
 				31AE574D18D6E42C004F8D4C /* AppIcon.png */,
 				31AE574E18D6E42C004F8D4C /* AppIcon@2x.png */,
@@ -591,8 +581,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-2";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Razia Khan (4W3665ZY7C)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Razia Khan (4W3665ZY7C)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: TechKnowledgeG LLC";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TechKnowledgeG LLC";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/misbahkhan/Desktop/webview,
@@ -603,7 +593,7 @@
 				INFOPLIST_FILE = "webview/FreeAppLife-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = FreeAppLife;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "E218C8AC-4082-4F33-B8E6-27DA333E7873";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
@@ -614,8 +604,8 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "AppIcon-2";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Razia Khan (4W3665ZY7C)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Razia Khan (4W3665ZY7C)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: TechKnowledgeG LLC";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TechKnowledgeG LLC";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/misbahkhan/Desktop/webview,
@@ -626,7 +616,7 @@
 				INFOPLIST_FILE = "webview/FreeAppLife-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				PRODUCT_NAME = FreeAppLife;
-				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE = "E218C8AC-4082-4F33-B8E6-27DA333E7873";
 				TARGETED_DEVICE_FAMILY = 1;
 				WRAPPER_EXTENSION = app;
 			};
