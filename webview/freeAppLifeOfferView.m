@@ -17,6 +17,21 @@
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[_sharedInstance sponsorPayHelp]]];
 }
 
+- (void) pend
+{
+    NSString *title = [_offerData objectForKey:@"name"];
+    NSString *userID = [_sharedInstance userID];
+    NSDate *date = [NSDate date];
+    NSString *rewardID = [_offerData objectForKey:@"id"];
+    NSString *pointValue = [_offerData objectForKey:@"points"];
+    NSString *guessTime = [_offerData objectForKey:@"estimate"];
+    NSString *image = [_offerData objectForKey:@"image"];
+    NSString *postString = [NSString stringWithFormat:@"rewardID=%@&userID=%@&name=%@&time=%lld&points=%@&guess=%@&image=%@", rewardID, userID, title, [@(floor([date timeIntervalSince1970])) longLongValue], pointValue, guessTime, image];
+    NSMutableURLRequest *request = [_sharedInstance requestForEndpoint:@"pending" andBody:postString];
+    NSError *error;
+    [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
+}
+
 - (id) initWithData:(NSDictionary *)data
 {
     self = [super initWithFrame:CGRectMake(0, 0, 280, 275)];

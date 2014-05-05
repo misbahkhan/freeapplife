@@ -586,39 +586,10 @@
     
 }
 
-//-(UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-//{
-//    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableView.frame.size.width, 22)];
-//    return view;
-//}
-
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-//        NSString *CellIdentifier = @"app";
-//        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
-
-//    BOOL isAarki = false;
-    
     NSDictionary *currentData = [sponsorData objectAtIndex:indexPath.row];
     NSString *title = [currentData objectForKey:@"name"];
-//    ([currentData objectForKey:@"title"] > [currentData objectForKey:@"name"] ? [currentData objectForKey:@"title"] : [currentData objectForKey:@"name"]);
-
-//    if([title length]>17){
-//        title = [title substringToIndex: MIN(20, [title length])];
-//        title = [title stringByAppendingString:@"..."];
-//    }
-    
-//    if([currentData objectForKey:@"url"] > 0){
-//        NSString *url = [currentData objectForKey:@"url"];
-//        NSError  *error  = NULL;
-//        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"aarki" options:0 error:&error];
-//        NSRange range   = [regex rangeOfFirstMatchInString:url options:0 range:NSMakeRange(0, [url length])];
-//        NSString *result = [url substringWithRange:range];
-//        
-//        if ([result length]>0) {
-//            isAarki = true;
-//        }
-//    }
     
     NSString *pointsLabel;
     pointsLabel = [NSString stringWithFormat:@"+ %@", [currentData objectForKey:@"points"]];
@@ -627,19 +598,6 @@
         pointsLabel = @"PENDING";
     }
     
-    
-//    if(isAarki){
-////        title = [NSString stringWithFormat:@"%@\n%@", title, [currentData objectForKey:@"reward"]];
-//        pointsLabel = [NSString stringWithFormat:@"%@", [currentData objectForKey:@"reward"]];
-//        pointsParts = [pointsLabel componentsSeparatedByString:@" "];
-//        pointsLabel = [NSString stringWithFormat:@"+ %@", [pointsParts objectAtIndex:0]];
-//    }else{
-////        title = [NSString stringWithFormat:@"%@\n%@ points", title, [currentData objectForKey:@"payout"]];
-//        pointsLabel = [NSString stringWithFormat:@"%@", [currentData objectForKey:@"payout"]];
-//        pointsParts = [pointsLabel componentsSeparatedByString:@" "];
-//        pointsLabel = [NSString stringWithFormat:@"+ %@", [pointsParts objectAtIndex:0]];
-//    }
-    
     if([currentData objectForKey:@"link"]>0){
         if([[currentData objectForKey:@"link"] isEqualToString:@"popup"]){
             title = [NSString stringWithFormat:@"%@", [currentData objectForKey:@"name"]];
@@ -647,58 +605,27 @@
         }
     }
     
-    rewardCell *cell;
+    rewardCell *cell = [tableView dequeueReusableCellWithIdentifier:@"rewardCell" forIndexPath:indexPath];
+    if (cell == nil){
+        cell = [[rewardCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"rewardCell"];
+    }
     
-//    cell.imageView.frame = CGRectMake(0, 0, 30, 30);
-    
-//    cell.textLabel.text = title;
-//    cell.detailTextLabel.text = [NSString stringWithFormat:@"%@ points",[currentData objectForKey:@"points"]];
+    cell.points.text = pointsLabel;
+    [cell.points sizeToFit];
+    CGRect oldFrame = cell.points.frame;
+    oldFrame.size.width = oldFrame.size.width+20;
+    oldFrame.size.height = oldFrame.size.height+10;
+    oldFrame.origin.x = 280-oldFrame.size.width;
+    oldFrame.origin.x += 20;
+    oldFrame.origin.y = 21+((59-oldFrame.size.height)/2);
 
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    CGFloat screenWidth = screenRect.size.width;
+    if(screenWidth > 320){
+        oldFrame.origin.x = screenWidth-75;
+    }
 
-//        return cell;
-    
-//    rewardCell *cell;
-    
-//    if(indexPath.row == 0){
-//        cell = [tableView dequeueReusableCellWithIdentifier:@"tutorialCell" forIndexPath:indexPath];
-//        cell.data = currentData; 
-//        cell.points.layer.borderColor = [UIColor clearColor].CGColor;
-//    }else{
-        cell = [tableView dequeueReusableCellWithIdentifier:@"rewardCell" forIndexPath:indexPath];
-        if (cell == nil){
-            cell = [[rewardCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"rewardCell"];
-        }
-//    [cell.cell setData:currentData];
-//    [cell.image loadURL:[currentData objectForKey:@"image"]];
-//    if([[sharedInstance imageCache] objectForKey:[currentData objectForKey:@"image"]] > 0){
-//        cell.cell.image = [UIImage imageWithData:[[sharedInstance imageCache] objectForKey:[currentData objectForKey:@"image"]]];
-//    }
-    
-//    cell.cell.data = currentData;
-//    [cell.cell setNeedsDisplay];
-//    if(cell == nil){
-//        NSLog(@"NIL");
-    
-        cell.points.text = pointsLabel;
-        [cell.points sizeToFit];
-        CGRect oldFrame = cell.points.frame;
-        oldFrame.size.width = oldFrame.size.width+20;
-        oldFrame.size.height = oldFrame.size.height+10;
-        oldFrame.origin.x = 280-oldFrame.size.width;
-        oldFrame.origin.x += 20;
-        oldFrame.origin.y = 21+((59-oldFrame.size.height)/2);
-    
-        CGRect screenRect = [[UIScreen mainScreen] bounds];
-        CGFloat screenWidth = screenRect.size.width;
-        if(screenWidth > 320){
-            oldFrame.origin.x = screenWidth-75;
-        }
-    
-    
-    
-        cell.points.frame = oldFrame;
-//    }
-    
+    cell.points.frame = oldFrame;
     cell.image.image = nil;
     
     if([[sharedInstance imageCache] objectForKey:[currentData objectForKey:@"image"]] > 0){
@@ -706,26 +633,12 @@
     }
 
     cell.data = currentData;
-//    cell.textLabel.text = title;
     cell.label.text = title;
     
     if(screenWidth > 320){
         CGRect oldFrame = cell.label.frame;
         cell.label.frame = CGRectMake(oldFrame.origin.x, oldFrame.origin.y, oldFrame.size.width + 300, oldFrame.size.height);
     }
-//    cell.image.image = nil;
-//    [cell.image loadURL:[currentData objectForKey:@"image"]];
-//    }
-//        cell.selectionStyle = UITableViewCellEditingStyleNone;
-//    cell.image.image = [[lazyImage alloc] initWithURL:[currentData objectForKey:@"image"]].image;
-//    [cell.contentView addSubview:cell.image];
-
-    
-//    if([images count]>indexPath.row){
-//        cell.image.image = [images objectAtIndex:indexPath.row];
-//        cell.image.layer.cornerRadius = 10.0f;
-//        cell.image.clipsToBounds = YES;
-//    }
     return cell;
 }
 
@@ -739,6 +652,7 @@
     redirects = 0;
     [_tableView deselectRowAtIndexPath:indexPath animated:NO];
     
+    
     NSDictionary *currentData = [sponsorData objectAtIndex:indexPath.row];
     freeAppLifeOfferView *offerView = [[freeAppLifeOfferView alloc] initWithData:currentData];
     
@@ -748,21 +662,21 @@
     [_progress setProgress:0.0f];
     UIView *progressView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 280, 20)];
     [progressView addSubview:_progress];
+    [offerView addSubview:_progress];
     
-
-    [offerView addSubview:progressView];
+    
     
     UIView *cellView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 280, 275)];
     [cellView setBackgroundColor:[UIColor clearColor]];
     [cellView addSubview:progressView];
 
-    NSString *title = [currentData objectForKey:@"name"];
+//    NSString *title = [currentData objectForKey:@"name"];
     
 //    NSLog(@"%@", currentCell.data);
     
 //    NSString *guide = @"Remember to open the app for a minimum of 30 seconds and do not switch networks (e.g. 3G, LTE > Wi-Fi). Some offers may take up to 24 hours to credit to your account.";
     
-    NSString *credit = @"Some offers may take up to 24 hours to credit to your account.";
+//    NSString *credit = @"Some offers may take up to 24 hours to credit to your account.";
     
 //    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(89, 20, 160, 20)];
 //    [titleLabel setText:title];
@@ -856,28 +770,26 @@
     [sponsorClicked setUseMotionEffects:TRUE];
     UIWebView *web = _webView;
     
-    NSString *URL = [[sponsorData objectAtIndex:indexPath.row] objectForKey:@"link"];
+    NSString *URL = [[sponsorData objectAtIndex:indexPath.row] objectForKey:@"url"];
     
     [sponsorClicked show];
     
     NSLog(@"%@", currentData);
     
-    NSString *userID = [sharedInstance userID];
-    NSDate *date = [NSDate date];
-    NSString *rewardID = [currentData objectForKey:@"id"];
-    NSString *pointValue = [currentData objectForKey:@"points"];
-    NSString *guessTime = [currentData objectForKey:@"estimate"];
-    NSString *image = [currentData objectForKey:@"image"];
-    NSString *postString = [NSString stringWithFormat:@"rewardID=%@&userID=%@&name=%@&time=%lld&points=%@&guess=%@&image=%@", rewardID, userID, title, [@(floor([date timeIntervalSince1970])) longLongValue], pointValue, guessTime, image];
-    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"pending" andBody:postString];
+//    NSString *userID = [sharedInstance userID];
+//    NSDate *date = [NSDate date];
+//    NSString *rewardID = [currentData objectForKey:@"id"];
+//    NSString *pointValue = [currentData objectForKey:@"points"];
+//    NSString *guessTime = [currentData objectForKey:@"estimate"];
+//    NSString *image = [currentData objectForKey:@"image"];
+//    NSString *postString = [NSString stringWithFormat:@"rewardID=%@&userID=%@&name=%@&time=%lld&points=%@&guess=%@&image=%@", rewardID, userID, title, [@(floor([date timeIntervalSince1970])) longLongValue], pointValue, guessTime, image];
+//    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"pending" andBody:postString];
 
     [sponsorClicked setOnButtonTouchUpInside:^(CustomIOS7AlertView *alertView, int buttonIndex) {
         if(buttonIndex == 0){
             [alertView close];
         }else if(buttonIndex == 1) {
-            //add pending code
-            NSError *error;
-            [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
+            [offerView pend];
             UIButton *button = (UIButton *)[[[[alertView subviews] objectAtIndex:0] subviews] objectAtIndex:3];
             if(![button.titleLabel.text isEqualToString:@"Loading"]){
                 [button setTitle:@"Loading" forState:UIControlStateNormal];

@@ -15,5 +15,5 @@
 @property (nonatomic, strong) API *sharedInstance;
 
 -(id)initWithData:(NSDictionary *)data;
-
+-(void) pend; 
 @end
