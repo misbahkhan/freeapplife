@@ -12,10 +12,12 @@
 #import <arpa/inet.h>
 #import <CommonCrypto/CommonHMAC.h>
 #import <CommonCrypto/CommonDigest.h>
+#import <Social/Social.h>
+#import <Accounts/Accounts.h>
 
 @implementation API
 {
-
+    UIAlertView *versionAlert;
 }
 
 + (id)sharedInstance {
@@ -37,8 +39,14 @@
 //        _topBar = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
 //        [_topBar setBackgroundColor:[UIColor colorWithRed:244.0f/255.0f green:244.0f/255.0f blue:244.0f/255.0f alpha:1.0f]];
         
-        _topBar = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
-        [_topBar setImage:[UIImage imageNamed:@"topBar.png"]]; 
+//        if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ){
+//            _topBar = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 1536, 44)];
+//            [_topBar setImage:[UIImage imageNamed:@"topBariPad.png"]];
+//        }else{
+//            _topBar = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+//            [_topBar setImage:[UIImage imageNamed:@"topBar.png"]];
+//        }
+        _imageCache = [[NSMutableDictionary alloc] init]; 
         
         _points = [[UILabel alloc] initWithFrame:CGRectMake(140, 20, 160, 20)];
         [_points setTextAlignment:NSTextAlignmentRight];
@@ -57,6 +65,72 @@
     return self;
 }
 
+- (void)tweet:(NSString *)message
+{
+    //  Step 0: Check that the user has local Twitter accounts
+    if ([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]) {
+        ACAccountStore *accountStore = [[ACAccountStore alloc] init];
+        //  Step 1:  Obtain access to the user's Twitter accounts
+        ACAccountType *twitterAccountType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+        
+        [accountStore
+         requestAccessToAccountsWithType:twitterAccountType
+         options:NULL
+         completion:^(BOOL granted, NSError *error) {
+             if (granted) {
+                 //  Step 2:  Create a request
+                 NSArray *twitterAccounts =
+                 [accountStore accountsWithAccountType:twitterAccountType];
+                 NSURL *url = [NSURL URLWithString:@"https://api.twitter.com/1.1/statuses/update.json"];
+                 NSDictionary *params = @{@"status" : message};
+                 SLRequest *request =
+                 [SLRequest requestForServiceType:SLServiceTypeTwitter
+                                    requestMethod:SLRequestMethodPOST
+                                              URL:url
+                                       parameters:params];
+                 
+                 //  Attach an account to the request
+                 [request setAccount:[twitterAccounts firstObject]];
+                 
+                 //  Step 3:  Execute the request
+                 [request performRequestWithHandler:
+                  ^(NSData *responseData,
+                    NSHTTPURLResponse *urlResponse,
+                    NSError *error) {
+                      
+                      if (responseData) {
+                          if (urlResponse.statusCode >= 200 &&
+                              urlResponse.statusCode < 300) {
+                              
+                              NSError *jsonError;
+                              NSDictionary *timelineData =
+                              [NSJSONSerialization
+                               JSONObjectWithData:responseData
+                               options:NSJSONReadingAllowFragments error:&jsonError];
+                              if (timelineData) {
+                                  //                                  NSLog(@"Timeline Response: %@\n", timelineData);
+//                                  NSLog(@"user: %@", [[timelineData objectForKey:@"status"] objectForKey:@"id"]);
+                              }
+                              else {
+                                  // Our JSON deserialization went awry
+//                                  NSLog(@"JSON Error: %@", [jsonError localizedDescription]);
+                              }
+                          }
+                          else {
+                              // The server did not respond ... were we rate-limited?
+//                              NSLog(@"The response status code is %ld", (long)urlResponse.statusCode);
+                          }
+                      }
+                  }];
+             }
+             else {
+                 // Access was not granted, or an error occurred
+//                 NSLog(@"%@", [error localizedDescription]);
+             }
+         }];
+    }
+}
+
 - (NSString *) currentPoints
 {
     if([_userData objectForKey:@"points"]>0){
@@ -66,10 +140,26 @@
     }
 }
 
+- (NSString *) giveaway
+{
+    if([_userData objectForKey:@"giveaway"] > 0){
+        if([[_userData objectForKey:@"giveaway"] intValue] == 1){
+            return [NSString stringWithFormat:@"%@", [_userData objectForKey:@"giveaway"]];
+        }
+        return [NSString stringWithFormat:@"%@", [_userData objectForKey:@"giveaway"]];
+    }else{
+        return @"0";
+    }
+}
+
 - (UILabel *) getPoints
 {
     UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(200, 24, 100, 20)];
+    if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ){
+        label = [[UILabel alloc] initWithFrame:CGRectMake(645, 24, 100, 20)];
+    }
     [label setTextAlignment:NSTextAlignmentRight];
+    [label setBackgroundColor:[UIColor clearColor]]; 
     [label setText:_points.text];
     [label setTextColor:[UIColor grayColor]];
     return label; 
@@ -77,10 +167,17 @@
 
 - (UIView *) getBar
 {
-    UIView *bar = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
-    
-    UIImageView *barImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
-    [barImage setImage:[UIImage imageNamed:@"topBar.png"]];
+    UIView *bar;
+    UIImageView *barImage;
+    if ( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ){
+        bar = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 768, 44)];
+        barImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 768, 44)];
+        [barImage setImage:[UIImage imageNamed:@"topBariPad.png"]];
+    }else{
+        bar = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+        barImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 320, 44)];
+        [barImage setImage:[UIImage imageNamed:@"topBar.png"]];
+    }
     
     [bar addSubview:barImage];
     return bar; 
@@ -95,7 +192,18 @@
 
 - (void) alertView:(UIAlertView *)alertView willDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-    [self user];
+    if(alertView == versionAlert){
+        if(buttonIndex == 0){
+            [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+            exit(0);
+        }else if(buttonIndex == 1){
+            [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+            [[UIApplication sharedApplication] openURL:[NSURL URLWithString: [self appURL]]];
+            exit(0);
+        }
+    }else{
+        [self user];
+    }
 }
 
 - (void) user
@@ -108,9 +216,9 @@
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){
             NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-            NSLog(@"%@", response);
+//            NSLog(@"%@", response);
             NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-            NSLog(@"user: %@", strData);
+//            NSLog(@"user: %@", strData);
             _userData = [json mutableCopy];
 //            if(![_userData isEqual:json]){
                 [[NSNotificationCenter defaultCenter] postNotificationName:_notificationName object:self];
@@ -118,6 +226,13 @@
                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Maintenence Mode" message:@"FreeAppLife is currently in maintenance mode. We will return shortly!" delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
                 [alert show];
             }
+            
+            if([[json objectForKey:@"version"] floatValue] > [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] floatValue]){
+//                outdated = YES;
+                versionAlert = [[UIAlertView alloc] initWithTitle:@"Old Version" message:@"You're currently running an outdated version of FreeAppLife, please update now." delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Update", nil];
+                [versionAlert show];
+            }
+            
 //            }
             [_points setText:[NSString stringWithFormat:@"%@", [json objectForKey:@"points"]]];
 //            [_referrals setText:[NSString stringWithFormat:@"Referrals: %@", [json objectForKey:@"referrals_count"]]];
@@ -128,23 +243,23 @@
 
 - (void) refer:(NSString *)person
 {
-    NSLog(@"REFER PERSON");
+//    NSLog(@"REFER PERSON");
     
     NSString *postString = [NSString stringWithFormat:@"userID=%@&referrer=%@", [self serialNumber], person];
     NSMutableURLRequest *request = [self requestForEndpoint:@"anonRefer" andBody:postString];
     
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){
-            NSLog(@"%@", response);
+//            NSLog(@"%@", response);
             NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-            NSLog(@"user: %@", strData);
+//            NSLog(@"user: %@", strData);
         }
     }];
 }
 
 - (void) stuff
 {
-    NSLog(@"stuff");
+//    NSLog(@"stuff");
 }
 
 -(NSString*) sha1:(NSString*)input
@@ -217,6 +332,11 @@
 	}
 	
 	return serialNumber;
+}
+
+- (NSString *)userID
+{
+    return [self md5ForString:[self serialNumber]];
 }
 
 - (NSString*)md5ForString:(NSString *)string

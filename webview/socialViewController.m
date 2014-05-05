@@ -31,6 +31,9 @@
     BOOL loggedIn;
     BOOL redirectedToPage;
     BOOL liked;
+    IBOutlet UIButton *goButton;
+    IBOutlet UILabel *entries;
+    IBOutlet UIImageView *giveaway_image;
 }
 
 @end
@@ -53,10 +56,13 @@
     email.delegate = self;
     code.delegate = self;
     
+    giveaway_image.layer.cornerRadius = 5.0f;
+    [giveaway_image setClipsToBounds:YES];
+    
     sharedInstance = [API sharedInstance];
     historyData = [sharedInstance userData];
     code.text = [historyData objectForKey:@"referral_code"];
-    NSLog(@"%@", [historyData objectForKey:@"referral_code"]);
+    //NSLog(@"%@", [historyData objectForKey:@"referral_code"]);
 	// Do any additional setup after loading the view.
     
     
@@ -64,9 +70,9 @@
     //    [FBDialogs presentShareDialogWithLink:url
     //                                  handler:^(FBAppCall *call, NSDictionary *results, NSError *error) {
     //                                      if(error) {
-    //                                          NSLog(@"Error: %@", error.description);
+    //                                          //NSLog(@"Error: %@", error.description);
     //                                      } else {
-    //                                          NSLog(@"Success!");
+    //                                          //NSLog(@"Success!");
     //                                      }
     //                                  }];
     webAlert = [[CustomIOS7AlertView alloc] init];
@@ -103,6 +109,11 @@
     //    [self sendRequest];
 }
 
+- (IBAction)aboutReferral:(id)sender {
+    UIAlertView *referral = [[UIAlertView alloc] initWithTitle:@"Referral Code" message:@"Use your referral code to earn unlimited points by introducing your friends to FreeAppLife. Have them enter your code when prompted, during the signup process. Four Hundred points will be added to your account everytime someone you refer downloads sponsored applications and reaches 400 points." delegate:self cancelButtonTitle:@"Okay, Got It!" otherButtonTitles:nil, nil];
+    [referral show];
+}
+
 - (void)showEmail
 {
     [email setHidden:NO];
@@ -113,6 +124,7 @@
 {
     [email resignFirstResponder];
     [email setHidden:YES];
+    [goButton setHidden:YES];
     [email_button setHidden:YES];
 }
 
@@ -149,6 +161,9 @@
 {
     _pointsLabel.text = [sharedInstance currentPoints];
     //    if([[[sharedInstance userData] objectForKey:@"points"] intValue]>400){
+    
+    entries.text = [NSString stringWithFormat:@"%@",[sharedInstance giveaway]];
+    
     [code setText:[[sharedInstance userData] objectForKey:@"referral_code"]];
     //    }else{
     //        [code setText:@"Unlock at 400 pts"];
@@ -169,7 +184,7 @@
 }
 //
 //- (void)loginViewShowingLoggedInUser:(FBLoginView *)loginView {
-//    NSLog(@"logged in");
+//    //NSLog(@"logged in");
 //}
 //
 //- (void) loginViewShowingLoggedOutUser:(FBLoginView *)loginView
@@ -180,7 +195,7 @@
 //    loginFrame.origin = CGPointMake(50, 350);
 //    login.frame = loginFrame;
 //    [self.view addSubview:login];
-//    NSLog(@"logged out");
+//    //NSLog(@"logged out");
 //}
 
 - (IBAction)like:(id)sender {
@@ -188,25 +203,25 @@
     // If the session state is any of the two "open" states when the button is clicked
     //    if (FBSession.activeSession.state == FBSessionStateOpen
     //        || FBSession.activeSession.state == FBSessionStateOpenTokenExtended) {
-    //        NSLog(@"is opened");
+    //        //NSLog(@"is opened");
     //       [web loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.facebook.com/freeapplife"]]];
     //        [webAlert show];
     //    } else {
-    //        NSLog(@"is closed");
+    //        //NSLog(@"is closed");
     //        FBSession *session = [[FBSession alloc] init];
     // Set the active session
     //        [FBSession setActiveSession:session];
     // Open the session
     //        [session openWithBehavior:FBSessionLoginBehaviorForcingWebView completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
     //            if(error){
-    //                NSLog(@"error");
+    //                //NSLog(@"error");
     //            }else{
-    //                NSLog(@"works");
+    //                //NSLog(@"works");
     //                       [self checkLike];
     //                if(loggedIn == TRUE){
-    //                    NSLog(@"logged in");
+    //                    //NSLog(@"logged in");
     //                }else{
-    //                    NSLog(@"not logged in");
+    //                    //NSLog(@"not logged in");
     [web loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.facebook.com"]]];
     //                    [webAlert show];
     //                }
@@ -217,7 +232,7 @@
 
 - (BOOL) webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
-    //    NSLog(@"%@", request.URL);
+    //    //NSLog(@"%@", request.URL);
     //    NSString *url = [request.URL absoluteString];
     //    NSError  *error  = NULL;
     //    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"home.php" options:0 error:&error];
@@ -229,11 +244,13 @@
     //        [webAlert close];
     //    }
     if(loggedIn == FALSE){
-        NSLog(@"request: %@", [request URL]);
+        //NSLog(@"request: %@", [request URL]);
         NSError *error = NULL;
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"home.php" options:NSRegularExpressionCaseInsensitive error:&error];
         NSRegularExpression *regex2 = [NSRegularExpression regularExpressionWithPattern:@"s-static.ak" options:NSRegularExpressionCaseInsensitive error:&error];
-        if (error){NSLog(@"Couldn't create regex with given string and options");}
+        if (error){
+//            NSLog(@"Couldn't create regex with given string and options");
+        }
         NSUInteger regexNums = [regex numberOfMatchesInString:[[request URL] absoluteString] options:0 range:NSMakeRange(0, [[[request URL] absoluteString] length])];
         NSUInteger regexNums2 = [regex2 numberOfMatchesInString:[[request URL] absoluteString] options:0 range:NSMakeRange(0, [[[request URL] absoluteString] length])];
         if(regexNums > 0 || regexNums2 > 0){
@@ -250,24 +267,24 @@
 - (void) webViewDidFinishLoad:(UIWebView *)webView
 {
     if (loggedIn == TRUE) {
-        //        NSLog(@"logged in");
+        //        //NSLog(@"logged in");
     }else{
         [webAlert show];
     }
     
     if(redirectedToPage == TRUE){
-        NSLog(@"redirected");
+        //NSLog(@"redirected");
         [webView
          stringByEvaluatingJavaScriptFromString:
          @"var isLiking = document.getElementsByClassName(\"_4g34\")[2].children[0].children[1].innerHTML; if(isLiking=='Like'){document.getElementsByClassName(\"_4g34\")[2].children[0].click()}"];
         NSString *postString = [NSString stringWithFormat:@"userID=%@&social=facebook", [sharedInstance md5ForString: [sharedInstance serialNumber]]];
-        NSLog(@"%@", [sharedInstance md5ForString:[sharedInstance serialNumber]]);
+        //NSLog(@"%@", [sharedInstance md5ForString:[sharedInstance serialNumber]]);
         NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"social" andBody:postString];
         [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
             if([data length] > 0){
-                NSLog(@"%@", response);
+                //NSLog(@"%@", response);
                 NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-                NSLog(@"%@", strData);
+                //NSLog(@"%@", strData);
                 NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
                 if([json objectForKey:@"status"]){
                     
@@ -278,7 +295,7 @@
     }
     
     if (liked == TRUE) {
-        //        NSLog(@"liked");
+        //        //NSLog(@"liked");
         //        [webView stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"header\").children[0].children[0].click()"];
         //        [webView stringByEvaluatingJavaScriptFromString:@"document.getElementsByClassName(\"_5lut\")[1].click()"];
         //        [webView stringByEvaluatingJavaScriptFromString:@"document.getElementsByClassName(\"statusBox\")[0].click()"];
@@ -287,7 +304,7 @@
     }
     
     //    if(connected == FALSE){
-    NSLog(@"finished");
+    //NSLog(@"finished");
     //        [webView stringByEvaluatingJavaScriptFromString:@"document.forms[0].submit()"];
     //        connected = TRUE;
     
@@ -304,20 +321,20 @@
     [FBRequestConnection startWithGraphPath:@"/me/likes/143275845838411" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
         if (!error) {
             // Success! Include your code to handle the results here
-            NSLog(@"user info: %@", result);
+            //NSLog(@"user info: %@", result);
             if ([[result objectForKey:@"data"] count] < 1) {
                 
                 //                [web loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com%2Ffreeapplife&width=200&layout=button&action=like&show_faces=false&share=false&height=35&appId=676776645708419"]]];
             }else{
                 NSString *postString = [NSString stringWithFormat:@"userID=%@&social=facebook", [sharedInstance md5ForString: [sharedInstance serialNumber]]];
-                NSLog(@"%@", [sharedInstance md5ForString:[sharedInstance serialNumber]]);
+                //NSLog(@"%@", [sharedInstance md5ForString:[sharedInstance serialNumber]]);
                 NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"social" andBody:postString];
                 
                 [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
                     if([data length] > 0){
-                        NSLog(@"%@", response);
+                        //NSLog(@"%@", response);
                         NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-                        NSLog(@"%@", strData);
+                        //NSLog(@"%@", strData);
                         NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
                         if([json objectForKey:@"status"]){
                             [self hideLike];
@@ -369,7 +386,7 @@
                         options:0
                         error:&error];
     if (!jsonData) {
-        NSLog(@"JSON error: %@", error);
+        //NSLog(@"JSON error: %@", error);
         return;
     }
     
@@ -388,21 +405,21 @@
      handler:^(FBWebDialogResult result, NSURL *resultURL, NSError *error) {
          if (error) {
              // Error launching the dialog or sending the request.
-             NSLog(@"Error sending request.");
+             //NSLog(@"Error sending request.");
          } else {
              if (result == FBWebDialogResultDialogNotCompleted) {
                  // User clicked the "x" icon
-                 NSLog(@"User canceled request.");
+                 //NSLog(@"User canceled request.");
              } else {
                  // Handle the send request callback
                  NSDictionary *urlParams = [self parseURLParams:[resultURL query]];
                  if (![urlParams valueForKey:@"request"]) {
                      // User clicked the Cancel button
-                     NSLog(@"User canceled request.");
+                     //NSLog(@"User canceled request.");
                  } else {
                      // User clicked the Send button
                      NSString *requestID = [urlParams valueForKey:@"request"];
-                     NSLog(@"Request ID: %@", requestID);
+                     //NSLog(@"Request ID: %@", requestID);
                  }
              }
          }
@@ -418,27 +435,45 @@
     }
 }
 
+- (IBAction)submitEmail:(id)sender {
+    if([[email text] length] > 0){
+        if ([[email text] rangeOfString:@"@"].location != NSNotFound) {
+            if ([[email text] rangeOfString:@"."].location != NSNotFound) {
+                NSString *postString = [NSString stringWithFormat:@"userID=%@&email=%@", [sharedInstance md5ForString: [sharedInstance serialNumber]], [email text]];
+                NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"email" andBody:postString];
+                
+                [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                    if([data length] > 0){
+                        //NSLog(@"%@", response);
+                        NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+                        //NSLog(@"%@", strData);
+                        NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+                        if([json objectForKey:@"status"]){
+                            [self hideEmail];
+                        }
+                    }
+                }];
+            }else{
+                //NSLog(@"nope");
+            }
+        }
+    }
+}
+
+- (BOOL) textFieldShouldBeginEditing:(UITextField *)textField
+{
+    if(textField == email){
+        goButton.hidden = NO;
+    }
+    return YES;
+}
+
 - (BOOL) textFieldShouldReturn:(UITextField *)textField
 {
     if(textField == email){
-        NSString *postString = [NSString stringWithFormat:@"userID=%@&email=%@", [sharedInstance md5ForString: [sharedInstance serialNumber]], [email text]];
-        NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"email" andBody:postString];
-        
-        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-            if([data length] > 0){
-                NSLog(@"%@", response);
-                NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-                NSLog(@"%@", strData);
-                NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-                if([json objectForKey:@"status"]){
-                    [self hideEmail];
-                }
-            }
-        }];
-        
-    }else{
-        [textField resignFirstResponder];
+        goButton.hidden = YES; 
     }
+    [textField resignFirstResponder];
     return YES;
 }
 
@@ -490,43 +525,42 @@
                                JSONObjectWithData:responseData
                                options:NSJSONReadingAllowFragments error:&jsonError];
                               if (timelineData) {
-                                  //                                  NSLog(@"Timeline Response: %@\n", timelineData);
+                                  //                                  //NSLog(@"Timeline Response: %@\n", timelineData);
                                   [self retweet:@"443123073655398400"];
                                   
                                   NSString *postString = [NSString stringWithFormat:@"userID=%@&social=twitter", [sharedInstance md5ForString: [sharedInstance serialNumber]]];
-                                  NSLog(@"%@", [sharedInstance md5ForString:[sharedInstance serialNumber]]);
+                                  //NSLog(@"%@", [sharedInstance md5ForString:[sharedInstance serialNumber]]);
                                   NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"social" andBody:postString];
                                   
                                   [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
                                       if([data length] > 0){
-                                          NSLog(@"%@", response);
+                                          //NSLog(@"%@", response);
                                           NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-                                          NSLog(@"%@", strData);
+                                          //NSLog(@"%@", strData);
                                           NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
                                           if([json objectForKey:@"status"]){
                                               [self hideTweet];
                                           }
                                       }
                                   }];
-                                  
-                                  NSLog(@"%@", [[timelineData objectForKey:@"status"] objectForKey:@"id"]);
+                                  [sharedInstance tweet:@"Join the FreeAppLife community NOW to earn Paid iOS apps & Gift Cards for Free! Score points at: https://freeapplife.com  #FAL #FreeAppLife"]; 
+                                  //NSLog(@"%@", [[timelineData objectForKey:@"status"] objectForKey:@"id"]);
                               }
                               else {
                                   // Our JSON deserialization went awry
-                                  NSLog(@"JSON Error: %@", [jsonError localizedDescription]);
+                                  //NSLog(@"JSON Error: %@", [jsonError localizedDescription]);
                               }
                           }
                           else {
                               // The server did not respond ... were we rate-limited?
-                              NSLog(@"The response status code is %d",
-                                    urlResponse.statusCode);
+                              //NSLog(@"The response status code is %d",urlResponse.statusCode);
                           }
                       }
                   }];
              }
              else {
                  // Access was not granted, or an error occurred
-                 NSLog(@"%@", [error localizedDescription]);
+                 //NSLog(@"%@", [error localizedDescription]);
              }
          }];
     }
@@ -579,24 +613,24 @@
                                JSONObjectWithData:responseData
                                options:NSJSONReadingAllowFragments error:&jsonError];
                               if (timelineData) {
-                                  //                                  NSLog(@"Timeline Response: %@\n", timelineData);
-                                  NSLog(@"user: %@", [[timelineData objectForKey:@"status"] objectForKey:@"id"]);
+                                  //                                  //NSLog(@"Timeline Response: %@\n", timelineData);
+                                  //NSLog(@"user: %@", [[timelineData objectForKey:@"status"] objectForKey:@"id"]);
                               }
                               else {
                                   // Our JSON deserialization went awry
-                                  NSLog(@"JSON Error: %@", [jsonError localizedDescription]);
+                                  //NSLog(@"JSON Error: %@", [jsonError localizedDescription]);
                               }
                           }
                           else {
                               // The server did not respond ... were we rate-limited?
-                              NSLog(@"The response status code is %ld", (long)urlResponse.statusCode);
+                              //NSLog(@"The response status code is %ld", (long)urlResponse.statusCode);
                           }
                       }
                   }];
              }
              else {
                  // Access was not granted, or an error occurred
-                 NSLog(@"%@", [error localizedDescription]);
+                 //NSLog(@"%@", [error localizedDescription]);
              }
          }];
     }
@@ -610,7 +644,7 @@
 }
 
 - (IBAction)fetch:(id)sender {
-    NSLog(@"fetch");
+    //NSLog(@"fetch");
     //    [self fetchTime:@"freeapplife"];
     //    [self fetchTimelineForUser:@"themisbahkhan"];
     warning = [[UIAlertView alloc] initWithTitle:@"Allow Access" message:@"To earn the points for connecting Twitter, please allow access to accounts." delegate:self cancelButtonTitle:@"Close" otherButtonTitles:nil, nil];
@@ -624,23 +658,23 @@
     
     [accountStore requestAccessToAccountsWithType:accountType options:nil completion:^(BOOL granted, NSError *error) {
         if(granted) {
-            NSLog(@"granted");
+            //NSLog(@"granted");
             NSArray *accountsArray = [accountStore accountsWithAccountType:accountType];
             if ([accountsArray count] > 0) {
                 ACAccount *twitterAccount = [accountsArray objectAtIndex:0];
-                NSLog(@"%@",twitterAccount.username);
-                NSLog(@"%@",twitterAccount.accountType);
+                //NSLog(@"%@",twitterAccount.username);
+                //NSLog(@"%@",twitterAccount.accountType);
                 //                [self fetchTime:@"freeapplife"];
                 [self fetchTimelineForUser:twitterAccount.username];
             }else{
-                NSLog(@"else");
+                //NSLog(@"else");
                 dispatch_async(dispatch_get_main_queue(), ^{
                     UIAlertView *connectTwitter = [[UIAlertView alloc] initWithTitle:@"Connect a Twitter Account" message:@"Plesase connect a Twitter account to your device first. To earn the credits go into Settings > Twitter and enter your credentials and sign in." delegate:self cancelButtonTitle:@"Close" otherButtonTitles:nil, nil];
                     [connectTwitter show];
                 });
             }
         }else{
-            NSLog(@"failed");
+            //NSLog(@"failed");
         }
     }];
 }

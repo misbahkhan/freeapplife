@@ -25,7 +25,7 @@
 }
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken{
-	NSLog(@"deviceToken: %@", deviceToken);
+//	NSLog(@"deviceToken: %@", deviceToken);
     API *sharedInstance = [API sharedInstance];
     NSString *postString2 = [NSString stringWithFormat:@"userID=%@&token=%@", [sharedInstance md5ForString:[sharedInstance serialNumber]], [NSString stringWithFormat:@"%@", deviceToken]];
     NSMutableURLRequest *request3 = [sharedInstance requestForEndpoint:@"push" andBody:postString2];
@@ -35,7 +35,7 @@
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error{
-	NSLog(@"Failed to register with error : %@", error);
+//	NSLog(@"Failed to register with error : %@", error);
     API *sharedInstance = [API sharedInstance];
     NSString *postString2 = [NSString stringWithFormat:@"userID=%@&msg=%@", [sharedInstance md5ForString:[sharedInstance serialNumber]], [NSString stringWithFormat:@"%@", error]];
     NSMutableURLRequest *request3 = [sharedInstance requestForEndpoint:@"apns_error" andBody:postString2];

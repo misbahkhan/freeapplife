@@ -14,6 +14,6 @@
 @property (nonatomic, strong) UIView *view;
 @property (nonatomic, strong) UILabel *label;
 @property (nonatomic, strong) UILabel *points;
-@property (nonatomic, strong) NSDictionary *data; 
+@property (nonatomic, strong) NSDictionary *data;
 
 @end

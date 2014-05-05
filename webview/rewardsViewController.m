@@ -17,7 +17,7 @@
 
 @interface rewardsViewController () <UITableViewDataSource, UITableViewDelegate>
 {
-    NSMutableArray *rewardData, *categories, *images, *imageLinks, *rewards, *tables, *names;
+    NSMutableArray *rewardData, *categories, *images, *imageLinks, *rewards, *tables, *names, *ids;
     UITableView *currentTable, *loadingTable;
     UIRefreshControl *refreshControl;
     NSUInteger current, loading, nowLoading;
@@ -28,6 +28,9 @@
     UILabel *code;
     NSString *actualCode;
     API *sharedInstance;
+    CGRect screenRect;
+    CGFloat screenWidth;
+    CGFloat screenHeight;
 }
 
 @end
@@ -77,7 +80,17 @@
     [self.view addSubview:refresh];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dataUpdated:) name:[sharedInstance notificationName] object:nil];
+    screenRect = [[UIScreen mainScreen] bounds];
+    screenWidth = screenRect.size.width;
+    screenHeight = screenRect.size.height;
 
+    UIButton *warning = [[UIButton alloc] initWithFrame:CGRectMake(0, 90, screenWidth, 28)];
+    [warning setTitle:@"Rewards are currently US-exclusive. Tap for more." forState:UIControlStateNormal];
+    [warning.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size:13.0f]];
+    [warning setTitleColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0] forState:UIControlStateNormal];
+    [warning addTarget:self action:@selector(usOnlyPopup) forControlEvents:UIControlEventTouchUpInside];
+    [self.view addSubview:warning];
+    
 }
 
 - (void) alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
@@ -94,7 +107,7 @@
 
 - (void) viewDidDisappear:(BOOL)animated
 {
-    NSLog(@"disappeared");
+    //NSLog(@"disappeared");
 }
 
 - (void) dataUpdated:(id)sender
@@ -107,6 +120,8 @@
     current = [_segmentedControl selectedSegmentIndex];
     [self getReward:[[categories objectAtIndex:current] objectForKey:@"Name"]];
     currentTable = (UITableView *)[self.view viewWithTag:10+current];
+    currentTable.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
+    currentTable.separatorColor = [UIColor lightGrayColor];
     [self.view bringSubviewToFront:[self.view viewWithTag:10+current]];
     [refreshControl removeFromSuperview]; 
     refreshControl = [[UIRefreshControl alloc] init];
@@ -126,7 +141,7 @@
 
 - (void) getCategories
 {
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"http://freeapplife.com/api/rewardCategories"]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://freeapplife.com/api/rewardCategories"]];
     [request setHTTPMethod:@"POST"];
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){
@@ -135,14 +150,17 @@
             [categories addObjectsFromArray:dataArray];
 
             [_segmentedControl removeAllSegments];
-            
             for(int i = 0; i<[categories count]; i++){
                 [_segmentedControl insertSegmentWithTitle:[[categories objectAtIndex:i] objectForKey:@"Name"] atIndex:i animated:NO];
                 [rewards addObject:[[NSMutableArray alloc] init]];
-                [images addObject:[[NSMutableArray alloc] init]];
+                [images addObject:[[NSMutableDictionary alloc] init]];
                 [imageLinks addObject:[[NSMutableArray alloc] init]];
                 [names addObject:[[categories objectAtIndex:i] objectForKey:@"Name"]];
-                UITableView *table = [[UITableView alloc] initWithFrame:CGRectMake(0, 128, 320, 440)];
+                int heightSubtractor = 126;
+                if ([[[UIDevice currentDevice] systemVersion] floatValue] < 7.0) {
+                    heightSubtractor = 146;
+                }
+                UITableView *table = [[UITableView alloc] initWithFrame:CGRectMake(0, 128, screenWidth, screenHeight-heightSubtractor)];
                 table.tag = 10+i;
                 [self.view addSubview:table];
                 table.delegate = self;
@@ -153,12 +171,6 @@
                 [table registerClass:[rewardCell class] forCellReuseIdentifier:@"rewardCell"];
                 [tables addObject:table];
             }
-            UIButton *warning = [[UIButton alloc] initWithFrame:CGRectMake(0, 90, 320, 28)];
-            [warning setTitle:@"Rewards are currently US-exclusive. Tap for more." forState:UIControlStateNormal];
-            [warning.titleLabel setFont:[UIFont fontWithName:@"Helvetica Neue" size:13.0f]];
-            [warning setTitleColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0] forState:UIControlStateNormal];
-            [warning addTarget:self action:@selector(usOnlyPopup) forControlEvents:UIControlEventTouchUpInside];
-            [self.view addSubview:warning];
             [_segmentedControl setSelectedSegmentIndex:0];
             _segmentedControl.hidden = NO;
             [self categorySelect:self]; 
@@ -181,7 +193,7 @@
 {
     isRefreshing = YES;
     
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://freeapplife.com/api/rewardsForCategory?category=%@", forCategory]]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://freeapplife.com/api/rewardsForCategory?category=%@", forCategory]]];
     [request setHTTPMethod:@"POST"];
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){
@@ -193,16 +205,61 @@
             [[rewards objectAtIndex:place] addObjectsFromArray:dataArray];
             loadingTable = (UITableView *)[self.view viewWithTag:10+place];
             [loadingTable reloadData];
-            [self getImages:place];
+            [self getNewImages:place];
         }
     }];
 }
+
+
+- (void) getNewImages:(int)forTable{
+    [[imageLinks objectAtIndex:forTable] removeAllObjects];
+    if([rewards count]>0){
+        for(int i = 0; i<[[rewards objectAtIndex:forTable] count]; i++){
+            [[imageLinks objectAtIndex:forTable] addObject:[[[rewards objectAtIndex:forTable] objectAtIndex:i] objectForKey:@"SecretID"]];
+        }
+        //NSLog(@"%@", imageLinks);
+        [self getNewImageLinks:forTable];
+    }
+}
+
+- (void) getNewImageLinks:(int)forTable{
+    UITableView *toLoad = (UITableView *)[self.view viewWithTag:forTable+10];
+    
+    for(int i = 0; i<[[imageLinks objectAtIndex:forTable] count]; i++){
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
+        [request setAllHTTPHeaderFields:@{@"User-Agent": @"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"}];
+        [request setHTTPMethod:@"POST"];
+        
+        NSString *secretID = [[[rewards objectAtIndex:forTable] objectAtIndex:i] objectForKey:@"SecretID"];
+        
+        if(!([[images objectAtIndex:forTable] objectForKey:secretID] > 0)){
+            NSURL *URL = [[NSURL alloc] initWithString:[NSString stringWithFormat:@"https://freeapplife.com/fal/png/%@.png", secretID]];
+            [request setURL:URL];
+            [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                if([data length] > 0){
+                    UIImage *image = [UIImage imageWithData:data];
+                    if(image){
+                        [[images objectAtIndex:forTable] setObject:image forKey:secretID];
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            [toLoad reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:i inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+                        });
+                    }else{
+                        //NSLog(@"NO IMAGE");
+                    }
+                }
+            }];
+        }
+    }
+}
+
+
+
 
 - (void) getImages:(int)forTable{
     [[imageLinks objectAtIndex:forTable] removeAllObjects];
     if([rewards count]>0){
         for(int i = 0; i<[[rewards objectAtIndex:forTable] count]; i++){
-            NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"http://freeapplife.com/fal/png/%@.png",[[[rewards objectAtIndex:forTable] objectAtIndex:i] objectForKey:@"SecretID"]]];
+            NSURL *imageURL = [NSURL URLWithString:[NSString stringWithFormat:@"https://freeapplife.com/fal/png/%@.png",[[[rewards objectAtIndex:forTable] objectAtIndex:i] objectForKey:@"SecretID"]]];
             [[imageLinks objectAtIndex:forTable] addObject:imageURL];
         }
         [self getImageLinks:0 table:forTable];
@@ -218,7 +275,7 @@
             if([data length] > 0){
                 UIImage *image = [UIImage imageWithData:data];
                 if(image){
-                    [[images objectAtIndex:forTable] addObject:image];
+                    [[images objectAtIndex:forTable] setObject:image forKey:@""];
                     dispatch_async(dispatch_get_main_queue(), ^{
                         UITableView *toLoad = (UITableView *)[self.view viewWithTag:forTable+10];
                         if(number<[[imageLinks objectAtIndex:forTable] count]){
@@ -232,7 +289,7 @@
                         }
                     });
                 }else{
-                    NSLog(@"NO IMAGE");
+                    //NSLog(@"NO IMAGE");
                 }
             }
         }];
@@ -262,7 +319,7 @@
 
 - (NSArray *) makeForData:(NSString *)data
 {
-    NSData *ipD = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:@"http://freeapplife.com/beta/ip"]];
+    NSData *ipD = [[NSData alloc] initWithContentsOfURL:[NSURL URLWithString:@"https://freeapplife.com/beta/ip"]];
     NSString *ip = [[NSString alloc] initWithData:ipD encoding:NSUTF8StringEncoding];
     ip = [ip stringByReplacingOccurrencesOfString:@"." withString:@""];
     
@@ -287,11 +344,11 @@
     return @[someString, epoch];
 }
 
-- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
-{
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 49)];
-    return view;
-}
+//- (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
+//{
+//    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 320, 49)];
+//    return view;
+//}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -302,11 +359,32 @@
     if([[rewards objectAtIndex:tag] count]){
         NSDictionary *currentData = [[rewards objectAtIndex:tag] objectAtIndex:indexPath.row];
         cell.data = currentData;
-        cell.label.text = [NSString stringWithFormat:@"%@\n%@ points",[currentData objectForKey:@"Reward"], [currentData objectForKey:@"Points"]];
+        cell.label.text = [currentData objectForKey:@"Reward"];
+        cell.points.text = [NSString stringWithFormat:@"- %@", [currentData objectForKey:@"Points"]];
+        [cell.points sizeToFit];
+        CGRect oldFrame = cell.points.frame;
+        oldFrame.size.width = oldFrame.size.width+20;
+        oldFrame.size.height = oldFrame.size.height+10;
+        oldFrame.origin.x = 280-oldFrame.size.width;
+        oldFrame.origin.x += 20;
+        oldFrame.origin.y = 21+((59-oldFrame.size.height)/2);
+        
+        if(screenWidth > 320){
+            oldFrame.origin.x = screenWidth-75;
+        }
+        
+        cell.points.frame = oldFrame;
+
+        
+        if(screenWidth > 320){
+            CGRect oldFrame = cell.label.frame;
+            cell.label.frame = CGRectMake(oldFrame.origin.x, oldFrame.origin.y, oldFrame.size.width + 300, oldFrame.size.height);
+        }
+        
 //        cell.points.text = [NSString stringWithFormat:@"%@ points", [currentData objectForKey:@"Points"]];
         cell.image.image = nil;
-        if([[images objectAtIndex:tag] count] > indexPath.row){
-            cell.image.image = [[images objectAtIndex:tag] objectAtIndex:indexPath.row];
+        if([[images objectAtIndex:tag] objectForKey:[currentData objectForKey:@"SecretID"]] > 0){
+            cell.image.image = [[images objectAtIndex:tag] objectForKey:[currentData objectForKey:@"SecretID"]];
         }
     }
     return cell;
@@ -335,7 +413,7 @@
         NSString *rewardID = [cell.data objectForKey:@"SecretID"];
         NSString *points = [cell.data objectForKey:@"Points"];
     
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"http://freeapplife.com/api/rewardstock?rewardID=%@", rewardID]]];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithFormat:@"https://freeapplife.com/api/rewardstock?rewardID=%@", rewardID]]];
         
         [request setHTTPMethod:@"POST"];
         [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
@@ -343,7 +421,7 @@
                 NSArray *dataArray = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
                 NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
 
-                NSLog(@"%@", dataArray);
+                //NSLog(@"%@", dataArray);
                 
                     UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, 20, 60, 59)];
                     imageView.image = cell.image.image;
@@ -390,7 +468,7 @@
                                     [alertView close];
                                 }
                                 if(![button.titleLabel.text isEqualToString:@"Open in App Store"]){
-                                    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://freeapplife.com/api/redeem"]];
+                                    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://freeapplife.com/api/redeem"]];
                                      [request setAllHTTPHeaderFields:@{@"User-Agent": @"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"}];
                                      [request setHTTPMethod:@"POST"];
                                      NSString *postString = [NSString stringWithFormat:@"userID=%@&rewardID=%@", [sharedInstance serialNumber], rewardID];
@@ -402,12 +480,13 @@
                                          int responseStatusCode = [httpResponse statusCode];
 
                                          //Just to make sure, it works or not
-                                         NSLog(@"Status Code :: %d", responseStatusCode);
+                                         //NSLog(@"Status Code :: %d", responseStatusCode);
                                          if([data length] > 0){
                                              NSError* error;
                                              NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
                                              //NSLog(@"%@", response);
-                                             NSLog(@"redeem: %@", json);
+                                             //NSLog(@"redeem: %@", json);
+                                             
                                              if(responseStatusCode == 200 && [[_segmentedControl titleForSegmentAtIndex:[_segmentedControl selectedSegmentIndex]] isEqualToString:@"Apps"]){
                                                  actualCode = [json objectForKey:@"code"];
                                                  [code setText:[NSString stringWithFormat:@"Code: %@", [json objectForKey:@"code"]]];
@@ -429,10 +508,19 @@
                                                  [code setTextAlignment:NSTextAlignmentCenter];
                                              }
                                              [sharedInstance user];
+                                             
+                                             NSString *titleForTweet;
+                                             if ([title length] > 15) {
+                                                 titleForTweet = [NSString stringWithFormat:@"%@...", [title substringToIndex:15]];
+                                             }else{
+                                                 titleForTweet = title;
+                                             }
+                                             NSString *tweet = [NSString stringWithFormat:@"I just redeemed %@ for Free using @FreeAppLife. Join now to earn Paid Apps and Gift Cards for Free! http://freeapplife.com", titleForTweet];
+                                             [sharedInstance tweet:tweet];
                                          }
                                      }];
                                 }else{
-                                    NSLog(@"actualCode: %@", actualCode);
+                                    //NSLog(@"actualCode: %@", actualCode);
                                     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[NSString stringWithFormat:@"itmss://buy.itunes.apple.com/WebObjects/MZFinance.woa/wa/freeProductCodeWizard?code=%@", actualCode]]];
                                 }
                             }else{

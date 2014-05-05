@@ -21,6 +21,9 @@
     UITextField *referral;
     UITextField *password;
     IBOutlet UIButton *restore_button;
+    CGRect screenRect;
+    CGFloat screenWidth;
+    CGFloat screenHeight;
 }
 
 @end
@@ -43,8 +46,11 @@
 	// Do any additional setup after loading the view.
     sharedInstance = [API sharedInstance];
     
-    
-    history = [[UITableView alloc] initWithFrame:CGRectMake(0, 100, 320, 400)];
+    screenRect = [[UIScreen mainScreen] bounds];
+    screenWidth = screenRect.size.width;
+    screenHeight = screenRect.size.height;
+    float y = 100;
+    history = [[UITableView alloc] initWithFrame:CGRectMake(0, y, screenWidth, screenHeight-150)];
     history.delegate = self;
     history.dataSource = self;
     [history setSeparatorStyle:UITableViewCellSeparatorStyleNone];
@@ -61,21 +67,35 @@
     [self.view addSubview:refresh];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dataUpdated:) name:[sharedInstance notificationName] object:nil];
-    
 }
 
 - (void) dataUpdated:(id)sender
 {
     _pointsLabel.text = [sharedInstance currentPoints];
-    historyData = [[sharedInstance userData] objectForKey:@"reward_history"];
-    [history reloadData];
+//    historyData = [[sharedInstance userData] objectForKey:@"reward_history"];
+//    [history reloadData];
     
     if([[[sharedInstance userData] objectForKey:@"migrated"] intValue] == 0){
-        NSLog(@"not migrated");
-        [restore_button setHidden:NO]; 
+//        NSLog(@"not migrated");
+        [restore_button setHidden:NO];
     }else{
         [restore_button setHidden:YES]; 
     }
+}
+
+- (void) getHistory {
+    NSString *postString = [NSString stringWithFormat:@"userID=%@",[sharedInstance md5ForString:[sharedInstance serialNumber]]];
+    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"rewardHistory" andBody:postString];
+    
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
+        int responseStatusCode = [httpResponse statusCode];
+        if(responseStatusCode == 200 && [data length] > 0){
+            NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+            historyData = [[json objectForKey:@"history"] mutableCopy];
+            [history reloadData];
+        }
+    }];
 }
 
 - (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -97,8 +117,8 @@
                                       reuseIdentifier:@"rewardCell"];
     }
     
-    cell.textLabel.text = [NSString stringWithFormat:@"%@ (-%@)", [[historyData objectAtIndex:indexPath.row] objectAtIndex:3], [[historyData objectAtIndex:indexPath.row] objectAtIndex:2]];
-    cell.detailTextLabel.text = [[historyData objectAtIndex:indexPath.row] objectAtIndex:0];
+    cell.textLabel.text = [NSString stringWithFormat:@"%@ (-%@)", [[historyData objectAtIndex:indexPath.row] objectForKey:@"code"], [[historyData objectAtIndex:indexPath.row] objectForKey:@"points"]];
+    cell.detailTextLabel.text = [[historyData objectAtIndex:indexPath.row] objectForKey:@"reward"];
 //    cell.image.image = nil;
 //    cell.data = [historyData objectAtIndex:indexPath.row];
     return cell;
@@ -107,7 +127,7 @@
 - (void) viewDidAppear:(BOOL)animated
 {
     [sharedInstance user];
-//    [history registerClass:[rewardCell class] forCellReuseIdentifier:@"rewardCell"];
+    [self getHistory];
 }
 
 
@@ -159,20 +179,20 @@
     [alert setOnButtonTouchUpInside:^(CustomIOS7AlertView *alertView, int buttonIndex) {
         if(buttonIndex == 1){
 //            NSLog(@"migrate");
-            NSLog(@"%@", [email text]);
-            NSLog(@"%@", [password text]);
+//            NSLog(@"%@", [email text]);
+//            NSLog(@"%@", [password text]);
             NSString *postString = [NSString stringWithFormat:@"userID=%@&email=%@&password=%@",[sharedInstance md5ForString:[sharedInstance serialNumber]], [email text], [password text]];
             NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"regainData" andBody:postString];
             
             [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
                 NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-                NSLog(@"%@", response);
+//                NSLog(@"%@", response);
                 NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-                NSLog(@"user: %@", strData);
+//                NSLog(@"user: %@", strData);
                 
                 NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
                 int responseStatusCode = [httpResponse statusCode];
-                NSLog(@"%d", responseStatusCode);
+//                NSLog(@"%d", responseStatusCode);
                 
                 if(responseStatusCode == 204){
                     UILabel *error = [[UILabel alloc] initWithFrame:CGRectMake(20, 180, 240, 50)];
