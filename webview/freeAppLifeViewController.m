@@ -9,15 +9,11 @@
 #import "freeAppLifeViewController.h"
 #import <AdSupport/ASIdentifierManager.h>
 #import <QuartzCore/QuartzCore.h>
-#import <ifaddrs.h>
-#import <arpa/inet.h>
-#import <CommonCrypto/CommonHMAC.h>
-#import <dlfcn.h>
 #import "API.h"
 #import "rewardCell.h"
-#import "CustomIOS7AlertView.h"
-#import "freeAppLifeOfferView.h"
-
+#import <StoreKit/StoreKit.h>
+#import "offerPopUp.h"
+#import "customPopUp.h"
 
 @interface freeAppLifeViewController ()
 {
@@ -32,7 +28,6 @@
     UITextField *referralBox; 
     IBOutlet UILabel *points;
     IBOutlet UILabel *referral_count;
-    CustomIOS7AlertView *sponsorClicked;
     UIAlertView *referralAlert;
     UIAlertView *versionAlert;
     API *sharedInstance;
@@ -40,6 +35,11 @@
     NSString *aarkiHelp;
     NSString *videoCode;
     UIRefreshControl *refreshControl;
+    offerPopUp *offerView;
+    int sep;
+    CGRect screenRect;
+    CGFloat screenWidth;
+    CGFloat screenHeight;
 }
 
 @end
@@ -58,6 +58,12 @@
     [[NSURLCache sharedURLCache] setDiskCapacity:0];
     [[NSURLCache sharedURLCache] setMemoryCapacity:0];
     
+    screenRect = [[UIScreen mainScreen] bounds];
+    screenWidth = screenRect.size.width;
+    screenHeight = screenRect.size.height;
+    
+    sep = 0;
+    
     refreshing = FALSE;
     
     sponsorData = [[NSMutableArray alloc] init];
@@ -75,28 +81,8 @@
     [_tableView registerClass:[rewardCell class] forCellReuseIdentifier:@"tutorialCell"];
     _tableView.delegate = self;
     
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    CGFloat screenWidth = screenRect.size.width;
-    CGFloat screenHeight = screenRect.size.height;
-    
-    UIButton *featured = [[UIButton alloc] initWithFrame:CGRectMake((screenWidth/2)-140, 44, 280, 100)];
-    [self.view addSubview:featured];
-    
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://freeapplife.com/fal/png/featured.png"]];
-    [request setAllHTTPHeaderFields:@{@"User-Agent": @"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"}];
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-        if([data length] > 0){
-            UIImage *image = [UIImage imageWithData:data];
-            [featured setBackgroundImage:image forState:UIControlStateNormal];
-            [featured addTarget:self action:@selector(changeTab) forControlEvents:UIControlEventTouchUpInside];
-            [featured setContentMode:UIViewContentModeScaleAspectFit];
-            featured.layer.cornerRadius = 5.0f;
-            [featured setClipsToBounds:YES];
-        }
-    }];
-    
-    
-    //NSLog(@"advertising: %@", [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]);
+    [self featuredImage];
+    [self videoCode];
     
     UIView *topBar = [sharedInstance getBar];
     [self.view addSubview:topBar];
@@ -112,21 +98,6 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dataUpdated:) name:[sharedInstance notificationName] object:nil];
 
     [self registerUser];
-    NSString *postString = [NSString stringWithFormat:@"u=%@&v=%.2f", [sharedInstance md5ForString:[sharedInstance serialNumber]], [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] floatValue]];
-    //NSLog(@"%@", postString);
-    NSMutableURLRequest *request2 = [sharedInstance requestForEndpoint:@"version" andBody:postString];
-    [NSURLConnection sendAsynchronousRequest:request2 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-//        if([data length] > 0){
-            [self aggregateOffers];
-//        }
-    }];
-    
-    NSMutableURLRequest *request3 = [sharedInstance requestForEndpoint:@"video" andBody:nil];
-    [NSURLConnection sendAsynchronousRequest:request3 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-        if([data length] > 0){
-            videoCode = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        }
-    }];
     
     _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     _tableView.separatorColor = [UIColor lightGrayColor];
@@ -147,7 +118,7 @@
 
 - (void) viewDidDisappear:(BOOL)animated
 {
-    [sponsorClicked close];
+
 }
 
 - (void) dataUpdated:(id)sender
@@ -165,7 +136,6 @@
 }
 
 - (void) changeTab{
-    //NSLog(@"change tab");
     if([[[sharedInstance userData] objectForKey:@"link"] length] > 0){
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[[sharedInstance userData] objectForKey:@"link"]]];
     }else{
@@ -178,7 +148,6 @@
 {
     if(alertView == referralAlert){
         if(buttonIndex == 1){
-            //NSLog(@"%@", [referralBox text]);
             [sharedInstance refer:[referralBox text]];
         }
     }else if(alertView == versionAlert){
@@ -194,21 +163,14 @@
 
 - (void) registerUser
 {
-    //    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://freeapplife.com/api/register"]];
-    //    [request setAllHTTPHeaderFields:@{@"User-Agent": @"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"}];
-    //    [request setHTTPMethod:@"POST"];
-    //    [request setHTTPBody:[postString dataUsingEncoding:NSUTF8StringEncoding]];
-    
     NSArray *a = [sharedInstance makeForData:[sharedInstance serialNumber]];
     NSString *postString = [NSString stringWithFormat:@"sn=%@&a=%@&t=%@", [sharedInstance serialNumber], [a objectAtIndex:0], [a objectAtIndex:1]];
     NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"register" andBody:postString];
     
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){
-            //NSLog(@"%@", response);
             NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-            //NSLog(@"%@", strData);
-            //            NSError *error;
+//            NSLog(@"%@", strData);
             NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
             if([json objectForKey:@"status"]){
                 referralAlert = [[UIAlertView alloc] initWithTitle:@"Get More Points!" message:@"If you were referred to FreeAppLife by a friend, input their referral code now and earn an excess of 400 points to be rewarded." delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Add!", nil];
@@ -217,120 +179,55 @@
                 [referralAlert show];
             }
         }
+        
+        [sharedInstance token];
+        Log(@"%@", [sharedInstance deviceToken]);
+        [self version];
+        
     }];
     
 }
 
-- (void) getAarki
+- (void) videoCode
 {
-    refreshing = TRUE;
-//    NSString *SponsorPayURL = [NSString stringWithFormat:@"http://freeapplife.com/api/offers?userID=%@&idfa=%@", [self serialNumber], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
-//    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"register" andBody:@"aarki"];
+    NSMutableURLRequest *request3 = [sharedInstance requestForEndpoint:@"video" andBody:nil];
+    [NSURLConnection sendAsynchronousRequest:request3 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        if([data length] > 0){
+            videoCode = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        }
+    }];
+}
+
+- (void) version
+{
+    NSString *postString = [NSString stringWithFormat:@"u=%@&v=%.2f", [sharedInstance md5ForString:[sharedInstance serialNumber]], [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] floatValue]];
+    NSMutableURLRequest *request2 = [sharedInstance requestForEndpoint:@"version" andBody:postString];
+    [NSURLConnection sendAsynchronousRequest:request2 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        [self aggregateOffers];
+    }];
+}
+
+- (void) featuredImage
+{
+    UIButton *featured = [[UIButton alloc] initWithFrame:CGRectMake((screenWidth/2)-140, 44, 280, 100)];
+    [self.view addSubview:featured];
     
-    NSString *postString = [NSString stringWithFormat:@"userID=%@&idfa=%@", [sharedInstance md5ForString: [sharedInstance serialNumber]], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
-    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"aarki" andBody:postString];
-    
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://freeapplife.com/fal/png/featured.png"]];
+    [request setAllHTTPHeaderFields:@{@"User-Agent": @"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"}];
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){
-            //B3C14AA3-862C-4120-ADA1-295FC5250092
-            NSArray *dataArray = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-            //NSLog(@"%@", dataArray);
-            [sponsorData addObjectsFromArray:dataArray];
-        }
-        [sponsorData removeAllObjects];
-        [images removeAllObjects];
-        [imageLinks removeAllObjects];
-        [_tableView reloadData];
-        [self getSponsorPay];
-        
-        // This will get the NSURLResponse into NSHTTPURLResponse format
-        NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
-        
-        // This will Fetch the status code from NSHTTPURLResponse object
-        int responseStatusCode = [httpResponse statusCode];
-        
-        //Just to make sure, it works or not
-        //NSLog(@"Status Code :: %d", responseStatusCode);
-    }];
-}
-
-- (void) getSponsorPay
-{
-    refreshing = TRUE;
-    //NSLog(@"getting sponsorpay");
-    //    [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://freeapplife.com"]]];
-    
-    NSString *postString = [NSString stringWithFormat:@"userID=%@&idfa=%@", [sharedInstance md5ForString: [sharedInstance serialNumber]], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
-    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"offers" andBody:postString];
-
-    
-//    NSString *SponsorPayURL = [NSString stringWithFormat:@"http://freeapplife.com/api/offers?userID=%@&idfa=%@", [self serialNumber], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
-    
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-        if([data length] > 0){
-            //NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-            
-            NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-            //NSLog(@"%@", dataDictionary);
-            // This will get the NSURLResponse into NSHTTPURLResponse format
-            NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
-            
-            // This will Fetch the status code from NSHTTPURLResponse object
-            int responseStatusCode = [httpResponse statusCode];
-            
-            //Just to make sure, it works or not
-            //NSLog(@"Status Code :: %d", responseStatusCode);
-            [images removeAllObjects];
-            [imageLinks removeAllObjects];
-            
-            if(responseStatusCode == 200){
-    //            [sponsorData addObjectsFromArray:d[dataDictionary objectForKey:@"offers"]];
-                NSLog(@"%@", dataDictionary);
-                sharedInstance.sponsorPayHelp = [dataDictionary objectForKey:@"spay_support"];
-                NSMutableArray *tmp = [[NSMutableArray alloc] initWithArray:[dataDictionary objectForKey:@"offers"]];
-                [tmp addObjectsFromArray:sponsorData];
-                sponsorData = [tmp mutableCopy];
-                NSDictionary *popUp = [[NSDictionary alloc] initWithObjectsAndKeys:@"popup", @"link", @"0", @"payout", @"WATCH", @"description", @"Install Tutorial", @"name", @"https://freeapplife.com/fal/png/store.png", @"image", nil];
-                [sponsorData insertObject:popUp atIndex:0];
-                [_tableView reloadData];
-            }else{
-                refreshing = FALSE;
-            }
-            
-            [self getImages];
+            UIImage *image = [UIImage imageWithData:data];
+            [featured setBackgroundImage:image forState:UIControlStateNormal];
+            [featured addTarget:self action:@selector(changeTab) forControlEvents:UIControlEventTouchUpInside];
+            [featured setContentMode:UIViewContentModeScaleAspectFit];
+            featured.layer.cornerRadius = 5.0f;
+            [featured setClipsToBounds:YES];
         }
     }];
-}
-
-- (NSString *)getIPAddress {
-    NSString *address = @"error";
-    struct ifaddrs *interfaces = NULL;
-    struct ifaddrs *temp_addr = NULL;
-    int success = 0;
-    // retrieve the current interfaces - returns 0 on success
-    success = getifaddrs(&interfaces);
-    if (success == 0) {
-        // Loop through linked list of interfaces
-        temp_addr = interfaces;
-        while(temp_addr != NULL) {
-            if(temp_addr->ifa_addr->sa_family == AF_INET) {
-                // Check if interface is en0 which is the wifi connection on the iPhone
-                if([[NSString stringWithUTF8String:temp_addr->ifa_name] isEqualToString:@"en0"]) {
-                    // Get NSString from C String
-                    address = [NSString stringWithUTF8String:inet_ntoa(((struct sockaddr_in *)temp_addr->ifa_addr)->sin_addr)];
-                }
-            }
-            temp_addr = temp_addr->ifa_next;
-        }
-    }
-    // Free memory
-    freeifaddrs(interfaces);
-    return address;
 }
 
 - (void) pendingOffers
 {
-    NSLog(@"pending"); 
     NSString *postString = [NSString stringWithFormat:@"userID=%@", [sharedInstance md5ForString: [sharedInstance serialNumber]]];
     NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"pendingList" andBody:postString];
     
@@ -342,10 +239,13 @@
             
             if(responseStatusCode == 200){
                 NSMutableArray *tmp = [[NSMutableArray alloc] initWithArray:[dataDictionary objectForKey:@"pendingList"]];
-                NSLog(@"%@", dataDictionary);
+                if([tmp count] > 0){
+                    [sponsorData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:@"separator", @"type", nil]];
+                    sep = [sponsorData count]-1;
+                }
                 [sponsorData addObjectsFromArray:tmp];
                 [_tableView reloadData];
-                [self getNewImages];
+                [self getImages];
             }
         }
     }];
@@ -377,22 +277,16 @@
             [imageLinks removeAllObjects];
             
             if(responseStatusCode == 200){
-//                [sponsorData addObjectsFromArray:[dataDictionary obje:@"offers"]];
-//                sponsorPayHelp = [[dataDictionary objectForKey:@"information"] objectForKey:@"support_url"];
-//                NSMutableArray *tmp = [[NSMutableArray alloc] initWithArray:[dataDictionary objectForKey:@"offers"]];
                 NSMutableArray *tmp = [[NSMutableArray alloc] initWithArray:[dataDictionary objectForKey:@"offers"]];
-//                NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-//                NSLog(@"%@", tmp);
                 sponsorData = [tmp mutableCopy];
                 sharedInstance.sponsorPayHelp = [dataDictionary objectForKey:@"spay_support"];
-                NSDictionary *popUp = [[NSDictionary alloc] initWithObjectsAndKeys:@"popup", @"link", @"0", @"payout", @"WATCH", @"description", @"Install Tutorial", @"name", @"https://freeapplife.com/fal/png/store.png", @"image", nil];
+                sharedInstance.aarkiHelp = [dataDictionary objectForKey:@"aarki_support"];
+                NSDictionary *popUp = [[NSDictionary alloc] initWithObjectsAndKeys:@"popup", @"link", @"0", @"payout", @"WATCH", @"description", @"Install Tutorial", @"name", @"https://freeapplife.com/fal/png/store.png", @"image", @"custom", @"type", [NSString stringWithFormat:@"<html><body style='margin:0px;padding:0px;'><script type='text/javascript' src='http://www.youtube.com/iframe_api'></script><script type='text/javascript'>function onYouTubeIframeAPIReady(){ytplayer=new YT.Player('yt',{events:{onReady:onPlayerReady}})}function onPlayerReady(a){a.target.playVideo();}</script><iframe id='yt' type='text/html' width='%d' height='%d' src='http://www.youtube.com/embed/%@?enablejsapi=1&rel=0&playsinline=1&autoplay=1&controls=0' frameborder='0'></body></html>", 280, 158, videoCode], @"html", @"158", @"height", nil];
                 [sponsorData insertObject:popUp atIndex:0];
                 [_tableView reloadData];
-//                [self getNewImages];
+//                [self getImages];
 //                [self goneFreeList];
                 [self pendingOffers];
-                
-                
             }else{
                 refreshing = FALSE;
             }
@@ -401,8 +295,6 @@
 }
 
 - (void) goneFreeList {
-//    NSString *postString = [NSString stringWithFormat:@"userID=%@&idfa=%@", [sharedInstance md5ForString: [sharedInstance serialNumber]], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
-    
     NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"goneFreeList" andBody:nil];
     
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
@@ -412,7 +304,7 @@
             int responseStatusCode = (int)[httpResponse statusCode];
             if(responseStatusCode == 200){
 //                NSMutableArray *tmp = [[NSMutableArray alloc] initWithArray:[dataDictionary objectForKey:@"goneFree"]];
-                NSLog(@"%@", dataDictionary);
+//                NSLog(@"%@", dataDictionary);
             }else{
 //                refreshing = FALSE;
             }
@@ -420,105 +312,7 @@
     }];
 }
 
-- (void) newAarki
-{
-    refreshing = TRUE;
-//    NSLog(@"getting aarki");
-    
-    NSString *postString = [NSString stringWithFormat:@"userID=%@&idfa=%@", [sharedInstance md5ForString: [sharedInstance serialNumber]], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
-    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"aarki" andBody:postString];
-    
-//    NSString *aarki = [NSString stringWithFormat:@"http://freeapplife.com/api/aarki?userID=%@&idfa=%@", [self serialNumber], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-        if([data length] > 0){
-//            NSLog(@"%@", [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]);
-            
-            NSArray *dataArray = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-            
-            NSMutableArray *filteredData = [dataArray mutableCopy];
-            NSMutableArray *toRemove = [[NSMutableArray alloc] init];
-            
-            //NSLog(@"%@", filteredData);
-            // This will get the NSURLResponse into NSHTTPURLResponse format
-            NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
-            
-            // This will Fetch the status code from NSHTTPURLResponse object
-            int responseStatusCode = [httpResponse statusCode];
-            
-            //Just to make sure, it works or not
-            //NSLog(@"Status Code :: %d", responseStatusCode);
-            
-            [sponsorData removeAllObjects];
-            [images removeAllObjects];
-            [imageLinks removeAllObjects];
-            
-            if(responseStatusCode == 200){
-                for(int i = 0; i<[filteredData count]; i++){
-                    if([[[filteredData objectAtIndex:i] objectForKey:@"purchase"] integerValue] == 1){
-                        [toRemove addObject:[filteredData objectAtIndex:i]];
-                    }
-                }
-                
-                for(int i = 0; i<[toRemove count]; i++){
-                    [filteredData removeObject:[toRemove objectAtIndex:i]];
-                }
-                [sponsorData addObjectsFromArray:filteredData];
-            }else{
-                [sponsorData removeAllObjects];
-                refreshing = FALSE;
-            }
-            [_tableView reloadData];
-        }
-        [self getSponsorPay];
-    }];
-}
-
--(NSString*) sha1:(NSString*)input
-{
-    const char *cstr = [input cStringUsingEncoding:NSUTF8StringEncoding];
-    NSData *data = [NSData dataWithBytes:cstr length:input.length];
-    uint8_t digest[CC_SHA1_DIGEST_LENGTH];
-    CC_SHA1(data.bytes, data.length, digest);
-    NSMutableString* output = [NSMutableString stringWithCapacity:CC_SHA1_DIGEST_LENGTH * 2];
-    for(int i = 0; i < CC_SHA1_DIGEST_LENGTH; i++)
-        [output appendFormat:@"%02x", digest[i]];
-    return output;
-}
-
-- (NSString *)serialNumber
-{
-	NSString *serialNumber = nil;
-	
-	void *IOKit = dlopen("/System/Library/Frameworks/IOKit.framework/IOKit", RTLD_NOW);
-	if (IOKit)
-	{
-		mach_port_t *kIOMasterPortDefault = dlsym(IOKit, "kIOMasterPortDefault");
-		CFMutableDictionaryRef (*IOServiceMatching)(const char *name) = dlsym(IOKit, "IOServiceMatching");
-		mach_port_t (*IOServiceGetMatchingService)(mach_port_t masterPort, CFDictionaryRef matching) = dlsym(IOKit, "IOServiceGetMatchingService");
-		CFTypeRef (*IORegistryEntryCreateCFProperty)(mach_port_t entry, CFStringRef key, CFAllocatorRef allocator, uint32_t options) = dlsym(IOKit, "IORegistryEntryCreateCFProperty");
-		kern_return_t (*IOObjectRelease)(mach_port_t object) = dlsym(IOKit, "IOObjectRelease");
-		
-		if (kIOMasterPortDefault && IOServiceGetMatchingService && IORegistryEntryCreateCFProperty && IOObjectRelease)
-		{
-			mach_port_t platformExpertDevice = IOServiceGetMatchingService(*kIOMasterPortDefault, IOServiceMatching("IOPlatformExpertDevice"));
-			if (platformExpertDevice)
-			{
-				CFTypeRef platformSerialNumber = IORegistryEntryCreateCFProperty(platformExpertDevice, CFSTR("IOPlatformSerialNumber"), kCFAllocatorDefault, 0);
-				if (CFGetTypeID(platformSerialNumber) == CFStringGetTypeID())
-				{
-					serialNumber = [NSString stringWithString:(__bridge NSString*)platformSerialNumber];
-					CFRelease(platformSerialNumber);
-				}
-				IOObjectRelease(platformExpertDevice);
-			}
-		}
-		dlclose(IOKit);
-	}
-	
-	return serialNumber;
-}
-
-- (void) getNewImages {
+- (void) getImages {
     [refreshControl endRefreshing];
     for (int i = 0; i < [sponsorData count]; i++) {
         NSString *URL = [[sponsorData objectAtIndex:i] objectForKey:@"image"];
@@ -541,54 +335,29 @@
     }
 }
 
-- (void) getImages{
-    for(int i = 0; i<[sponsorData count]; i++){
-        NSDictionary *thisOne = [sponsorData objectAtIndex:i];
-//        NSLog(@"%@", thisOne);
-        NSURL *imageURL = [[NSURL alloc] init];
-//        if([thisOne objectForKey:@"image_url"]){
-            imageURL = [NSURL URLWithString:[thisOne objectForKey:@"image"]];
-//        }else{
-//            imageURL = [NSURL URLWithString:[[thisOne objectForKey:@"thumbnail"] objectForKey:@"hires"]];
-//        }
-        [imageLinks addObject:imageURL];
-    }
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^(void) {
-        for (int i = 0; i<[imageLinks count]; i++){
-            if([[[imageLinks objectAtIndex:i] absoluteString] isEqualToString:@"https://freeapplife.com/fal/png/store.png"]){
-                NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[imageLinks objectAtIndex:i]];
-                [request setAllHTTPHeaderFields:@{@"User-Agent": @"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"}];
-                NSURLResponse *response;
-                NSError *error = nil;
-                NSData* data = [NSURLConnection sendSynchronousRequest:request  returningResponse:&response error:&error];
-                UIImage *image = [UIImage imageWithData:data];
-                [images addObject:image];
-            }else{
-                NSData *tempImageData = [NSData dataWithContentsOfURL:[imageLinks objectAtIndex:i]];
-                UIImage *image = [UIImage imageWithData:tempImageData];
-                [images addObject:image];
-            }
-            dispatch_async(dispatch_get_main_queue(), ^{
-//                rewardCell *cell = (rewardCell *)[_tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:i inSection:0]];
-//                cell.image.image = [images objectAtIndex:i];
-                [_tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:i inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
-                if(i == [imageLinks count]-1){
-                    [refreshControl endRefreshing]; 
-                }
-            });
-        }
-        refreshing = FALSE;
-    });
-}
-
-- (void) appVideoToggle:(id)sender
+- (CGFloat) tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+    if(indexPath.row == sep && sep>0){
+        return 30.0f;
+    }
+    return 102.0f;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSDictionary *currentData = [sponsorData objectAtIndex:indexPath.row];
+    
+    if([[currentData objectForKey:@"type"] isEqualToString:@"separator"]){
+        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"normalCell"];
+        if (cell == nil){
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"normalCell"];
+        }
+        cell.textLabel.text = @"Pending Offers";
+        [cell.textLabel setFont:[UIFont fontWithName:@"HelveticaNeue-Light" size:13.0f]];
+        [cell.textLabel setTextAlignment:NSTextAlignmentCenter];
+        return cell;
+    }
+    
     NSString *title = [currentData objectForKey:@"name"];
     
     NSString *pointsLabel;
@@ -617,10 +386,8 @@
     oldFrame.size.height = oldFrame.size.height+10;
     oldFrame.origin.x = 280-oldFrame.size.width;
     oldFrame.origin.x += 20;
-    oldFrame.origin.y = 21+((59-oldFrame.size.height)/2);
+    oldFrame.origin.y = 21+((60-oldFrame.size.height)/2);
 
-    CGRect screenRect = [[UIScreen mainScreen] bounds];
-    CGFloat screenWidth = screenRect.size.width;
     if(screenWidth > 320){
         oldFrame.origin.x = screenWidth-75;
     }
@@ -652,170 +419,22 @@
     redirects = 0;
     [_tableView deselectRowAtIndexPath:indexPath animated:NO];
     
-    
     NSDictionary *currentData = [sponsorData objectAtIndex:indexPath.row];
-    freeAppLifeOfferView *offerView = [[freeAppLifeOfferView alloc] initWithData:currentData];
+    NSString *type = [currentData objectForKey:@"type"];
     
-    
-    
-    _progress = [[UIProgressView alloc] initWithFrame:CGRectMake(20, 240, 240, 10)];
-    [_progress setProgress:0.0f];
-    UIView *progressView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 280, 20)];
-    [progressView addSubview:_progress];
-    [offerView addSubview:_progress];
-    
-    
-    
-    UIView *cellView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 280, 275)];
-    [cellView setBackgroundColor:[UIColor clearColor]];
-    [cellView addSubview:progressView];
-
-//    NSString *title = [currentData objectForKey:@"name"];
-    
-//    NSLog(@"%@", currentCell.data);
-    
-//    NSString *guide = @"Remember to open the app for a minimum of 30 seconds and do not switch networks (e.g. 3G, LTE > Wi-Fi). Some offers may take up to 24 hours to credit to your account.";
-    
-//    NSString *credit = @"Some offers may take up to 24 hours to credit to your account.";
-    
-//    UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(89, 20, 160, 20)];
-//    [titleLabel setText:title];
-//    [titleLabel setFont:[UIFont boldSystemFontOfSize:16.0f]];
-//    [titleLabel setNumberOfLines:1];
-//    CGRect titleFrame = titleLabel.frame;
-//    titleLabel.frame = titleFrame;
-//    [cellView addSubview:titleLabel];
-    
-//    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(20, 20, 60, 59)];
-//    imageView.image = [UIImage imageWithData:[[sharedInstance imageCache] objectForKey:[currentData objectForKey:@"image"]]];
-//    imageView.layer.cornerRadius = 10.0f;
-//    [imageView setClipsToBounds:YES];
-//    [cellView addSubview:imageView];
-    
-//    UILabel *instructions = [[UILabel alloc] initWithFrame:CGRectMake(90, titleFrame.size.height+20, 190, 120)];
-//    [instructions setNumberOfLines:3];
-//    NSString *instruct;
-//
-//    instruct = [currentData objectForKey:@"description"];
-//    [instructions setNumberOfLines:6];
-//    [instructions setFont: [UIFont fontWithName:@"Helvetica Neue" size:11.0f]];
-//    
-//    if([[currentData objectForKey:@"vendor"] isEqualToString:@"spay"]){
-//        UIButton *helpLabel = [[UIButton alloc] initWithFrame:CGRectMake(20, titleFrame.size.height+180, 240, 20)];
-//        [helpLabel setTitle:@"Missing Points? Tap for Help!" forState:UIControlStateNormal];
-//        [helpLabel.titleLabel setFont: [UIFont fontWithName:@"Helvetica Neue" size:13.0f]];
-//        [helpLabel setTitleColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0] forState:UIControlStateNormal];
-//        [helpLabel addTarget:self action:@selector(sponsorPayHelpClicked:) forControlEvents:UIControlEventTouchUpInside];
-//        [cellView addSubview:helpLabel];
-//    }
-//
-//    instruct = [NSString stringWithFormat:@"Instructions: %@", instruct];
-//    [instructions setText:instruct];
-//    [instructions sizeToFit];
-//    [cellView addSubview:instructions];
-//    
-//    UILabel *guidelines = [[UILabel alloc] initWithFrame:CGRectMake(20, titleFrame.size.height+100, 240, 120)];
-//    [guidelines setText:guide];
-//    [guidelines setNumberOfLines:5];
-//    [guidelines setFont: [UIFont fontWithName:@"Helvetica Neue" size:13.0f]];
-//    [guidelines setTextAlignment:NSTextAlignmentCenter];
-//    [guidelines sizeToFit];
-//    [cellView addSubview:guidelines];
-    
-    sponsorClicked = [[CustomIOS7AlertView alloc] init];
-    sponsorClicked.delegate = self;
-    [sponsorClicked setButtonTitles:[NSMutableArray arrayWithObjects:@"Cancel", @"Continue", nil]];
-    
-    
-    if([currentData objectForKey:@"link"]>0){
-        if([[currentData objectForKey:@"link"] isEqualToString:@"popup"]){
-//            [guidelines removeFromSuperview];
-//            [progressView removeFromSuperview];
-            [sponsorClicked setButtonTitles:[NSMutableArray arrayWithObjects:@"Get Started", nil]];
-            video = [[UIWebView alloc] initWithFrame:CGRectMake(0, 90, 280, 158)];
-            [video setAllowsInlineMediaPlayback:YES];
-            [video setMediaPlaybackRequiresUserAction:NO];
-            [video.scrollView setScrollEnabled:NO];
-            NSString* embedHTML = [NSString stringWithFormat:@"\
-                                   <html>\
-                                   <body style='margin:0px;padding:0px;'>\
-                                   <script type='text/javascript' src='http://www.youtube.com/iframe_api'></script>\
-                                   <script type='text/javascript'>\
-                                   function onYouTubeIframeAPIReady()\
-                                   {\
-                                   ytplayer=new YT.Player('playerId',{events:{onReady:onPlayerReady}})\
-                                   }\
-                                   function onPlayerReady(a)\
-                                   { \
-                                   a.target.playVideo(); \
-                                   }\
-                                   </script>\
-                                   <iframe id='playerId' type='text/html' width='%d' height='%d' src='http://www.youtube.com/embed/%@?enablejsapi=1&rel=0&playsinline=1&autoplay=1' frameborder='0'>\
-                                   </body>\
-                                   </html>", 280, 158, videoCode];
-            [video loadHTMLString:embedHTML baseURL:nil];
-            
-            CGRect oldFrame = cellView.frame;
-            oldFrame.size.height = cellView.frame.size.height-30;
-            cellView.frame = oldFrame;
-            [cellView addSubview:video];
-        }
+    if([type isEqualToString:@"separator"]){
+        [table deselectRowAtIndexPath:indexPath animated:NO];
+        return;
     }
     
-
-//    [sponsorClicked setContainerView:cellView];
-    [sponsorClicked setContainerView:offerView];
-    
-    
-    [sponsorClicked setUseMotionEffects:TRUE];
-    UIWebView *web = _webView;
-    
-    NSString *URL = [[sponsorData objectAtIndex:indexPath.row] objectForKey:@"url"];
-    
-    [sponsorClicked show];
-    
-    NSLog(@"%@", currentData);
-    
-//    NSString *userID = [sharedInstance userID];
-//    NSDate *date = [NSDate date];
-//    NSString *rewardID = [currentData objectForKey:@"id"];
-//    NSString *pointValue = [currentData objectForKey:@"points"];
-//    NSString *guessTime = [currentData objectForKey:@"estimate"];
-//    NSString *image = [currentData objectForKey:@"image"];
-//    NSString *postString = [NSString stringWithFormat:@"rewardID=%@&userID=%@&name=%@&time=%lld&points=%@&guess=%@&image=%@", rewardID, userID, title, [@(floor([date timeIntervalSince1970])) longLongValue], pointValue, guessTime, image];
-//    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"pending" andBody:postString];
-
-    [sponsorClicked setOnButtonTouchUpInside:^(CustomIOS7AlertView *alertView, int buttonIndex) {
-        if(buttonIndex == 0){
-            [alertView close];
-        }else if(buttonIndex == 1) {
-            [offerView pend];
-            UIButton *button = (UIButton *)[[[[alertView subviews] objectAtIndex:0] subviews] objectAtIndex:3];
-            if(![button.titleLabel.text isEqualToString:@"Loading"]){
-                [button setTitle:@"Loading" forState:UIControlStateNormal];
-                [web loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:URL]]];
-            }
-        }
-    }];
-}
-
-- (void) loadRequest:(NSString *)string
-{
-    
-}
-
-- (void)customIOS7dialogButtonTouchUpInside: (CustomIOS7AlertView *)alertView clickedButtonAtIndex: (NSInteger)buttonIndex
-{
-    if ([alertView tag]==0) {
-        if(buttonIndex == 0){
-            [_webView stopLoading];
-            [video stringByEvaluatingJavaScriptFromString:@"ytplayer.stopVideo();"];
-            [video loadRequest:nil];
-            [video removeFromSuperview];
-        }
-        if(buttonIndex == 1){
-
-        }
+    if([type isEqualToString:@"offer"] || [type isEqualToString:@"pending"]){
+        offerView = [[offerPopUp alloc] initWithData:currentData];
+        offerView.web = _webView;
+        [offerView show];
+    }else if([type isEqualToString:@"custom"]){
+        customPopUp *custom = [[customPopUp alloc] initWithFrame:CGRectMake(0, 0, 280, [[currentData objectForKey:@"height"] floatValue])];
+        [custom.web loadHTMLString:[currentData objectForKey:@"html"] baseURL:nil];
+        [custom show];
     }
 }
 
@@ -826,18 +445,7 @@
 
 - (void) plus
 {
-    [_progress setProgress:_progress.progress+0.2f animated:YES];
-}
-
-- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
-{
-//    [self plus];
-}
-
-- (NSURLRequest *)connection:(NSURLConnection *)connection willSendRequest:(NSURLRequest *)request redirectResponse:(NSURLResponse *)response
-{
-    //NSLog(@"request: %@", [request URL]);
-    return request;
+    [offerView.progress setProgress:_progress.progress+0.2f animated:YES];
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection *)connection
@@ -851,35 +459,47 @@
 - (void) webViewDidFinishLoad:(UIWebView *)webView
 {
     NSString *currentURL = webView.request.URL.absoluteString;
-    //NSLog(@"URL is: %@", currentURL);
     if ([currentURL rangeOfString:@"preview"].location == NSNotFound) {
-        //NSLog(@"URL is not a preview");
     } else {
-        //NSLog(@"URL is a preview");
         [webView stringByEvaluatingJavaScriptFromString:@"document.getElementsByTagName(\"input\")[1].click()"];
     }
 }
 
+- (void) productViewControllerDidFinish:(SKStoreProductViewController *)viewController
+{
+    [offerView afterMessage];
+    [self dismissViewControllerAnimated:NO completion:^{
+        [offerView show];
+    }];
+}
+
 - (BOOL) webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
-    //NSLog(@"%@", [request.URL absoluteString]); 
     NSError *error = NULL;
-
     NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"itunes.apple.com" options:NSRegularExpressionCaseInsensitive error:&error];
-    
-    
-    if (error)
-    {
-        //NSLog(@"Couldn't create regex with given string and options");
-    }
-    
     NSUInteger regexNums = [regex numberOfMatchesInString:[[request URL] absoluteString] options:0 range:NSMakeRange(0, [[[request URL] absoluteString] length])];
-//    NSLog(@"request: %@", [request URL]);
+    
+    
     if(regexNums > 0){
-        [sponsorClicked close];
+        [offerView afterMessage];
+//        NSRegularExpression *regex2 = [NSRegularExpression regularExpressionWithPattern:@"([0-9]{1,9})" options:NSRegularExpressionCaseInsensitive error:&error];
+//        NSTextCheckingResult *matches = [regex2 firstMatchInString:request.URL.absoluteString options:0 range:NSMakeRange(0, [request.URL.absoluteString length])];
+//        NSString *storeID = [request.URL.absoluteString substringWithRange:[matches rangeAtIndex:0]];
+//        NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:[NSNumber numberWithInt:[storeID intValue]], SKStoreProductParameterITunesItemIdentifier, nil];
+//        SKStoreProductViewController *store = [[SKStoreProductViewController alloc] init];
+//        store.delegate = self;
+//        [offerView.progress setProgress:1.0f];
+//        [store loadProductWithParameters:params completionBlock:^(BOOL result, NSError *error) {
+//            if(error){}
+//        }];
+//        
+//        [self presentViewController:store animated:YES completion:^{
+//            [offerView pause];
+//        }];
+//        return NO;
     }
     redirects++;
-    [_progress setProgress:redirects*0.1];
+    [offerView.progress setProgress:redirects*0.1];
     return YES;
 }
 

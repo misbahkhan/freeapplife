@@ -18,16 +18,20 @@
 @property (nonatomic, strong) UILabel *referrals; 
 @property (nonatomic, strong) NSString *notificationName;
 @property (nonatomic, strong) NSString *sponsorPayHelp;
+@property (nonatomic, strong) NSString *aarkiHelp;
 @property (nonatomic, strong) NSString *appURL;
-@property (nonatomic, strong) NSData *token;
+@property (nonatomic, strong) NSData *deviceToken;
+//@property (nonatomic, strong) NSData *token;
+
+
 
 + (id)sharedInstance;
 
 - (void) user;
 - (void) clear; 
 - (void) refer:(NSString *)person;
-- (void) stuff;
-- (void) tweet:(NSString *)message; 
+- (void) tweet:(NSString *)message;
+- (void) token; 
 - (UILabel *) getPoints;
 - (NSString *) currentPoints;
 - (NSString *) giveaway; 

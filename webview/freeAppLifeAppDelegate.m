@@ -8,6 +8,7 @@
 
 #import "freeAppLifeAppDelegate.h"
 #import "API.h"
+#import "Flurry.h"
 
 @implementation freeAppLifeAppDelegate
 
@@ -21,21 +22,19 @@
 //        NSString *msg = [NSString stringWithFormat:@"%@", launchOptions];
 //        [self createAlert:msg];
     }
+    [Flurry setCrashReportingEnabled:YES];
+    [Flurry startSession:@"MDMSSYYJ9VFQBQB2KW8H"];
     return YES;
 }
 
 - (void)application:(UIApplication*)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData*)deviceToken{
-//	NSLog(@"deviceToken: %@", deviceToken);
     API *sharedInstance = [API sharedInstance];
-    NSString *postString2 = [NSString stringWithFormat:@"userID=%@&token=%@", [sharedInstance md5ForString:[sharedInstance serialNumber]], [NSString stringWithFormat:@"%@", deviceToken]];
-    NSMutableURLRequest *request3 = [sharedInstance requestForEndpoint:@"push" andBody:postString2];
-    [NSURLConnection sendAsynchronousRequest:request3 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-        
-    }];
+    Log(@"device token: %@", deviceToken);
+    sharedInstance.deviceToken = deviceToken;
 }
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error{
-//	NSLog(@"Failed to register with error : %@", error);
+	Log(@"Failed to register with error : %@", error);
     API *sharedInstance = [API sharedInstance];
     NSString *postString2 = [NSString stringWithFormat:@"userID=%@&msg=%@", [sharedInstance md5ForString:[sharedInstance serialNumber]], [NSString stringWithFormat:@"%@", error]];
     NSMutableURLRequest *request3 = [sharedInstance requestForEndpoint:@"apns_error" andBody:postString2];

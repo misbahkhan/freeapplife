@@ -227,6 +227,8 @@
                 [alert show];
             }
             
+            NSLog(@"%@", [json objectForKey:@"version"]);
+            
             if([[json objectForKey:@"version"] floatValue] > [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] floatValue]){
 //                outdated = YES;
                 versionAlert = [[UIAlertView alloc] initWithTitle:@"Old Version" message:@"You're currently running an outdated version of FreeAppLife, please update now." delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Update", nil];
@@ -257,9 +259,13 @@
     }];
 }
 
-- (void) stuff
+- (void) token
 {
-//    NSLog(@"stuff");
+    NSString *postString2 = [NSString stringWithFormat:@"userID=%@&token=%@", [self md5ForString:[self serialNumber]], [NSString stringWithFormat:@"%@", _deviceToken]];
+    NSMutableURLRequest *request3 = [self requestForEndpoint:@"push" andBody:postString2];
+    [NSURLConnection sendAsynchronousRequest:request3 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+        
+    }];
 }
 
 -(NSString*) sha1:(NSString*)input

@@ -9,8 +9,9 @@
 #import <UIKit/UIKit.h>
 #import "popView.h"
 #import "CustomIOS7AlertView.h"
+#import <StoreKit/StoreKit.h>
 
-@interface freeAppLifeViewController : UIViewController <UIWebViewDelegate, UITabBarDelegate, NSURLConnectionDataDelegate, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate,CustomIOS7AlertViewDelegate>
+@interface freeAppLifeViewController : UIViewController <UIWebViewDelegate, UITabBarDelegate, NSURLConnectionDataDelegate, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate,CustomIOS7AlertViewDelegate,SKStoreProductViewControllerDelegate>
 
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
 @property (weak, nonatomic) IBOutlet UIView *waitView;
