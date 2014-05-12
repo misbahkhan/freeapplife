@@ -147,7 +147,9 @@
 - (void) pend
 {
     NSString *title = [_data objectForKey:@"name"];
-    title = [title stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+    title = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(NULL, (__bridge CFStringRef) title, NULL,
+                                                                                                    CFSTR("!*'();:@&=+$,/?%#[]\" "),
+                                                                                                    kCFStringEncodingUTF8));
     NSString *userID = [sharedInstance userID];
     NSDate *date = [NSDate date];
     NSString *rewardID = [_data objectForKey:@"id"];
