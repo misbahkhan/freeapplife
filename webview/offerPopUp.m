@@ -163,7 +163,6 @@
     NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"pending" andBody:postString];
     NSError *error;
     [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
-    
 }
 
 - (void) startLoad

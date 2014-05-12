@@ -481,27 +481,8 @@
     
     
     if(regexNums > 0){
-//        if([[[UIDevice currentDevice] systemVersion] floatValue] >= 7.1f){
-//            [offerView afterMessage];
-//            return YES;
-//        }else{
-            NSRegularExpression *regex2 = [NSRegularExpression regularExpressionWithPattern:@"([0-9]{9}?)" options:NSRegularExpressionCaseInsensitive error:&error];
-            NSTextCheckingResult *matches = [regex2 firstMatchInString:request.URL.absoluteString options:0 range:NSMakeRange(0, [request.URL.absoluteString length])];
-            NSString *storeID = [request.URL.absoluteString substringWithRange:[matches rangeAtIndex:0]];
-            NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:[NSNumber numberWithInt:[storeID intValue]], SKStoreProductParameterITunesItemIdentifier, nil];
-            SKStoreProductViewController *store = [[SKStoreProductViewController alloc] init];
-            store.delegate = self;
-            [offerView.progress setProgress:1.0f];
-            [store loadProductWithParameters:params completionBlock:^(BOOL result, NSError *error) {
-                if(error){
-                    Log(@"%@", error);
-                }
-                [self presentViewController:store animated:YES completion:^{
-                    [offerView pause];
-                }];
-            }];
-            return NO;
-//        }
+        [offerView afterMessage];
+        return YES;
     }
     redirects++;
     [offerView.progress setProgress:redirects*0.1];

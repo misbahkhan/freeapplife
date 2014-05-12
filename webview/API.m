@@ -370,9 +370,7 @@
     if(postString != nil){
         [request setHTTPBody:[postString dataUsingEncoding:NSUTF8StringEncoding]];
     }
-    
     return request;
-    
 }
 
 
