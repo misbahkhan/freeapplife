@@ -147,6 +147,7 @@
 - (void) pend
 {
     NSString *title = [_data objectForKey:@"name"];
+    title = [title stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *userID = [sharedInstance userID];
     NSDate *date = [NSDate date];
     NSString *rewardID = [_data objectForKey:@"id"];
@@ -160,6 +161,7 @@
     NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"pending" andBody:postString];
     NSError *error;
     [NSURLConnection sendSynchronousRequest:request returningResponse:nil error:&error];
+    
 }
 
 - (void) startLoad
