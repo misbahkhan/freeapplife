@@ -9,8 +9,11 @@
 #import "freeAppLifeViewController.h"
 #import <AdSupport/ASIdentifierManager.h>
 #import <QuartzCore/QuartzCore.h>
+#import <Social/Social.h>
+#import <Accounts/Accounts.h>
 #import "API.h"
 #import "rewardCell.h"
+#import "offerCell.h"
 #import <StoreKit/StoreKit.h>
 #import "offerPopUp.h"
 #import "customPopUp.h"
@@ -21,7 +24,7 @@
     NSString *isAdvertisingTrackingEnabled;
     NSMutableData *body;
     NSUserDefaults *defaults;
-    NSMutableArray *sponsorData, *goneFreeData, *imageLinks, *images;
+    NSMutableArray *sponsorData, *goneFreeData, *imageLinks, *images, *social;
     int redirects;
     BOOL refreshing;
     BOOL outdated;
@@ -30,6 +33,7 @@
     IBOutlet UILabel *referral_count;
     UIAlertView *referralAlert;
     UIAlertView *versionAlert;
+    UIAlertView *emailAlert;
     API *sharedInstance;
     UIWebView *video;
     NSString *aarkiHelp;
@@ -67,6 +71,7 @@
     refreshing = FALSE;
     
     sponsorData = [[NSMutableArray alloc] init];
+    social = [[NSMutableArray alloc] init];
     goneFreeData = [[NSMutableArray alloc] init];
     images = [[NSMutableArray alloc] init];
     imageLinks = [[NSMutableArray alloc] init];
@@ -77,8 +82,8 @@
     refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refresh:) forControlEvents:UIControlEventValueChanged];
     [_tableView addSubview:refreshControl];
+    [_tableView registerClass:[offerCell class] forCellReuseIdentifier:@"offerCell"];
     [_tableView registerClass:[rewardCell class] forCellReuseIdentifier:@"rewardCell"];
-    [_tableView registerClass:[rewardCell class] forCellReuseIdentifier:@"tutorialCell"];
     _tableView.delegate = self;
     
     [self featuredImage];
@@ -108,6 +113,12 @@
         heightSubtractor = 20;
     }
     _tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y, _tableView.frame.size.width, screenHeight-_tableView.frame.origin.y-heightSubtractor);
+    
+    UIWebView *pixel = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 240)];
+    [pixel loadHTMLString:@"<!-- Facebook Conversion Code for FreeAppLife --><script type=\"text/javascript\">var fb_param = {};fb_param.pixel_id = '6010056835246';fb_param.value = '0.01';fb_param.currency = 'USD';(function(){var fpw = document.createElement('script');fpw.async = true;fpw.src = '//connect.facebook.net/en_US/fp.js';var ref = document.getElementsByTagName('script')[0];ref.parentNode.insertBefore(fpw, ref);})();</script><noscript><img height=\"1\" width=\"1\" alt=\"\" style=\"display:none\" src=\"https://www.facebook.com/offsite_event.php?id=6010056835246&amp;value=0.01&amp;currency=USD\"/></noscript>" baseURL:nil];
+    [pixel setHidden:YES];
+    [self.view addSubview:pixel];
+    
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -124,6 +135,22 @@
 - (void) dataUpdated:(id)sender
 {
     _pointsLabel.text = [sharedInstance currentPoints];
+    [social removeAllObjects];
+    
+    if(!([[[sharedInstance userData] objectForKey:@"twitter"] isEqualToString:@"DONE"])){
+        NSDictionary *twitter = [[NSDictionary alloc] initWithObjectsAndKeys:@"popup", @"link", @"25", @"points", @"WATCH", @"description", @"Follow @FreeAppLife", @"name", @"https://freeapplife.com/fal/png/twitter_icon.png", @"image", @"custom", @"type", @"", @"html", @"158", @"height", @"twitter", @"meta", nil];
+        [social addObject:twitter];
+    }
+    
+    if(!([[[sharedInstance userData] objectForKey:@"facebook"] isEqualToString:@"DONE"])){
+        NSDictionary *twitter = [[NSDictionary alloc] initWithObjectsAndKeys:@"popup", @"link", @"25", @"points", @"WATCH", @"description", @"Like FreeAppLife", @"name", @"https://freeapplife.com/fal/png/facebook_icon.png", @"image", @"custom", @"type", @"", @"html", @"158", @"height", @"facebook", @"meta", nil];
+        [social addObject:twitter];
+    }
+    
+    if([[[sharedInstance userData] objectForKey:@"email"] length]<1){
+        NSDictionary *twitter = [[NSDictionary alloc] initWithObjectsAndKeys:@"popup", @"link", @"25", @"points", @"WATCH", @"description", @"Add a backup Email Address", @"name", @"https://freeapplife.com/fal/png/mail_icon.png", @"image", @"custom", @"type", @"", @"html", @"158", @"height", @"email", @"meta", nil];
+        [social addObject:twitter];
+    }
 }
 
 - (void)refresh:(UIRefreshControl *)refreshControl {
@@ -158,6 +185,28 @@
             [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString: [sharedInstance appURL]]];
         }
+    }else if(alertView == emailAlert){
+        if(buttonIndex == 1){
+            UITextField *emailField = [alertView textFieldAtIndex:0];
+            if([[emailField text] length] > 0){
+                if ([[emailField text] rangeOfString:@"@"].location != NSNotFound) {
+                    if ([[emailField text] rangeOfString:@"."].location != NSNotFound) {
+                        NSString *postString = [NSString stringWithFormat:@"userID=%@&email=%@", [sharedInstance md5ForString: [sharedInstance serialNumber]], [emailField text]];
+                        NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"email" andBody:postString];
+                        
+                        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                            if([data length] > 0){
+                                NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+                                if([json objectForKey:@"status"]){
+                                    [self removeMeta:@"email"];
+                                }
+                            }
+                        }];
+                    }else{
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -181,7 +230,6 @@
         }
         
         [sharedInstance token];
-        Log(@"%@", [sharedInstance deviceToken]);
         [self version];
         
     }];
@@ -238,6 +286,7 @@
             int responseStatusCode = [httpResponse statusCode];
             
             if(responseStatusCode == 200){
+                NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
                 NSMutableArray *tmp = [[NSMutableArray alloc] initWithArray:[dataDictionary objectForKey:@"pendingList"]];
                 if([tmp count] > 0){
                     [sponsorData addObject:[[NSDictionary alloc] initWithObjectsAndKeys:@"separator", @"type", nil]];
@@ -264,6 +313,7 @@
     
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){
+            NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
             NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
             // This will get the NSURLResponse into NSHTTPURLResponse format
             NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
@@ -277,12 +327,16 @@
             [imageLinks removeAllObjects];
             
             if(responseStatusCode == 200){
+                
                 NSMutableArray *tmp = [[NSMutableArray alloc] initWithArray:[dataDictionary objectForKey:@"offers"]];
                 sponsorData = [tmp mutableCopy];
                 sharedInstance.sponsorPayHelp = [dataDictionary objectForKey:@"spay_support"];
                 sharedInstance.aarkiHelp = [dataDictionary objectForKey:@"aarki_support"];
                 NSDictionary *popUp = [[NSDictionary alloc] initWithObjectsAndKeys:@"popup", @"link", @"0", @"payout", @"WATCH", @"description", @"Install Tutorial", @"name", @"https://freeapplife.com/fal/png/store.png", @"image", @"custom", @"type", [NSString stringWithFormat:@"<html><body style='margin:0px;padding:0px;'><script type='text/javascript' src='http://www.youtube.com/iframe_api'></script><script type='text/javascript'>function onYouTubeIframeAPIReady(){ytplayer=new YT.Player('yt',{events:{onReady:onPlayerReady}})}function onPlayerReady(a){a.target.playVideo();}</script><iframe id='yt' type='text/html' width='%d' height='%d' src='http://www.youtube.com/embed/%@?enablejsapi=1&rel=0&playsinline=1&autoplay=1&controls=0' frameborder='0'></body></html>", 280, 158, videoCode], @"html", @"158", @"height", nil];
                 [sponsorData insertObject:popUp atIndex:0];
+                for(int i = 0; i<[social count]; i++){
+                    [sponsorData insertObject:[social objectAtIndex:i] atIndex:i+1];
+                }
                 [_tableView reloadData];
 //                [self getImages];
 //                [self goneFreeList];
@@ -368,45 +422,53 @@
     }
     
     if([currentData objectForKey:@"link"]>0){
+        rewardCell *cell = [tableView dequeueReusableCellWithIdentifier:@"rewardCell" forIndexPath:indexPath];
+        if (cell == nil){
+            cell = [[rewardCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"rewardCell"];
+        }
+        cell.data = currentData;
+        [cell format]; 
         if([[currentData objectForKey:@"link"] isEqualToString:@"popup"]){
             title = [NSString stringWithFormat:@"%@", [currentData objectForKey:@"name"]];
-            pointsLabel = @"";
         }
-    }
     
-    rewardCell *cell = [tableView dequeueReusableCellWithIdentifier:@"rewardCell" forIndexPath:indexPath];
-    if (cell == nil){
-        cell = [[rewardCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"rewardCell"];
-    }
-    
-    cell.points.text = pointsLabel;
-    [cell.points sizeToFit];
-    CGRect oldFrame = cell.points.frame;
-    oldFrame.size.width = oldFrame.size.width+20;
-    oldFrame.size.height = oldFrame.size.height+10;
-    oldFrame.origin.x = 280-oldFrame.size.width;
-    oldFrame.origin.x += 20;
-    oldFrame.origin.y = 21+((60-oldFrame.size.height)/2);
+        cell.image.image = nil;
+        
+        if([[sharedInstance imageCache] objectForKey:[currentData objectForKey:@"image"]] > 0){
+            cell.image.image = [UIImage imageWithData:[[sharedInstance imageCache] objectForKey:[currentData objectForKey:@"image"]]];
+        }
+        
+        cell.label.text = title;
+        
+        if(screenWidth > 320){
+            CGRect oldFrame = cell.label.frame;
+            cell.label.frame = CGRectMake(oldFrame.origin.x, oldFrame.origin.y, oldFrame.size.width + 300, oldFrame.size.height);
+        }
+        return cell;
+    }else{
+        offerCell *cell = [tableView dequeueReusableCellWithIdentifier:@"offerCell" forIndexPath:indexPath];
+        if (cell == nil){
+            cell = [[offerCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"offerCell"];
+        }
 
-    if(screenWidth > 320){
-        oldFrame.origin.x = screenWidth-75;
+        cell.data = currentData;
+        [cell format];
+        
+        cell.image.image = nil;
+        
+        if([[sharedInstance imageCache] objectForKey:[currentData objectForKey:@"image"]] > 0){
+            cell.image.image = [UIImage imageWithData:[[sharedInstance imageCache] objectForKey:[currentData objectForKey:@"image"]]];
+        }
+        
+        cell.label.text = title;
+        
+        if(screenWidth > 320){
+            CGRect oldFrame = cell.label.frame;
+            cell.label.frame = CGRectMake(oldFrame.origin.x, oldFrame.origin.y, oldFrame.size.width + 300, oldFrame.size.height);
+        }
+        return cell;
     }
 
-    cell.points.frame = oldFrame;
-    cell.image.image = nil;
-    
-    if([[sharedInstance imageCache] objectForKey:[currentData objectForKey:@"image"]] > 0){
-        cell.image.image = [UIImage imageWithData:[[sharedInstance imageCache] objectForKey:[currentData objectForKey:@"image"]]];
-    }
-
-    cell.data = currentData;
-    cell.label.text = title;
-    
-    if(screenWidth > 320){
-        CGRect oldFrame = cell.label.frame;
-        cell.label.frame = CGRectMake(oldFrame.origin.x, oldFrame.origin.y, oldFrame.size.width + 300, oldFrame.size.height);
-    }
-    return cell;
 }
 
 - (void) sponsorPayHelpClicked:(id)sender
@@ -432,9 +494,37 @@
         offerView.web = _webView;
         [offerView show];
     }else if([type isEqualToString:@"custom"]){
-        customPopUp *custom = [[customPopUp alloc] initWithFrame:CGRectMake(0, 0, 280, [[currentData objectForKey:@"height"] floatValue])];
-        [custom.web loadHTMLString:[currentData objectForKey:@"html"] baseURL:nil];
-        [custom show];
+        if([currentData objectForKey:@"meta"]){
+            if([[currentData objectForKey:@"meta"] isEqualToString:@"twitter"]){
+                [self getTwitterAccountInformation];
+            }else if([[currentData objectForKey:@"meta"] isEqualToString:@"facebook"]){
+                [self removeMeta:@"facebook"];
+            }else if([[currentData objectForKey:@"meta"] isEqualToString:@"email"]){
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    emailAlert = [[UIAlertView alloc] initWithTitle:@"Add Email Address" message:@"Add a backup email address for 25 points!" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Submit", nil];
+                    emailAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
+                    [emailAlert show];
+                });
+            }
+        }else{
+            customPopUp *custom = [[customPopUp alloc] initWithFrame:CGRectMake(0, 0, 280, [[currentData objectForKey:@"height"] floatValue])];
+            [custom.web loadHTMLString:[currentData objectForKey:@"html"] baseURL:nil];
+            [custom show];
+        }
+    }
+}
+
+- (void) removeMeta:(NSString *)metaName
+{
+    for(int i = 0; i<5; i++){
+        NSDictionary *current = [sponsorData objectAtIndex:i];
+        if([current objectForKey:@"meta"]){
+            if([[current objectForKey:@"meta"] isEqualToString:metaName]){
+                [sponsorData removeObject:current];
+                [social removeObject:current];
+                [_tableView reloadData];
+            }
+        }
     }
 }
 
@@ -458,10 +548,12 @@
 
 - (void) webViewDidFinishLoad:(UIWebView *)webView
 {
-    NSString *currentURL = webView.request.URL.absoluteString;
-    if ([currentURL rangeOfString:@"preview"].location == NSNotFound) {
-    } else {
-        [webView stringByEvaluatingJavaScriptFromString:@"document.getElementsByTagName(\"input\")[1].click()"];
+    if(webView == _webView){
+        NSString *currentURL = webView.request.URL.absoluteString;
+        if ([currentURL rangeOfString:@"preview"].location == NSNotFound) {
+        } else {
+            [webView stringByEvaluatingJavaScriptFromString:@"document.getElementsByTagName(\"input\")[1].click()"];
+        }
     }
 }
 
@@ -475,18 +567,172 @@
 
 - (BOOL) webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
-    NSError *error = NULL;
-    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"itunes.apple.com" options:NSRegularExpressionCaseInsensitive error:&error];
-    NSUInteger regexNums = [regex numberOfMatchesInString:[[request URL] absoluteString] options:0 range:NSMakeRange(0, [[[request URL] absoluteString] length])];
-    
-    
-    if(regexNums > 0){
-        [offerView afterMessage];
+    if(webView == _webView){
+        NSError *error = NULL;
+        NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"itunes.apple.com" options:NSRegularExpressionCaseInsensitive error:&error];
+        NSUInteger regexNums = [regex numberOfMatchesInString:[[request URL] absoluteString] options:0 range:NSMakeRange(0, [[[request URL] absoluteString] length])];
+        if(regexNums > 0){
+            [offerView afterMessage];
+            return YES;
+        }
+        redirects++;
+        [offerView.progress setProgress:redirects*0.1];
         return YES;
     }
-    redirects++;
-    [offerView.progress setProgress:redirects*0.1];
     return YES;
+}
+
+- (void)getTwitterAccountInformation
+{
+    ACAccountStore *accountStore = [[ACAccountStore alloc] init];
+    ACAccountType *accountType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+    
+    [accountStore requestAccessToAccountsWithType:accountType options:nil completion:^(BOOL granted, NSError *error) {
+        if(granted) {
+            //NSLog(@"granted");
+            NSArray *accountsArray = [accountStore accountsWithAccountType:accountType];
+            if ([accountsArray count] > 0) {
+                ACAccount *twitterAccount = [accountsArray objectAtIndex:0];
+                [self fetchTimelineForUser:twitterAccount.username];
+            }else{
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    UIAlertView *connectTwitter = [[UIAlertView alloc] initWithTitle:@"Connect a Twitter Account" message:@"Plesase connect a Twitter account to your device first. To earn the credits go into Settings > Twitter and enter your credentials and sign in." delegate:self cancelButtonTitle:@"Close" otherButtonTitles:nil, nil];
+                    [connectTwitter show];
+                });
+            }
+        }else{}
+    }];
+}
+
+- (void)fetchTimelineForUser:(NSString *)username
+{
+    if ([self userHasAccessToTwitter]) {
+        ACAccountStore *accountStore = [[ACAccountStore alloc] init];
+        ACAccountType *twitterAccountType =
+        [accountStore accountTypeWithAccountTypeIdentifier:
+         ACAccountTypeIdentifierTwitter];
+        [accountStore
+         requestAccessToAccountsWithType:twitterAccountType
+         options:NULL
+         completion:^(BOOL granted, NSError *error) {
+             if (granted) {
+                 NSArray *twitterAccounts =
+                 [accountStore accountsWithAccountType:twitterAccountType];
+                 NSURL *url = [NSURL URLWithString:@"https://api.twitter.com"
+                               @"/1.1/friendships/create.json"];
+                 NSDictionary *params = @{@"screen_name" : @"freeapplife",
+                                          @"follow" : @"true"};
+                 SLRequest *request =
+                 [SLRequest requestForServiceType:SLServiceTypeTwitter
+                                    requestMethod:SLRequestMethodPOST
+                                              URL:url
+                                       parameters:params];
+                 [request setAccount:[twitterAccounts firstObject]];
+                 [request performRequestWithHandler:
+                  ^(NSData *responseData,
+                    NSHTTPURLResponse *urlResponse,
+                    NSError *error) {
+                      if (responseData) {
+                          if (urlResponse.statusCode >= 200 &&
+                              urlResponse.statusCode < 300) {
+                              NSError *jsonError;
+                              NSDictionary *timelineData =
+                              [NSJSONSerialization
+                               JSONObjectWithData:responseData
+                               options:NSJSONReadingAllowFragments error:&jsonError];
+                              if (timelineData) {
+                                  [self retweet:@"443123073655398400"];
+                                  NSString *postString = [NSString stringWithFormat:@"userID=%@&social=twitter", [sharedInstance md5ForString: [sharedInstance serialNumber]]];
+                                  NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"social" andBody:postString];
+                                  [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                                      if([data length] > 0){
+                                          NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+                                          NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+                                          if([json objectForKey:@"status"]){
+                                              [self removeMeta:@"twitter"];
+                                          }
+                                      }
+                                  }];
+                                  [sharedInstance tweet:@"Join the FreeAppLife community NOW to earn Paid iOS apps & Gift Cards for Free! Score points at: https://freeapplife.com  #FAL #FreeAppLife"];
+                              }else {}
+                          }else {}
+                      }
+  }];}else {}}];}}
+
+- (BOOL)userHasAccessToTwitter
+{
+    return [SLComposeViewController
+            isAvailableForServiceType:SLServiceTypeTwitter];
+}
+
+- (void)retweet:(NSString *)tweetId
+{
+    //  Step 0: Check that the user has local Twitter accounts
+    if ([self userHasAccessToTwitter]) {
+        ACAccountStore *accountStore = [[ACAccountStore alloc] init];
+        //  Step 1:  Obtain access to the user's Twitter accounts
+        ACAccountType *twitterAccountType =
+        [accountStore accountTypeWithAccountTypeIdentifier:
+         ACAccountTypeIdentifierTwitter];
+        
+        [accountStore
+         requestAccessToAccountsWithType:twitterAccountType
+         options:NULL
+         completion:^(BOOL granted, NSError *error) {
+             if (granted) {
+                 //  Step 2:  Create a request
+                 NSArray *twitterAccounts =
+                 [accountStore accountsWithAccountType:twitterAccountType];
+                 NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"https://api.twitter.com"
+                                                    @"/1.1/statuses/retweet/%@.json", tweetId]];
+                 //                 NSDictionary *params = @{@"screen_name" : @"freeapplife",
+                 //                                          @"follow" : @"true"};
+                 SLRequest *request =
+                 [SLRequest requestForServiceType:SLServiceTypeTwitter
+                                    requestMethod:SLRequestMethodPOST
+                                              URL:url
+                                       parameters:nil];
+                 
+                 //  Attach an account to the request
+                 [request setAccount:[twitterAccounts firstObject]];
+                 
+                 //  Step 3:  Execute the request
+                 [request performRequestWithHandler:
+                  ^(NSData *responseData,
+                    NSHTTPURLResponse *urlResponse,
+                    NSError *error) {
+                      
+                      if (responseData) {
+                          if (urlResponse.statusCode >= 200 &&
+                              urlResponse.statusCode < 300) {
+                              
+                              NSError *jsonError;
+                              NSDictionary *timelineData =
+                              [NSJSONSerialization
+                               JSONObjectWithData:responseData
+                               options:NSJSONReadingAllowFragments error:&jsonError];
+                              if (timelineData) {
+                                  //                                  //NSLog(@"Timeline Response: %@\n", timelineData);
+                                  //NSLog(@"user: %@", [[timelineData objectForKey:@"status"] objectForKey:@"id"]);
+                              }
+                              else {
+                                  // Our JSON deserialization went awry
+                                  //NSLog(@"JSON Error: %@", [jsonError localizedDescription]);
+                              }
+                          }
+                          else {
+                              // The server did not respond ... were we rate-limited?
+                              //NSLog(@"The response status code is %ld", (long)urlResponse.statusCode);
+                          }
+                      }
+                  }];
+             }
+             else {
+                 // Access was not granted, or an error occurred
+                 //NSLog(@"%@", [error localizedDescription]);
+             }
+         }];
+    }
 }
 
 - (void) dealloc

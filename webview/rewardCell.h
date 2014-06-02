@@ -16,4 +16,6 @@
 @property (nonatomic, strong) UILabel *points;
 @property (nonatomic, strong) NSDictionary *data;
 
+- (void) format; 
+
 @end

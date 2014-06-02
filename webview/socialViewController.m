@@ -11,9 +11,10 @@
 #import <FacebookSDK/FacebookSDK.h>
 #import <Social/Social.h>
 #import <Accounts/Accounts.h>
+#import <MessageUI/MessageUI.h>
 #import "CustomIOS7AlertView.h"
 
-@interface socialViewController (){
+@interface socialViewController () {
     IBOutlet UITextField *email;
     IBOutlet UITextField *code;
     UIWebView *web;
@@ -34,6 +35,13 @@
     IBOutlet UIButton *goButton;
     IBOutlet UILabel *entries;
     IBOutlet UIImageView *giveaway_image;
+    MFMessageComposeViewController *message;
+    MFMailComposeViewController *emailview;
+    SLComposeViewController *socialcompose;
+    IBOutlet UIButton *emailButton;
+    IBOutlet UIButton *smsButton;
+    IBOutlet UIButton *tweetButton;
+    IBOutlet UIButton *fbButton;
 }
 
 @end
@@ -106,12 +114,70 @@
     loggedIn = FALSE;
     redirectedToPage = FALSE;
     liked = FALSE;
-    //    [self sendRequest];
+}
+
+- (void) messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result
+{
+    [message dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void) mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    [emailview dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (IBAction)sms:(id)sender {
+    if([MFMessageComposeViewController canSendText]){
+        message = [[MFMessageComposeViewController alloc] init];
+        message.messageComposeDelegate = self;
+        [message setBody:@"Download FreeAppLife NOW!"];
+        [self presentViewController:message animated:YES completion:nil];
+    }else{
+        UIAlertView *smsError = [[UIAlertView alloc] initWithTitle:@"iMessage Unavailable" message:@"Please set up iMessage on your device." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+        [smsError show];
+    }
+}
+
+- (IBAction)email:(id)sender {
+    if([MFMailComposeViewController canSendMail]){
+        emailview = [[MFMailComposeViewController alloc] init];
+        emailview.mailComposeDelegate = self;
+        [emailview setSubject:@"Get paid to try apps!"];
+        [emailview setMessageBody:@"Download FreeAppLifeNow!" isHTML:NO];
+        [self presentViewController:emailview animated:YES completion:nil];
+    }else{
+        UIAlertView *emailError = [[UIAlertView alloc] initWithTitle:@"Mail Unavailable" message:@"Please set up Mail on your device." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+        [emailError show];
+    }
+}
+
+- (IBAction)tweet:(id)sender {
+    if([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]){
+        socialcompose = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+        [socialcompose setInitialText:@"Download FreeAppLife Now!"];
+        [self presentViewController:socialcompose animated:YES completion:nil];
+    }else{
+        UIAlertView *twitterError = [[UIAlertView alloc] initWithTitle:@"Twitter Unavailable" message:@"Please connect a Twitter account to your device." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+        [twitterError show];
+    }
+}
+
+- (IBAction)status:(id)sender {
+    if([SLComposeViewController isAvailableForServiceType:SLServiceTypeFacebook]){
+        socialcompose = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeFacebook];
+        NSString *facebookMessage = [NSString stringWithFormat:@"Download FreeAppLife Now! Use referral code: %@", [[sharedInstance userData] objectForKey:@"referral_code"]];
+        [socialcompose setInitialText:facebookMessage];
+        [self presentViewController:socialcompose animated:YES completion:nil];
+    }else{
+        UIAlertView *facebookError = [[UIAlertView alloc] initWithTitle:@"Facebook Unavailable" message:@"Please connect a Facebook account to your device." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+        [facebookError show];
+    }
 }
 
 - (IBAction)aboutReferral:(id)sender {
     UIAlertView *referral = [[UIAlertView alloc] initWithTitle:@"Referral Code" message:@"Use your referral code to earn unlimited points by introducing your friends to FreeAppLife. Have them enter your code when prompted, during the signup process. Four Hundred points will be added to your account everytime someone you refer downloads sponsored applications and reaches 400 points." delegate:self cancelButtonTitle:@"Okay, Got It!" otherButtonTitles:nil, nil];
-    [referral show];
+//    [referral show];
+    [self sendRequest];
 }
 
 - (void)showEmail
@@ -182,75 +248,18 @@
         [self showEmail];
     }
 }
-//
-//- (void)loginViewShowingLoggedInUser:(FBLoginView *)loginView {
-//    //NSLog(@"logged in");
-//}
-//
-//- (void) loginViewShowingLoggedOutUser:(FBLoginView *)loginView
-//{
-//    FBLoginView *login = [[FBLoginView alloc] initWithPublishPermissions:@[@"publish_actions"] defaultAudience:FBSessionDefaultAudienceEveryone];
-//    login.delegate = self;
-//    CGRect loginFrame = loginView.frame;
-//    loginFrame.origin = CGPointMake(50, 350);
-//    login.frame = loginFrame;
-//    [self.view addSubview:login];
-//    //NSLog(@"logged out");
-//}
 
 - (IBAction)like:(id)sender {
-    //            [webAlert show];
-    // If the session state is any of the two "open" states when the button is clicked
-    //    if (FBSession.activeSession.state == FBSessionStateOpen
-    //        || FBSession.activeSession.state == FBSessionStateOpenTokenExtended) {
-    //        //NSLog(@"is opened");
-    //       [web loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.facebook.com/freeapplife"]]];
-    //        [webAlert show];
-    //    } else {
-    //        //NSLog(@"is closed");
-    //        FBSession *session = [[FBSession alloc] init];
-    // Set the active session
-    //        [FBSession setActiveSession:session];
-    // Open the session
-    //        [session openWithBehavior:FBSessionLoginBehaviorForcingWebView completionHandler:^(FBSession *session, FBSessionState status, NSError *error) {
-    //            if(error){
-    //                //NSLog(@"error");
-    //            }else{
-    //                //NSLog(@"works");
-    //                       [self checkLike];
-    //                if(loggedIn == TRUE){
-    //                    //NSLog(@"logged in");
-    //                }else{
-    //                    //NSLog(@"not logged in");
     [web loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.facebook.com"]]];
-    //                    [webAlert show];
-    //                }
-    //            }
-    //        }];
-    //    }
 }
 
 - (BOOL) webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
-    //    //NSLog(@"%@", request.URL);
-    //    NSString *url = [request.URL absoluteString];
-    //    NSError  *error  = NULL;
-    //    NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"home.php" options:0 error:&error];
-    //    NSRange range   = [regex rangeOfFirstMatchInString:url options:0 range:NSMakeRange(0, [url length])];
-    //    NSString *result = [url substringWithRange:range];
-    //
-    //    if ([result length]>0) {
-    //        loggedIn = TRUE;
-    //        [webAlert close];
-    //    }
     if(loggedIn == FALSE){
-        //NSLog(@"request: %@", [request URL]);
         NSError *error = NULL;
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"home.php" options:NSRegularExpressionCaseInsensitive error:&error];
         NSRegularExpression *regex2 = [NSRegularExpression regularExpressionWithPattern:@"s-static.ak" options:NSRegularExpressionCaseInsensitive error:&error];
-        if (error){
-//            NSLog(@"Couldn't create regex with given string and options");
-        }
+        if (error){}
         NSUInteger regexNums = [regex numberOfMatchesInString:[[request URL] absoluteString] options:0 range:NSMakeRange(0, [[[request URL] absoluteString] length])];
         NSUInteger regexNums2 = [regex2 numberOfMatchesInString:[[request URL] absoluteString] options:0 range:NSMakeRange(0, [[[request URL] absoluteString] length])];
         if(regexNums > 0 || regexNums2 > 0){
@@ -264,105 +273,29 @@
     return YES;
 }
 
+
 - (void) webViewDidFinishLoad:(UIWebView *)webView
 {
-    if (loggedIn == TRUE) {
-        //        //NSLog(@"logged in");
-    }else{
+    if (loggedIn != TRUE) {
         [webAlert show];
     }
     
     if(redirectedToPage == TRUE){
-        //NSLog(@"redirected");
         [webView
          stringByEvaluatingJavaScriptFromString:
          @"var isLiking = document.getElementsByClassName(\"_4g34\")[2].children[0].children[1].innerHTML; if(isLiking=='Like'){document.getElementsByClassName(\"_4g34\")[2].children[0].click()}"];
         NSString *postString = [NSString stringWithFormat:@"userID=%@&social=facebook", [sharedInstance md5ForString: [sharedInstance serialNumber]]];
-        //NSLog(@"%@", [sharedInstance md5ForString:[sharedInstance serialNumber]]);
         NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"social" andBody:postString];
-        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-            if([data length] > 0){
-                //NSLog(@"%@", response);
-                NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-                //NSLog(@"%@", strData);
-                NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-                if([json objectForKey:@"status"]){
-                    
-                }
-            }
-        }];
+        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error){}];
         liked = TRUE;
     }
     
-    if (liked == TRUE) {
-        //        //NSLog(@"liked");
-        //        [webView stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"header\").children[0].children[0].click()"];
-        //        [webView stringByEvaluatingJavaScriptFromString:@"document.getElementsByClassName(\"_5lut\")[1].click()"];
-        //        [webView stringByEvaluatingJavaScriptFromString:@"document.getElementsByClassName(\"statusBox\")[0].click()"];
-        //        [webView stringByEvaluatingJavaScriptFromString:@"document.getElementsByClassName(\"mentions\")[0].innerHTML = \"<textarea class=\"composerInput mentions-input\" rows=\"1\" placeholder=\"What\'s on your mind?\" aria-label=\"What\'s on your mind?\" data-store=\"{&quot;defaultvalue&quot;:&quot;&quot;}\" data-sigil=\"composer-textarea\" data-store-id=\"39\" id=\"uniqid_1\" data-autoid=\"autoid_30\"><\/textarea><input data-sigil=\" mentionsHiddenInput\" type=\"hidden\" name=\"status\" value=\"Join the FreeAppLife community NOW to earn Paid iOS apps & Gift Cards for Free! Score points now: http:\/\/getfal.co\/getfreeapplife\"><div class=\"mentions-shadow\" style=\"word-spacing: 0px; text-indent: 0px; padding: 6px; line-height: 20.719999313354492px; letter-spacing: normal; font-family: \'Helvetica Neue\', Helvetica, sans-serif; font-size: 14px;\">Join the FreeAppLife community NOW to earn Paid iOS apps & Gift Cards for Free! Score points now: http:\/\/getfal.co\/getfreeapplife<\/div><div class=\"mentions-measurer\" style=\"word-spacing: 0px; text-indent: 0px; padding: 6px; line-height: 20.719999313354492px; letter-spacing: normal; font-family: \'Helvetica Neue\', Helvetica, sans-serif; font-size: 14px;\">Join the FreeAppLife community NOW to earn Paid iOS apps & Gift Cards for Free! Score points now: http:\/\/getfal.co\/getfreeapplife<br><div><\/div><\/div>\""];
-        //        [webView stringByEvaluatingJavaScriptFromString:@"document.getElementById(\"static_templates\").children[0].children[4].children[0].children[0].children[0].children[0].children[2].children[0].click()"];
-    }
-    
-    //    if(connected == FALSE){
-    //NSLog(@"finished");
-    //        [webView stringByEvaluatingJavaScriptFromString:@"document.forms[0].submit()"];
-    //        connected = TRUE;
-    
-    //    }
+    if (liked == TRUE) {}
 }
 
 - (IBAction)copy:(id)sender {
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     pasteboard.string = [code text];
-}
-
-- (void) checkLike
-{
-    [FBRequestConnection startWithGraphPath:@"/me/likes/143275845838411" completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-        if (!error) {
-            // Success! Include your code to handle the results here
-            //NSLog(@"user info: %@", result);
-            if ([[result objectForKey:@"data"] count] < 1) {
-                
-                //                [web loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.facebook.com/plugins/like.php?href=https%3A%2F%2Fwww.facebook.com%2Ffreeapplife&width=200&layout=button&action=like&show_faces=false&share=false&height=35&appId=676776645708419"]]];
-            }else{
-                NSString *postString = [NSString stringWithFormat:@"userID=%@&social=facebook", [sharedInstance md5ForString: [sharedInstance serialNumber]]];
-                //NSLog(@"%@", [sharedInstance md5ForString:[sharedInstance serialNumber]]);
-                NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"social" andBody:postString];
-                
-                [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-                    if([data length] > 0){
-                        //NSLog(@"%@", response);
-                        NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-                        //NSLog(@"%@", strData);
-                        NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-                        if([json objectForKey:@"status"]){
-                            [self hideLike];
-                            NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                    @"Join the FreeAppLife community NOW to earn Paid iOS apps & Gift Cards for Free! Score points now: http://getfal.co/getfreeapplife", @"message",
-                                                    @"http://getfal.co/getfreeapplife", @"link",
-                                                    nil
-                                                    ];
-                            /* make the API call */
-                            [FBRequestConnection startWithGraphPath:@"/me/feed"
-                                                         parameters:params
-                                                         HTTPMethod:@"POST"
-                                                  completionHandler:^(
-                                                                      FBRequestConnection *connection,
-                                                                      id result,
-                                                                      NSError *error
-                                                                      ) {
-                                                      /* handle the result */
-                                                  }];
-                        }
-                    }
-                }];
-            }
-        } else {
-            // An error occurred, we need to handle the error
-            // See: https://developers.facebook.com/docs/ios/errors
-        }
-    }];
 }
 
 - (NSDictionary*)parseURLParams:(NSString *)query {

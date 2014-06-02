@@ -46,6 +46,30 @@
     return self;
 }
 
+- (void) format
+{
+    if([[self.data objectForKey:@"points"] intValue] > 0){
+        NSString *pointsLabel;
+        pointsLabel = [NSString stringWithFormat:@"+ %@", [self.data objectForKey:@"points"]];
+        self.points.text = pointsLabel;
+        [self.points sizeToFit];
+        CGRect oldFrame = self.points.frame;
+        oldFrame.size.width = oldFrame.size.width+20;
+        oldFrame.size.height = oldFrame.size.height+10;
+        oldFrame.origin.x = 280-oldFrame.size.width;
+        oldFrame.origin.x += 20;
+        oldFrame.origin.y = 21+((60-oldFrame.size.height)/2);
+        
+        CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
+        
+        if(screenWidth > 320){
+            oldFrame.origin.x = screenWidth-75;
+        }
+        
+        self.points.frame = oldFrame;
+    }
+}
+
         // Initialization code
 
 @end

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="kil-ib-KpY">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="kil-ib-KpY">
     <dependencies>
         <deployment defaultVersion="1536" identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
@@ -122,7 +122,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <imageView hidden="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="EmailLayer.png" id="g3m-2O-FlC">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="EmailLayer.png" id="g3m-2O-FlC">
                                 <rect key="frame" x="14" y="248" width="293" height="38"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
@@ -130,7 +130,7 @@
                                 <rect key="frame" x="14" y="44" width="293" height="89"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="BC2-sW-22Y">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="BC2-sW-22Y">
                                 <rect key="frame" x="14" y="355" width="293" height="38"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
@@ -141,7 +141,7 @@
                                     <action selector="like:" destination="VLK-Pe-G7l" eventType="touchUpInside" id="rdt-dE-byn"/>
                                 </connections>
                             </button>
-                            <button hidden="YES" opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="MfS-Jl-vNb">
+                            <button opaque="NO" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" id="MfS-Jl-vNb">
                                 <rect key="frame" x="14" y="355" width="293" height="38"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
@@ -160,7 +160,7 @@
                                     <action selector="copy:" destination="VLK-Pe-G7l" eventType="touchUpInside" id="Zsh-6t-hFB"/>
                                 </connections>
                             </button>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="0nO-Ka-Wm7">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="0nO-Ka-Wm7">
                                 <rect key="frame" x="14" y="301" width="293" height="38"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Connect Twitter" image="twitter.png">
@@ -170,7 +170,7 @@
                                     <action selector="fetch:" destination="VLK-Pe-G7l" eventType="touchUpInside" id="jmd-uC-CIb"/>
                                 </connections>
                             </button>
-                            <textField hidden="YES" opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Input Email Address" minimumFontSize="17" id="85I-NY-aeH">
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Input Email Address" minimumFontSize="17" id="85I-NY-aeH">
                                 <rect key="frame" x="54" y="248" width="206" height="38"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <nil key="textColor"/>
@@ -186,7 +186,7 @@
                                     <outlet property="delegate" destination="VLK-Pe-G7l" id="i4s-8s-md7"/>
                                 </connections>
                             </textField>
-                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Follow @FreeAppLife" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="OAy-SD-THl">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Follow @FreeAppLife" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="OAy-SD-THl">
                                 <rect key="frame" x="54" y="309" width="179" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
@@ -200,21 +200,14 @@
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Like FreeAppLife" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="soI-JL-d7P">
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Like FreeAppLife" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="soI-JL-d7P">
                                 <rect key="frame" x="54" y="363" width="179" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <label hidden="YES" opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Facebook Coming Soon" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="qtd-la-mq8">
-                                <rect key="frame" x="54" y="363" width="206" height="21"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                <nil key="highlightedColor"/>
-                            </label>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="ftt-w8-qXX">
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="ftt-w8-qXX">
                                 <rect key="frame" x="264" y="254" width="30" height="25"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -243,6 +236,46 @@
                                     <action selector="aboutReferral:" destination="VLK-Pe-G7l" eventType="touchUpInside" id="4Ef-2Y-uPs"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="j9A-Gw-eRp">
+                                <rect key="frame" x="90" y="392" width="140" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Text your friends.">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="sms:" destination="VLK-Pe-G7l" eventType="touchUpInside" id="HCw-LV-wPc"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="Oya-jX-Opv">
+                                <rect key="frame" x="93" y="416" width="134" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="E-Mail your friends.">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="email:" destination="VLK-Pe-G7l" eventType="touchUpInside" id="Bi8-ia-100"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="6av-eY-MUk">
+                                <rect key="frame" x="115" y="442" width="90" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Post a tweet!">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="tweet:" destination="VLK-Pe-G7l" eventType="touchUpInside" id="PkJ-3S-cWi"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="4Tl-5Y-xwB">
+                                <rect key="frame" x="115" y="470" width="96" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Post a status!">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="status:" destination="VLK-Pe-G7l" eventType="touchUpInside" id="2dj-Ea-YDD"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
@@ -251,12 +284,16 @@
                         <outlet property="code" destination="BRo-Pk-BF6" id="ilp-oG-rzd"/>
                         <outlet property="copy_code" destination="4RJ-Mq-wC6" id="w6w-ux-YPO"/>
                         <outlet property="email" destination="85I-NY-aeH" id="ZZZ-9E-NYQ"/>
+                        <outlet property="emailButton" destination="Oya-jX-Opv" id="df4-vV-bLI"/>
                         <outlet property="email_button" destination="g3m-2O-FlC" id="a7y-Vj-Gvi"/>
                         <outlet property="entries" destination="TrL-ch-iyc" id="vJp-wF-Mss"/>
+                        <outlet property="fbButton" destination="4Tl-5Y-xwB" id="TRA-BH-AAo"/>
                         <outlet property="giveaway_image" destination="UCm-Dw-hKZ" id="6Nv-Eq-d1b"/>
                         <outlet property="goButton" destination="ftt-w8-qXX" id="Y1a-BN-VJI"/>
                         <outlet property="like_button" destination="BC2-sW-22Y" id="rTJ-NH-UJJ"/>
                         <outlet property="like_label" destination="soI-JL-d7P" id="x9N-tL-JM4"/>
+                        <outlet property="smsButton" destination="j9A-Gw-eRp" id="aNx-ge-cLd"/>
+                        <outlet property="tweetButton" destination="6av-eY-MUk" id="q7y-vU-hWi"/>
                         <outlet property="tweet_button" destination="0nO-Ka-Wm7" id="fty-0X-bVh"/>
                         <outlet property="tweet_label" destination="OAy-SD-THl" id="jDs-vI-Nb8"/>
                     </connections>
