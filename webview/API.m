@@ -227,7 +227,7 @@
                 [alert show];
             }
             
-            NSLog(@"%@", [json objectForKey:@"version"]);
+//            NSLog(@"%@", [json objectForKey:@"version"]);
             
             if([[json objectForKey:@"version"] floatValue] > [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] floatValue]){
 //                outdated = YES;

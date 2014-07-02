@@ -67,6 +67,8 @@
         }
         
         self.points.frame = oldFrame;
+    }else{
+        self.points.text = @""; 
     }
 }
 

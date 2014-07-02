@@ -141,7 +141,7 @@
 
 - (void) getCategories
 {
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://freeapplife.com/api/rewardCategories?beta=true"]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://freeapplife.com/api/rewardCategories"]];
     [request setHTTPMethod:@"POST"];
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){

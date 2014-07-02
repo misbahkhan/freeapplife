@@ -32,7 +32,6 @@
 		31AE574F18D6E42C004F8D4C /* AppIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 31AE574D18D6E42C004F8D4C /* AppIcon.png */; };
 		31AE575018D6E42C004F8D4C /* AppIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 31AE574E18D6E42C004F8D4C /* AppIcon@2x.png */; };
 		31BF322918CE67FB0050AB5C /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D05D7E411897A522006593A9 /* FacebookSDK.framework */; };
-		D02DF3011939800F00B702F5 /* message.png in Resources */ = {isa = PBXBuildFile; fileRef = D02DF3001939800F00B702F5 /* message.png */; };
 		D030791A1909EA2F0058013B /* ps4.png in Resources */ = {isa = PBXBuildFile; fileRef = D03079191909EA2F0058013B /* ps4.png */; };
 		D03762AB18C1689000791FB7 /* checked2.png in Resources */ = {isa = PBXBuildFile; fileRef = D03762AA18C1689000791FB7 /* checked2.png */; };
 		D03762AD18C1694600791FB7 /* checked2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D03762AC18C1694600791FB7 /* checked2@2x.png */; };
@@ -45,7 +44,6 @@
 		D03762BD18C170BC00791FB7 /* EmailLayer.png in Resources */ = {isa = PBXBuildFile; fileRef = D03762BC18C170BC00791FB7 /* EmailLayer.png */; };
 		D03762CF18C173C000791FB7 /* ReferLayer.png in Resources */ = {isa = PBXBuildFile; fileRef = D03762CE18C173C000791FB7 /* ReferLayer.png */; };
 		D03762D218C1754600791FB7 /* socialViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D03762D118C1754600791FB7 /* socialViewController.m */; };
-		D03762D618C2DA0200791FB7 /* twitter22.png in Resources */ = {isa = PBXBuildFile; fileRef = D03762D518C2DA0200791FB7 /* twitter22.png */; };
 		D05278E618B94DB40065D401 /* API.m in Sources */ = {isa = PBXBuildFile; fileRef = D05278E518B94DB40065D401 /* API.m */; };
 		D05D7E451897A576006593A9 /* settingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D05D7E441897A576006593A9 /* settingsViewController.m */; };
 		D05D7E481897B65E006593A9 /* rewardCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D05D7E471897B65E006593A9 /* rewardCell.m */; };
@@ -65,13 +63,24 @@
 		D06AD78C19011E4300A742BF /* iphone 4040.png in Resources */ = {isa = PBXBuildFile; fileRef = D06AD78B19011E4300A742BF /* iphone 4040.png */; };
 		D06AD78E19011E6300A742BF /* iphone 5858.png in Resources */ = {isa = PBXBuildFile; fileRef = D06AD78D19011E6300A742BF /* iphone 5858.png */; };
 		D06AD790190202B800A742BF /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D06AD78F190202B800A742BF /* Default-568h@2x.png */; };
+		D073963A195A786000D3727C /* ReferLayer_inf.png in Resources */ = {isa = PBXBuildFile; fileRef = D0739639195A786000D3727C /* ReferLayer_inf.png */; };
+		D073963F195B631B00D3727C /* TapjoyResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D073963D195B631B00D3727C /* TapjoyResources.bundle */; };
+		D0739640195B631B00D3727C /* Tapjoy.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D073963E195B631B00D3727C /* Tapjoy.framework */; };
 		D0AD77C2191AF50300027597 /* close.png in Resources */ = {isa = PBXBuildFile; fileRef = D0AD77C0191AF50300027597 /* close.png */; };
 		D0AD77C3191AF50300027597 /* close@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D0AD77C1191AF50300027597 /* close@2x.png */; };
 		D0AD77C6191AFF7000027597 /* popUp.m in Sources */ = {isa = PBXBuildFile; fileRef = D0AD77C5191AFF7000027597 /* popUp.m */; };
-		D0C7530618CC691D00BDD9A6 /* twitter.png in Resources */ = {isa = PBXBuildFile; fileRef = D0C7530518CC691D00BDD9A6 /* twitter.png */; };
-		D0C7530818CC6AAA00BDD9A6 /* facebook.png in Resources */ = {isa = PBXBuildFile; fileRef = D0C7530718CC6AAA00BDD9A6 /* facebook.png */; };
 		D0C7530A18CC6B5300BDD9A6 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D0C7530918CC6B5300BDD9A6 /* Main_iPhone.storyboard */; };
 		D0CF33DC1918155E003708B9 /* cellView.m in Sources */ = {isa = PBXBuildFile; fileRef = D0CF33DB1918155E003708B9 /* cellView.m */; };
+		D0DA69C4193CA97B006544C1 /* invite.png in Resources */ = {isa = PBXBuildFile; fileRef = D0DA69C2193CA97B006544C1 /* invite.png */; };
+		D0DA69C5193CA97B006544C1 /* invite@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D0DA69C3193CA97B006544C1 /* invite@2x.png */; };
+		D0DA69C8193CAAC9006544C1 /* email.png in Resources */ = {isa = PBXBuildFile; fileRef = D0DA69C6193CAAC9006544C1 /* email.png */; };
+		D0DA69C9193CAAC9006544C1 /* email@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D0DA69C7193CAAC9006544C1 /* email@2x.png */; };
+		D0DA69CC193CAC6F006544C1 /* message.png in Resources */ = {isa = PBXBuildFile; fileRef = D0DA69CA193CAC6F006544C1 /* message.png */; };
+		D0DA69CD193CAC6F006544C1 /* message@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D0DA69CB193CAC6F006544C1 /* message@2x.png */; };
+		D0DA69D2193CAD5C006544C1 /* facebook.png in Resources */ = {isa = PBXBuildFile; fileRef = D0DA69CE193CAD5C006544C1 /* facebook.png */; };
+		D0DA69D3193CAD5C006544C1 /* facebook@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D0DA69CF193CAD5C006544C1 /* facebook@2x.png */; };
+		D0DA69D4193CAD5C006544C1 /* twitter.png in Resources */ = {isa = PBXBuildFile; fileRef = D0DA69D0193CAD5C006544C1 /* twitter.png */; };
+		D0DA69D5193CAD5C006544C1 /* twitter@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D0DA69D1193CAD5C006544C1 /* twitter@2x.png */; };
 		D0E0DA54191EED47008D98E2 /* rewardPopUp.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E0DA53191EED47008D98E2 /* rewardPopUp.m */; };
 		D0E0DA57191F101A008D98E2 /* offerPopUp.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E0DA56191F101A008D98E2 /* offerPopUp.m */; };
 		D0E0DA5A192015A6008D98E2 /* customPopUp.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E0DA59192015A6008D98E2 /* customPopUp.m */; };
@@ -127,7 +136,6 @@
 		31AE574D18D6E42C004F8D4C /* AppIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon.png; path = webview/AppIcon.png; sourceTree = "<group>"; };
 		31AE574E18D6E42C004F8D4C /* AppIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon@2x.png"; path = "webview/AppIcon@2x.png"; sourceTree = "<group>"; };
 		7768E45B9DF04A4085D82776 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		D02DF3001939800F00B702F5 /* message.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = message.png; path = ../icons/message.png; sourceTree = "<group>"; };
 		D02DF302193AADB500B702F5 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		D03079191909EA2F0058013B /* ps4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ps4.png; sourceTree = "<group>"; };
 		D03762AA18C1689000791FB7 /* checked2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checked2.png; sourceTree = "<group>"; };
@@ -142,7 +150,6 @@
 		D03762CE18C173C000791FB7 /* ReferLayer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ReferLayer.png; sourceTree = "<group>"; };
 		D03762D018C1754600791FB7 /* socialViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = socialViewController.h; sourceTree = "<group>"; };
 		D03762D118C1754600791FB7 /* socialViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = socialViewController.m; sourceTree = "<group>"; };
-		D03762D518C2DA0200791FB7 /* twitter22.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = twitter22.png; sourceTree = "<group>"; };
 		D05278E418B94DB40065D401 /* API.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = API.h; sourceTree = "<group>"; };
 		D05278E518B94DB40065D401 /* API.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = API.m; sourceTree = "<group>"; };
 		D05D7E411897A522006593A9 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = FacebookSDK.framework; sourceTree = "<group>"; };
@@ -168,15 +175,26 @@
 		D06AD78B19011E4300A742BF /* iphone 4040.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iphone 4040.png"; sourceTree = "<group>"; };
 		D06AD78D19011E6300A742BF /* iphone 5858.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "iphone 5858.png"; sourceTree = "<group>"; };
 		D06AD78F190202B800A742BF /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "webview/Default-568h@2x.png"; sourceTree = "<group>"; };
+		D0739639195A786000D3727C /* ReferLayer_inf.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ReferLayer_inf.png; sourceTree = "<group>"; };
+		D073963D195B631B00D3727C /* TapjoyResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = TapjoyResources.bundle; sourceTree = "<group>"; };
+		D073963E195B631B00D3727C /* Tapjoy.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Tapjoy.framework; sourceTree = "<group>"; };
 		D0AD77C0191AF50300027597 /* close.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = close.png; sourceTree = "<group>"; };
 		D0AD77C1191AF50300027597 /* close@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "close@2x.png"; sourceTree = "<group>"; };
 		D0AD77C4191AFF7000027597 /* popUp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = popUp.h; sourceTree = "<group>"; };
 		D0AD77C5191AFF7000027597 /* popUp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = popUp.m; sourceTree = "<group>"; };
-		D0C7530518CC691D00BDD9A6 /* twitter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = twitter.png; path = webview/twitter.png; sourceTree = "<group>"; };
-		D0C7530718CC6AAA00BDD9A6 /* facebook.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = facebook.png; path = webview/facebook.png; sourceTree = "<group>"; };
 		D0C7530918CC6B5300BDD9A6 /* Main_iPhone.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main_iPhone.storyboard; sourceTree = "<group>"; };
 		D0CF33DA1918155E003708B9 /* cellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cellView.h; sourceTree = "<group>"; };
 		D0CF33DB1918155E003708B9 /* cellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cellView.m; sourceTree = "<group>"; };
+		D0DA69C2193CA97B006544C1 /* invite.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = invite.png; path = ../icons/invite.png; sourceTree = "<group>"; };
+		D0DA69C3193CA97B006544C1 /* invite@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "invite@2x.png"; path = "../icons/invite@2x.png"; sourceTree = "<group>"; };
+		D0DA69C6193CAAC9006544C1 /* email.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = email.png; path = ../icons/email.png; sourceTree = "<group>"; };
+		D0DA69C7193CAAC9006544C1 /* email@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "email@2x.png"; path = "../icons/email@2x.png"; sourceTree = "<group>"; };
+		D0DA69CA193CAC6F006544C1 /* message.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = message.png; path = ../icons/message.png; sourceTree = "<group>"; };
+		D0DA69CB193CAC6F006544C1 /* message@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "message@2x.png"; path = "../icons/message@2x.png"; sourceTree = "<group>"; };
+		D0DA69CE193CAD5C006544C1 /* facebook.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = facebook.png; path = ../icons/facebook.png; sourceTree = "<group>"; };
+		D0DA69CF193CAD5C006544C1 /* facebook@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "facebook@2x.png"; path = "../icons/facebook@2x.png"; sourceTree = "<group>"; };
+		D0DA69D0193CAD5C006544C1 /* twitter.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = twitter.png; path = ../icons/twitter.png; sourceTree = "<group>"; };
+		D0DA69D1193CAD5C006544C1 /* twitter@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "twitter@2x.png"; path = "../icons/twitter@2x.png"; sourceTree = "<group>"; };
 		D0E0DA52191EED47008D98E2 /* rewardPopUp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rewardPopUp.h; sourceTree = "<group>"; };
 		D0E0DA53191EED47008D98E2 /* rewardPopUp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = rewardPopUp.m; sourceTree = "<group>"; };
 		D0E0DA55191F101A008D98E2 /* offerPopUp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = offerPopUp.h; sourceTree = "<group>"; };
@@ -201,6 +219,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D0739640195B631B00D3727C /* Tapjoy.framework in Frameworks */,
 				D0E0DA601920B9B7008D98E2 /* Security.framework in Frameworks */,
 				313305831885178600F7DB73 /* SystemConfiguration.framework in Frameworks */,
 				31BF322918CE67FB0050AB5C /* FacebookSDK.framework in Frameworks */,
@@ -230,6 +249,8 @@
 		313304971882441800F7DB73 = {
 			isa = PBXGroup;
 			children = (
+				D0DA69CA193CAC6F006544C1 /* message.png */,
+				D0DA69CB193CAC6F006544C1 /* message@2x.png */,
 				D0AD77C0191AF50300027597 /* close.png */,
 				D0AD77C1191AF50300027597 /* close@2x.png */,
 				313304A91882441800F7DB73 /* FreeAppLife */,
@@ -252,6 +273,7 @@
 		313304A21882441800F7DB73 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D073963B195B631B00D3727C /* Tapjoy.embeddedframework */,
 				D02DF302193AADB500B702F5 /* Twitter.framework */,
 				D0E0DA5F1920B9B7008D98E2 /* Security.framework */,
 				D05D7E49189880ED006593A9 /* Social.framework */,
@@ -353,11 +375,18 @@
 		D03762BE18C1719400791FB7 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				D0DA69CE193CAD5C006544C1 /* facebook.png */,
+				D0DA69CF193CAD5C006544C1 /* facebook@2x.png */,
+				D0DA69D0193CAD5C006544C1 /* twitter.png */,
+				D0DA69D1193CAD5C006544C1 /* twitter@2x.png */,
+				D0DA69C6193CAAC9006544C1 /* email.png */,
+				D0DA69C7193CAAC9006544C1 /* email@2x.png */,
+				D0DA69C2193CA97B006544C1 /* invite.png */,
+				D0DA69C3193CA97B006544C1 /* invite@2x.png */,
 				D062DC09193843AF00E86241 /* friends.png */,
 				D062DC0A193843AF00E86241 /* friends@2x.png */,
 				D06AD78719011CF600A742BF /* new ipad fal.png */,
 				D06AD78D19011E6300A742BF /* iphone 5858.png */,
-				D02DF3001939800F00B702F5 /* message.png */,
 				D06AD78B19011E4300A742BF /* iphone 4040.png */,
 				D06AD78919011E0A00A742BF /* iphone 8080.png */,
 				D06AD77F19011B3900A742BF /* fal retina ipad.png */,
@@ -370,13 +399,11 @@
 				31AE574E18D6E42C004F8D4C /* AppIcon@2x.png */,
 				31AE574718D6E144004F8D4C /* AppIcon@2x.png */,
 				31AE574918D6E14E004F8D4C /* AppIcon.png */,
-				D0C7530518CC691D00BDD9A6 /* twitter.png */,
-				D0C7530718CC6AAA00BDD9A6 /* facebook.png */,
 				D066162C18CBF70D0022B8DB /* button.png */,
 				D066162A18CAAA620022B8DB /* topBar.png */,
 				D06AD78F190202B800A742BF /* Default-568h@2x.png */,
-				D03762D518C2DA0200791FB7 /* twitter22.png */,
 				D03762CE18C173C000791FB7 /* ReferLayer.png */,
+				D0739639195A786000D3727C /* ReferLayer_inf.png */,
 				D03762BC18C170BC00791FB7 /* EmailLayer.png */,
 				D03762B618C16B6800791FB7 /* group2.png */,
 				D03762B718C16B6800791FB7 /* group2@2x.png */,
@@ -400,6 +427,23 @@
 		D03762DB18C2F8C600791FB7 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		D073963B195B631B00D3727C /* Tapjoy.embeddedframework */ = {
+			isa = PBXGroup;
+			children = (
+				D073963C195B631B00D3727C /* Resources */,
+				D073963E195B631B00D3727C /* Tapjoy.framework */,
+			);
+			path = Tapjoy.embeddedframework;
+			sourceTree = "<group>";
+		};
+		D073963C195B631B00D3727C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				D073963D195B631B00D3727C /* TapjoyResources.bundle */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -495,16 +539,18 @@
 			files = (
 				D06AD78C19011E4300A742BF /* iphone 4040.png in Resources */,
 				D06AD78E19011E6300A742BF /* iphone 5858.png in Resources */,
+				D073963A195A786000D3727C /* ReferLayer_inf.png in Resources */,
 				D06AD78819011CF600A742BF /* new ipad fal.png in Resources */,
 				D0EEFE5418EE6CB100779B69 /* Main_iPad.storyboard in Resources */,
 				D066162D18CBF70D0022B8DB /* button.png in Resources */,
 				D030791A1909EA2F0058013B /* ps4.png in Resources */,
-				D03762D618C2DA0200791FB7 /* twitter22.png in Resources */,
+				D0DA69D4193CAD5C006544C1 /* twitter.png in Resources */,
 				D06AD78019011B3900A742BF /* fal retina ipad.png in Resources */,
 				D0EEFE5618EE7C7100779B69 /* topBariPad.png in Resources */,
 				D0AD77C3191AF50300027597 /* close@2x.png in Resources */,
 				D03762B518C16A6300791FB7 /* present@2x.png in Resources */,
 				D06AD78219011B4800A742BF /* ipad fal icon.png in Resources */,
+				D073963F195B631B00D3727C /* TapjoyResources.bundle in Resources */,
 				D03762B418C16A6300791FB7 /* present.png in Resources */,
 				D062DC0B193843AF00E86241 /* friends.png in Resources */,
 				D03762AD18C1694600791FB7 /* checked2@2x.png in Resources */,
@@ -512,28 +558,34 @@
 				D03762B118C16A1000791FB7 /* machine2@2x.png in Resources */,
 				31AE574F18D6E42C004F8D4C /* AppIcon.png in Resources */,
 				D0C7530A18CC6B5300BDD9A6 /* Main_iPhone.storyboard in Resources */,
+				D0DA69D2193CAD5C006544C1 /* facebook.png in Resources */,
 				31AE574C18D6E153004F8D4C /* LaunchImage.png in Resources */,
 				D03762AB18C1689000791FB7 /* checked2.png in Resources */,
-				D02DF3011939800F00B702F5 /* message.png in Resources */,
+				D0DA69D3193CAD5C006544C1 /* facebook@2x.png in Resources */,
+				D0DA69C8193CAAC9006544C1 /* email.png in Resources */,
 				313304BF1882441800F7DB73 /* Images.xcassets in Resources */,
 				D062DC0C193843AF00E86241 /* friends@2x.png in Resources */,
 				D06AD78619011C3400A742BF /* fal icon small.png in Resources */,
+				D0DA69C4193CA97B006544C1 /* invite.png in Resources */,
 				D03762CF18C173C000791FB7 /* ReferLayer.png in Resources */,
+				D0DA69D5193CAD5C006544C1 /* twitter@2x.png in Resources */,
+				D0DA69C9193CAAC9006544C1 /* email@2x.png in Resources */,
+				D0DA69CD193CAC6F006544C1 /* message@2x.png in Resources */,
 				D066162B18CAAA620022B8DB /* topBar.png in Resources */,
 				D06AD78419011C0400A742BF /* fal icon.png in Resources */,
 				D06AD78A19011E0A00A742BF /* iphone 8080.png in Resources */,
 				D0AD77C2191AF50300027597 /* close.png in Resources */,
 				D03762B918C16B6800791FB7 /* group2@2x.png in Resources */,
+				D0DA69C5193CA97B006544C1 /* invite@2x.png in Resources */,
 				3168FB9118865ACA00BC13C7 /* popup.xib in Resources */,
 				31AE575018D6E42C004F8D4C /* AppIcon@2x.png in Resources */,
-				D0C7530618CC691D00BDD9A6 /* twitter.png in Resources */,
 				D03762BD18C170BC00791FB7 /* EmailLayer.png in Resources */,
 				D03762B018C16A1000791FB7 /* machine2.png in Resources */,
 				31AE574818D6E144004F8D4C /* AppIcon@2x.png in Resources */,
 				31AE574A18D6E14E004F8D4C /* AppIcon.png in Resources */,
 				313304AE1882441800F7DB73 /* InfoPlist.strings in Resources */,
 				D06AD790190202B800A742BF /* Default-568h@2x.png in Resources */,
-				D0C7530818CC6AAA00BDD9A6 /* facebook.png in Resources */,
+				D0DA69CC193CAC6F006544C1 /* message.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -701,6 +753,7 @@
 					"$(inherited)",
 					/Users/misbahkhan/Desktop/webview,
 					/Users/adriandurso/Documents/FINAL_APP/webview,
+					"$(PROJECT_DIR)/Tapjoy.embeddedframework",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "webview/FreeAppLife-Prefix.pch";
@@ -711,7 +764,7 @@
 					"$(PROJECT_DIR)/webview/Flurry",
 				);
 				PRODUCT_NAME = FreeAppLife;
-				PROVISIONING_PROFILE = "CF303CC5-C1EA-49D4-A57F-DEAD9536611C";
+				PROVISIONING_PROFILE = "53A605F0-76F8-4484-8410-8CAAB892BF9E";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
@@ -727,6 +780,7 @@
 					"$(inherited)",
 					/Users/misbahkhan/Desktop/webview,
 					/Users/adriandurso/Documents/FINAL_APP/webview,
+					"$(PROJECT_DIR)/Tapjoy.embeddedframework",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "webview/FreeAppLife-Prefix.pch";

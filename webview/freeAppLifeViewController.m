@@ -44,6 +44,11 @@
     CGRect screenRect;
     CGFloat screenWidth;
     CGFloat screenHeight;
+    CustomIOS7AlertView *fblikealert;
+    UIWebView *fblikewebview;
+    BOOL loggedIn;
+    BOOL redirectedToPage;
+    BOOL liked;
 }
 
 @end
@@ -119,6 +124,19 @@
     [pixel setHidden:YES];
     [self.view addSubview:pixel];
     
+    fblikealert = [[CustomIOS7AlertView alloc] init];
+    
+    fblikewebview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 280, 300)];
+    [fblikewebview.scrollView setScrollEnabled:NO];
+    fblikewebview.delegate = self;
+    [fblikewebview.scrollView.layer setCornerRadius:10.0f];
+    [fblikewebview.scrollView clipsToBounds];
+    [fblikewebview.layer setCornerRadius:10.0f];
+    [fblikewebview clipsToBounds];
+    [fblikealert setContainerView:fblikewebview];
+    loggedIn = NO;
+    redirectedToPage = NO;
+    liked = NO;
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -141,7 +159,7 @@
         NSDictionary *twitter = [[NSDictionary alloc] initWithObjectsAndKeys:@"popup", @"link", @"25", @"points", @"WATCH", @"description", @"Follow @FreeAppLife", @"name", @"https://freeapplife.com/fal/png/twitter_icon.png", @"image", @"custom", @"type", @"", @"html", @"158", @"height", @"twitter", @"meta", nil];
         [social addObject:twitter];
     }
-    
+
     if(!([[[sharedInstance userData] objectForKey:@"facebook"] isEqualToString:@"DONE"])){
         NSDictionary *twitter = [[NSDictionary alloc] initWithObjectsAndKeys:@"popup", @"link", @"25", @"points", @"WATCH", @"description", @"Like FreeAppLife", @"name", @"https://freeapplife.com/fal/png/facebook_icon.png", @"image", @"custom", @"type", @"", @"html", @"158", @"height", @"facebook", @"meta", nil];
         [social addObject:twitter];
@@ -222,7 +240,7 @@
 //            NSLog(@"%@", strData);
             NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
             if([json objectForKey:@"status"]){
-                referralAlert = [[UIAlertView alloc] initWithTitle:@"Get More Points!" message:@"If you were referred to FreeAppLife by a friend, input their referral code now and earn an excess of 400 points to be rewarded." delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Add!", nil];
+                referralAlert = [[UIAlertView alloc] initWithTitle:@"Get More Points!" message:@"If you were referred to FreeAppLife by a friend, input their referral code now to ensure that you both benefit. As a bonus, you'll start with 50 points!" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Add!", nil];
                 referralAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
                 referralBox = [referralAlert textFieldAtIndex:0];
                 [referralAlert show];
@@ -329,10 +347,14 @@
             if(responseStatusCode == 200){
                 
                 NSMutableArray *tmp = [[NSMutableArray alloc] initWithArray:[dataDictionary objectForKey:@"offers"]];
+                if([tmp count] < 1){
+                    UIAlertView *noSponsors = [[UIAlertView alloc] initWithTitle:@"No Available Sponsors" message:@"Either you've completed all available offers or your region isn't currently supported. Thank you for your interest in FreeAppLife and follow us on both Twitter and Facebook for updates." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+                    [noSponsors show];
+                }
                 sponsorData = [tmp mutableCopy];
                 sharedInstance.sponsorPayHelp = [dataDictionary objectForKey:@"spay_support"];
                 sharedInstance.aarkiHelp = [dataDictionary objectForKey:@"aarki_support"];
-                NSDictionary *popUp = [[NSDictionary alloc] initWithObjectsAndKeys:@"popup", @"link", @"0", @"payout", @"WATCH", @"description", @"Install Tutorial", @"name", @"https://freeapplife.com/fal/png/store.png", @"image", @"custom", @"type", [NSString stringWithFormat:@"<html><body style='margin:0px;padding:0px;'><script type='text/javascript' src='http://www.youtube.com/iframe_api'></script><script type='text/javascript'>function onYouTubeIframeAPIReady(){ytplayer=new YT.Player('yt',{events:{onReady:onPlayerReady}})}function onPlayerReady(a){a.target.playVideo();}</script><iframe id='yt' type='text/html' width='%d' height='%d' src='http://www.youtube.com/embed/%@?enablejsapi=1&rel=0&playsinline=1&autoplay=1&controls=0' frameborder='0'></body></html>", 280, 158, videoCode], @"html", @"158", @"height", nil];
+                NSDictionary *popUp = [[NSDictionary alloc] initWithObjectsAndKeys:@"popup", @"link", @"0", @"points", @"WATCH", @"description", @"Install Tutorial", @"name", @"https://freeapplife.com/fal/png/store.png", @"image", @"custom", @"type", [NSString stringWithFormat:@"<html><body style='margin:0px;padding:0px;'><script type='text/javascript' src='http://www.youtube.com/iframe_api'></script><script type='text/javascript'>function onYouTubeIframeAPIReady(){ytplayer=new YT.Player('yt',{events:{onReady:onPlayerReady}})}function onPlayerReady(a){a.target.playVideo();}</script><iframe id='yt' type='text/html' width='%d' height='%d' src='http://www.youtube.com/embed/%@?enablejsapi=1&rel=0&playsinline=1&autoplay=1&controls=0' frameborder='0'></body></html>", 280, 158, videoCode], @"html", @"158", @"height", nil];
                 [sponsorData insertObject:popUp atIndex:0];
                 for(int i = 0; i<[social count]; i++){
                     [sponsorData insertObject:[social objectAtIndex:i] atIndex:i+1];
@@ -491,6 +513,7 @@
     
     if([type isEqualToString:@"offer"] || [type isEqualToString:@"pending"]){
         offerView = [[offerPopUp alloc] initWithData:currentData];
+        offerView.preseneter = self; 
         offerView.web = _webView;
         [offerView show];
     }else if([type isEqualToString:@"custom"]){
@@ -498,7 +521,7 @@
             if([[currentData objectForKey:@"meta"] isEqualToString:@"twitter"]){
                 [self getTwitterAccountInformation];
             }else if([[currentData objectForKey:@"meta"] isEqualToString:@"facebook"]){
-                [self removeMeta:@"facebook"];
+                [fblikewebview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://www.facebook.com/profile.php"]]];
             }else if([[currentData objectForKey:@"meta"] isEqualToString:@"email"]){
                 dispatch_async(dispatch_get_main_queue(), ^{
                     emailAlert = [[UIAlertView alloc] initWithTitle:@"Add Email Address" message:@"Add a backup email address for 25 points!" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Submit", nil];
@@ -554,6 +577,20 @@
         } else {
             [webView stringByEvaluatingJavaScriptFromString:@"document.getElementsByTagName(\"input\")[1].click()"];
         }
+    }else if(webView == fblikewebview){
+        if (loggedIn != TRUE) {
+            [fblikealert show];
+        }
+        
+        if(redirectedToPage == TRUE){
+            [webView
+             stringByEvaluatingJavaScriptFromString:
+             @"var isLiking = document.getElementsByClassName(\"_4g34\")[2].children[0].children[1].innerHTML; if(isLiking=='Like'){document.getElementsByClassName(\"_4g34\")[2].children[0].click()}"];
+            NSString *postString = [NSString stringWithFormat:@"userID=%@&social=facebook", [sharedInstance md5ForString: [sharedInstance serialNumber]]];
+            NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"social" andBody:postString];
+            [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error){}];
+            liked = TRUE;
+        }
     }
 }
 
@@ -577,6 +614,28 @@
         }
         redirects++;
         [offerView.progress setProgress:redirects*0.1];
+        return YES;
+    }else if(webView == fblikewebview){
+        NSError *error = NULL;
+        NSRegularExpression *regex2 = [NSRegularExpression regularExpressionWithPattern:@"itunes" options:NSRegularExpressionCaseInsensitive error:&error];
+        NSUInteger regexNums2 = [regex2 numberOfMatchesInString:[[request URL] absoluteString] options:0 range:NSMakeRange(0, [[[request URL] absoluteString] length])];
+        NSRegularExpression *regex3 = [NSRegularExpression regularExpressionWithPattern:@"r.php" options:NSRegularExpressionCaseInsensitive error:&error];
+        NSUInteger regexNums3 = [regex3 numberOfMatchesInString:[[request URL] absoluteString] options:0 range:NSMakeRange(0, [[[request URL] absoluteString] length])];
+        if(regexNums2 > 0 || regexNums3 > 0){
+            return NO;
+        }
+        if(loggedIn == FALSE){
+            NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"login.php" options:NSRegularExpressionCaseInsensitive error:&error];
+            if (error){}
+            NSUInteger regexNums = [regex numberOfMatchesInString:[[request URL] absoluteString] options:0 range:NSMakeRange(0, [[[request URL] absoluteString] length])];
+            if(regexNums < 1 && ![[request.URL absoluteString] isEqualToString:@"http://www.facebook.com/profile.php"]){
+                [fblikealert close];
+                [self removeMeta:@"facebook"]; 
+                loggedIn = TRUE;
+                [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:@"http://facebook.com/freeapplife"]]];
+                redirectedToPage = TRUE;
+            }
+        }
         return YES;
     }
     return YES;
