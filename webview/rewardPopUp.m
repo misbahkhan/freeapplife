@@ -16,11 +16,13 @@
     UIActivityIndicatorView *activity;
     UIButton *continueButton;
     NSString *code;
+    NSString *title;
 }
 
 - (void) getCode
 {
     [continueButton setUserInteractionEnabled:NO];
+    [continueButton setTitle:@"Loading" forState:UIControlStateNormal];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://freeapplife.com/api/redeem"]];
     [request setAllHTTPHeaderFields:@{@"User-Agent": @"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"}];
     [request setHTTPMethod:@"POST"];
@@ -51,6 +53,16 @@
                     [continueButton addTarget:self action:@selector(hide) forControlEvents:UIControlEventTouchUpInside];
                     [continueButton setTitle:@"Okay" forState:UIControlStateNormal];
                 }
+                
+                NSString *titleForTweet;
+                if ([title length] > 15) {
+                    titleForTweet = [NSString stringWithFormat:@"%@...", [title substringToIndex:15]];
+                }else{
+                    titleForTweet = title;
+                }
+                NSString *tweet = [NSString stringWithFormat:@"I just redeemed %@ for Free using @FreeAppLife. Join now to earn Paid Apps and Gift Cards for Free! http://freeapplife.com", titleForTweet];
+                [sharedInstance tweet:tweet];
+                
             }else{
                 [description setText:@"Something went wrong, try again later."];
                 [continueButton addTarget:self action:@selector(hide) forControlEvents:UIControlEventTouchUpInside];
@@ -59,15 +71,6 @@
             
             [continueButton setUserInteractionEnabled:YES];
             [sharedInstance user];
-            
-            //            NSString *titleForTweet;
-            //            if ([title length] > 15) {
-            //                titleForTweet = [NSString stringWithFormat:@"%@...", [title substringToIndex:15]];
-            //            }else{
-            //                titleForTweet = title;
-            //            }
-            //            NSString *tweet = [NSString stringWithFormat:@"I just redeemed %@ for Free using @FreeAppLife. Join now to earn Paid Apps and Gift Cards for Free! http://freeapplife.com", titleForTweet];
-            //            [sharedInstance tweet:tweet];
         }
     }];
     
@@ -90,7 +93,7 @@
                 [self.inner addSubview:continueButton];
             }else{
                 UILabel *outOfStock = [[UILabel alloc] initWithFrame:CGRectMake(20, activity.frame.origin.y, 240, 50)];
-                [outOfStock setText:@"Sorry, reward is currently out of stock. :("];
+                [outOfStock setText:@"Sorry, reward is currently out of stock."];
                 [outOfStock setFont: [UIFont fontWithName:@"HelveticaNeue-Medium" size:13.0f]];
                 [outOfStock setTextColor:[UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0]];
                 [self.inner addSubview:outOfStock];
@@ -112,7 +115,7 @@
         [imageView setClipsToBounds:YES];
         [self.inner addSubview:imageView];
         
-        NSString *title = [_data objectForKey:@"Reward"];
+        title = [_data objectForKey:@"Reward"];
         UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, imageView.frame.size.height+imageView.frame.origin.y+10, 260, 40)];
         [titleLabel setNumberOfLines:3];
         [titleLabel setText:title];

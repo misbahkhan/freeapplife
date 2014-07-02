@@ -20,7 +20,7 @@
         [_refpoints setTextAlignment:NSTextAlignmentCenter];
         _refpoints.opaque = NO;
         
-        _ref = [[UIImageView alloc] initWithFrame:CGRectMake(230, 41, 15, 15)];
+        _ref = [[UIImageView alloc] initWithFrame:CGRectMake(230, 41, 10, 10)];
         [_ref setImage:[UIImage imageNamed:@"friends.png"]];
         [self.contentView addSubview:_ref];
         [self.contentView addSubview:_refpoints];
@@ -41,28 +41,24 @@
     
     CGRect oldFrame = self.points.frame;
     oldFrame.size.width = oldFrame.size.width+20;
-    oldFrame.size.height = oldFrame.size.height+10;
-    oldFrame.origin.x = 280-oldFrame.size.width;
-    oldFrame.origin.x += 20;
-    oldFrame.origin.y = 21+((60-oldFrame.size.height)/2);
+    oldFrame.origin.x = 300-oldFrame.size.width;
+    oldFrame.origin.y = 51-oldFrame.size.height;
     
     CGRect oldFrame2 = self.refpoints.frame;
     oldFrame2.size.width = oldFrame2.size.width+20;
-    oldFrame2.size.height = oldFrame2.size.height+10;
-    oldFrame2.origin.x = 280-oldFrame2.size.width;
-    oldFrame2.origin.x += 20;
-    oldFrame2.origin.y = 38+((60-oldFrame2.size.height)/2);
+    oldFrame2.origin.x = 300-oldFrame2.size.width;
+    oldFrame2.origin.y = 51;
     
     CGRect personFrame = self.ref.frame;
-    personFrame.origin.y = oldFrame2.origin.y + 5;
-    personFrame.origin.x = oldFrame.origin.x+5;
+    personFrame.origin.y = oldFrame2.origin.y+2;
+    personFrame.origin.x = oldFrame.origin.x+8;
     
     CGFloat screenWidth = [UIScreen mainScreen].bounds.size.width;
     
     if(screenWidth > 320){
         oldFrame.origin.x = screenWidth-75;
-        oldFrame2.origin.x = screenWidth-75;
-        personFrame.origin.x = screenWidth-75;
+        oldFrame2.origin.x = oldFrame.origin.x+(oldFrame.size.width-oldFrame2.size.width);
+        personFrame.origin.x = oldFrame.origin.x+8;
     }
     
     self.points.frame = oldFrame;

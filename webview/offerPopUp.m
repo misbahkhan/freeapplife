@@ -8,6 +8,8 @@
 
 #import "offerPopUp.h"
 #import "API.h"
+#import <Social/Social.h>
+#import <MessageUI/MessageUI.h>
 
 @implementation offerPopUp
 {
@@ -18,6 +20,12 @@
     UILabel *instructions;
     UIButton *helpLabel;
     UIImageView *imageView;
+    MFMailComposeViewController *emailview;
+    MFMessageComposeViewController *message;
+    SLComposeViewController *socialcompose;
+    UILabel *shareLabel;
+    UIButton *facebookButton;
+    UIButton *twitterButton;
 }
 
 - (void) hide
@@ -45,6 +53,9 @@
     [_progress removeFromSuperview];
     [instructions removeFromSuperview];
     [titleLabel removeFromSuperview];
+    [twitterButton removeFromSuperview];
+    [facebookButton removeFromSuperview];
+    [shareLabel removeFromSuperview];
 //    NSString *title = [NSString stringWithFormat:@"Thanks for installing %@", [_data objectForKey:@"name"]];
 //    titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, imageView.frame.size.height+imageView.frame.origin.y+10, 260, 40)];
 //    [titleLabel setNumberOfLines:3];
@@ -252,7 +263,34 @@
         [helpLabel addTarget:self action:@selector(sponsorPayHelpClicked:) forControlEvents:UIControlEventTouchUpInside];
         [self.inner addSubview:helpLabel];
         
-        _progress = [[UIProgressView alloc] initWithFrame:CGRectMake(20, helpLabel.frame.origin.y+helpLabel.frame.size.height+10, 240, 10)];
+        shareLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, helpLabel.frame.origin.y+helpLabel.frame.size.height+10, 240, 10)];
+        [shareLabel setFont: [UIFont fontWithName:@"HelveticaNeue-Thin" size:13.0f]];
+        [shareLabel setTextAlignment:NSTextAlignmentCenter];
+        [shareLabel setText:@"Share this offer with friends!"];
+        [shareLabel setTextColor:[UIColor colorWithRed:0.58 green:0.65 blue:0.65 alpha:1]];
+        [self.inner addSubview:shareLabel];
+        
+        facebookButton = [[UIButton alloc] initWithFrame:CGRectMake(110, shareLabel.frame.origin.y+shareLabel.frame.size.height+10, 17, 32)];
+        [facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook.png"] forState:UIControlStateNormal];
+        [facebookButton addTarget:self action:@selector(status:) forControlEvents:UIControlEventTouchUpInside];
+        [self.inner addSubview:facebookButton];
+        
+        twitterButton = [[UIButton alloc] initWithFrame:CGRectMake(facebookButton.frame.origin.x+facebookButton.frame.size.width+10, shareLabel.frame.origin.y+shareLabel.frame.size.height+13, 32, 26)];
+        [twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter.png"] forState:UIControlStateNormal];
+        [twitterButton addTarget:self action:@selector(tweet:) forControlEvents:UIControlEventTouchUpInside];
+        [self.inner addSubview:twitterButton];
+
+//        UIButton *smsButton = [[UIButton alloc] initWithFrame:CGRectMake(twitterButton.frame.origin.x+twitterButton.frame.size.width+10, shareLabel.frame.origin.y+shareLabel.frame.size.height+11, 32, 30)];
+//        [smsButton setBackgroundImage:[UIImage imageNamed:@"message.png"] forState:UIControlStateNormal];
+//        [smsButton addTarget:self action:@selector(sms:) forControlEvents:UIControlEventTouchUpInside];
+//        [self.inner addSubview:smsButton];
+//
+//        UIButton *mailButton = [[UIButton alloc] initWithFrame:CGRectMake(smsButton.frame.origin.x+smsButton.frame.size.width+10, shareLabel.frame.origin.y+shareLabel.frame.size.height+10, 32, 32)];
+//        [mailButton setBackgroundImage:[UIImage imageNamed:@"email.png"] forState:UIControlStateNormal];
+//        [mailButton addTarget:self action:@selector(email:) forControlEvents:UIControlEventTouchUpInside];
+//        [self.inner addSubview:mailButton];
+        
+        _progress = [[UIProgressView alloc] initWithFrame:CGRectMake(20, facebookButton.frame.origin.y+facebookButton.frame.size.height+10, 240, 10)];
         [_progress setProgress:0.0f];
         [self.inner addSubview:_progress];
         
@@ -260,7 +298,7 @@
         continueButton.layer.cornerRadius = 5.0f;
         [continueButton setClipsToBounds:YES];
         [continueButton setBackgroundColor:[UIColor colorWithRed:0 green:0.49 blue:0.84 alpha:1]];
-        [continueButton setTitle:@"Contiue" forState:UIControlStateNormal];
+        [continueButton setTitle:@"Continue" forState:UIControlStateNormal];
         
         if([[_data objectForKey:@"type"] isEqualToString:@"pending"]){
             [continueButton setTitle:@"Retry?" forState:UIControlStateNormal];
@@ -274,6 +312,67 @@
         self.inner.frame = oldFrame2;
     }
     return self;
+}
+
+- (void) messageComposeViewController:(MFMessageComposeViewController *)controller didFinishWithResult:(MessageComposeResult)result
+{
+    [message dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void) mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    [emailview dismissViewControllerAnimated:YES completion:nil];
+}
+
+//- (IBAction)sms:(id)sender {
+//    if([MFMessageComposeViewController canSendText]){
+//        message = [[MFMessageComposeViewController alloc] init];
+//        message.messageComposeDelegate = self;
+//        NSString *smsMessage = [NSString stringWithFormat:@"Join the FreeAppLife community NOW to earn Paid iOS apps & Gift Cards for Free! Score points at: http://freeapplife.com Use my referral code \"%@\" for 50 additional points when you sign up!", [[sharedInstance userData] objectForKey:@"referral_code"]];
+//        [message setBody:smsMessage];
+//        [_preseneter presentViewController:message animated:YES completion:nil];
+//    }else{
+//        UIAlertView *smsError = [[UIAlertView alloc] initWithTitle:@"iMessage Unavailable" message:@"Please set up iMessage on your device." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+//        [smsError show];
+//    }
+//}
+//
+//- (IBAction)email:(id)sender {
+//    if([MFMailComposeViewController canSendMail]){
+//        emailview = [[MFMailComposeViewController alloc] init];
+//        emailview.mailComposeDelegate = self;
+//        [emailview setSubject:@"Try FreeAppLife!"];
+//        NSString *emailMessage = [NSString stringWithFormat:@"Join the FreeAppLife community NOW to earn Paid iOS apps & Gift Cards for Free! Visit http://www.freeapplife.com and use my referral code \"%@\" when singining up to earn 50 bonus points. Save up to earn Gift Cards, electronics and more for free!", [[sharedInstance userData] objectForKey:@"referral_code"]];
+//        [emailview setMessageBody:emailMessage isHTML:NO];
+//        [_preseneter presentViewController:emailview animated:YES completion:nil];
+//    }else{
+//        UIAlertView *emailError = [[UIAlertView alloc] initWithTitle:@"Mail Unavailable" message:@"Please set up Mail on your device." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+//        [emailError show];
+//    }
+//}
+
+- (IBAction)tweet:(id)sender {
+    if([SLComposeViewController isAvailableForServiceType:SLServiceTypeTwitter]){
+        socialcompose = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+        NSString *twitterMessage = [NSString stringWithFormat:@"Join the FreeAppLife NOW to earn Paid iOS apps & Gift Cards for Free! http://freeapplife.com Use my referral code \"%@\" for +50 points!", [[sharedInstance userData] objectForKey:@"referral_code"]];
+        [socialcompose setInitialText:twitterMessage];
+        [_preseneter presentViewController:socialcompose animated:YES completion:nil];
+    }else{
+        UIAlertView *twitterError = [[UIAlertView alloc] initWithTitle:@"Twitter Unavailable" message:@"Please connect a Twitter account to your device." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+        [twitterError show];
+    }
+}
+
+- (IBAction)status:(id)sender {
+    if([SLComposeViewController isAvailableForServiceType:SLServiceTypeFacebook]){
+        socialcompose = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeFacebook];
+        NSString *facebookMessage = [NSString stringWithFormat:@"Join the FreeAppLife community NOW to earn Paid iOS apps & Gift Cards for Free! Score points at: http://freeapplife.com Use my referral code \"%@\" for 50 additional points when you sign up!", [[sharedInstance userData] objectForKey:@"referral_code"]];
+        [socialcompose setInitialText:facebookMessage];
+        [_preseneter presentViewController:socialcompose animated:YES completion:nil];
+    }else{
+        UIAlertView *facebookError = [[UIAlertView alloc] initWithTitle:@"Facebook Unavailable" message:@"Please connect a Facebook account to your device." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+        [facebookError show];
+    }
 }
 
 - (id)initWithFrame:(CGRect)frame
