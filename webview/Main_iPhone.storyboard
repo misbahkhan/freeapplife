@@ -23,7 +23,7 @@
                                 </connections>
                             </webView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="102" sectionHeaderHeight="1" sectionFooterHeight="1" id="4hS-nz-yE7">
-                                <rect key="frame" x="0.0" y="144" width="320" height="512"/>
+                                <rect key="frame" x="0.0" y="173" width="320" height="512"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <inset key="insetFor6xAndEarlier" minX="0.0" minY="0.0" maxX="0.0" maxY="-88"/>
@@ -33,12 +33,24 @@
                                     <outlet property="delegate" destination="vXZ-lx-hvc" id="lrL-jQ-Ijw"/>
                                 </connections>
                             </tableView>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" id="k8b-aw-5TY">
+                                <rect key="frame" x="20" y="44" width="280" height="29"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <segments>
+                                    <segment title="Apps"/>
+                                    <segment title="Videos"/>
+                                </segments>
+                                <connections>
+                                    <action selector="videos:" destination="vXZ-lx-hvc" eventType="valueChanged" id="Ge6-5y-9sO"/>
+                                </connections>
+                            </segmentedControl>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Get Points" image="checked2.png" id="FzJ-Yb-b81"/>
                     <connections>
                         <outlet property="tableView" destination="4hS-nz-yE7" id="67U-B6-hPS"/>
+                        <outlet property="videos" destination="k8b-aw-5TY" id="r57-OK-Cw3"/>
                         <outlet property="webView" destination="r4l-AP-35R" id="m4J-wn-QFt"/>
                     </connections>
                 </viewController>
@@ -65,50 +77,7 @@
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kxh-uC-APv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-112" y="1025"/>
-        </scene>
-        <!--Menu View Controller-->
-        <scene sceneID="CtX-u6-Ya3">
-            <objects>
-                <viewController storyboardIdentifier="menu" id="G8S-OZ-NkG" customClass="menuViewController" sceneMemberID="viewController">
-                    <view key="view" contentMode="scaleToFill" id="Irs-pt-LEt">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="background.png" id="VOF-L9-XT1">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                            </imageView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="NAF-4C-XDF">
-                                <rect key="frame" x="0.0" y="119" width="234" height="329"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                <prototypes>
-                                    <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="menu" id="vND-Y9-z65">
-                                        <rect key="frame" x="0.0" y="22" width="234" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="vND-Y9-z65" id="PUW-Ty-vTY">
-                                            <rect key="frame" x="0.0" y="0.0" width="234" height="44"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                        </tableViewCellContentView>
-                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                                    </tableViewCell>
-                                </prototypes>
-                                <connections>
-                                    <outlet property="dataSource" destination="G8S-OZ-NkG" id="7Bh-3d-eZD"/>
-                                    <outlet property="delegate" destination="G8S-OZ-NkG" id="DQ0-CO-if7"/>
-                                </connections>
-                            </tableView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                    </view>
-                    <connections>
-                        <outlet property="backgroundImageView" destination="VOF-L9-XT1" id="eCE-Cu-Y3x"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="Jjt-SM-yd8" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-112" y="1723"/>
+            <point key="canvasLocation" x="-28" y="1013"/>
         </scene>
         <!--Settings View Controller - Settings-->
         <scene sceneID="r3h-qR-DBN">
@@ -156,6 +125,41 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BpM-1E-gla" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="443" y="1778"/>
+        </scene>
+        <!--Video View Controller - VIdeos-->
+        <scene sceneID="ocW-RX-dzq">
+            <objects>
+                <viewController storyboardIdentifier="video" id="Vch-k9-lfX" customClass="videoViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="7AS-UX-Dra">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <webView contentMode="scaleToFill" id="p9g-Lx-7Zf">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="224"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            </webView>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="LuL-By-wlN">
+                                <rect key="frame" x="0.0" y="222" width="320" height="285"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="Vch-k9-lfX" id="L7e-eE-Wud"/>
+                                    <outlet property="delegate" destination="Vch-k9-lfX" id="zLS-Pl-ljp"/>
+                                </connections>
+                            </tableView>
+                        </subviews>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <tabBarItem key="tabBarItem" title="VIdeos" id="Adc-ya-DgV"/>
+                    <connections>
+                        <outlet property="table" destination="LuL-By-wlN" id="2Fm-GV-5xT"/>
+                        <outlet property="web" destination="p9g-Lx-7Zf" id="coc-2y-8fo"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="r6T-tD-RzA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-8" y="1767"/>
         </scene>
         <!--Social View Controller - Social-->
         <scene sceneID="smf-77-Te9">
@@ -378,7 +382,6 @@
     </scenes>
     <resources>
         <image name="ReferLayer_inf.png" width="585" height="75"/>
-        <image name="background.png" width="640" height="1136"/>
         <image name="checked2.png" width="21" height="30"/>
         <image name="email.png" width="32" height="32"/>
         <image name="facebook.png" width="17" height="32"/>

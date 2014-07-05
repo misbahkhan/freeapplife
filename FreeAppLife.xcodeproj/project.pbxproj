@@ -32,6 +32,7 @@
 		31AE574F18D6E42C004F8D4C /* AppIcon.png in Resources */ = {isa = PBXBuildFile; fileRef = 31AE574D18D6E42C004F8D4C /* AppIcon.png */; };
 		31AE575018D6E42C004F8D4C /* AppIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 31AE574E18D6E42C004F8D4C /* AppIcon@2x.png */; };
 		31BF322918CE67FB0050AB5C /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D05D7E411897A522006593A9 /* FacebookSDK.framework */; };
+		D010A5041965756100D85337 /* videoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D010A5031965756100D85337 /* videoViewController.m */; };
 		D030791A1909EA2F0058013B /* ps4.png in Resources */ = {isa = PBXBuildFile; fileRef = D03079191909EA2F0058013B /* ps4.png */; };
 		D03762AB18C1689000791FB7 /* checked2.png in Resources */ = {isa = PBXBuildFile; fileRef = D03762AA18C1689000791FB7 /* checked2.png */; };
 		D03762AD18C1694600791FB7 /* checked2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D03762AC18C1694600791FB7 /* checked2@2x.png */; };
@@ -149,6 +150,8 @@
 		31AE574B18D6E153004F8D4C /* LaunchImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = LaunchImage.png; path = webview/LaunchImage.png; sourceTree = "<group>"; };
 		31AE574D18D6E42C004F8D4C /* AppIcon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = AppIcon.png; path = webview/AppIcon.png; sourceTree = "<group>"; };
 		31AE574E18D6E42C004F8D4C /* AppIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon@2x.png"; path = "webview/AppIcon@2x.png"; sourceTree = "<group>"; };
+		D010A5021965756100D85337 /* videoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = videoViewController.h; sourceTree = "<group>"; };
+		D010A5031965756100D85337 /* videoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = videoViewController.m; sourceTree = "<group>"; };
 		D02DF302193AADB500B702F5 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		D03079191909EA2F0058013B /* ps4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ps4.png; sourceTree = "<group>"; };
 		D03762AA18C1689000791FB7 /* checked2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checked2.png; sourceTree = "<group>"; };
@@ -376,6 +379,8 @@
 				D0FB51EF18C04977009C92D7 /* CustomIOS7AlertView.m */,
 				313304BB1882441800F7DB73 /* freeAppLifeViewController.h */,
 				313304BC1882441800F7DB73 /* freeAppLifeViewController.m */,
+				D010A5021965756100D85337 /* videoViewController.h */,
+				D010A5031965756100D85337 /* videoViewController.m */,
 				317675CC188B20FA00DCF1C9 /* rewardsViewController.h */,
 				317675CD188B20FA00DCF1C9 /* rewardsViewController.m */,
 				D03762D018C1754600791FB7 /* socialViewController.h */,
@@ -666,6 +671,7 @@
 				D0FB51F018C04977009C92D7 /* CustomIOS7AlertView.m in Sources */,
 				D0E0DA5A192015A6008D98E2 /* customPopUp.m in Sources */,
 				D0FB51ED18C0055E009C92D7 /* topBar.m in Sources */,
+				D010A5041965756100D85337 /* videoViewController.m in Sources */,
 				D06AD77B18FF677600A742BF /* lazyImage.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

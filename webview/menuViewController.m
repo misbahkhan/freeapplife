@@ -45,35 +45,32 @@
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[imageView]" options:0 metrics:nil views:viewDictionary]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[imageView]" options:0 metrics:nil views:viewDictionary]];
     
-    menuOne = [[NSArray alloc] initWithObjects:@"App Offers", @"Video Offers", @"Pending Offers", @"Double Down Offers", nil];
-    menuTwo = [[NSArray alloc] initWithObjects:@"App Offers", @"Video Offers", @"Gone Free", @"Electronics Rewards", nil];
+    menuOne = [[NSArray alloc] initWithObjects:@"Get Points", @"Videos", @"Rewards", @"Social", @"Settings", nil];
 }
 
-- (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
-{
-    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 234, 50)];
-    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 204, 50)];
-    [view addSubview:label];
-    if (section == 1) {
-        [label setText:@"Offers"];
-    }else{
-        [label setText:@"Rewards"];
-    }
-    
-    return view;
-}
+//- (UIView *) tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+//{
+//    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 234, 45)];
+//    [view setBackgroundColor:[UIColor colorWithWhite:1.0f alpha:0.65f]];
+//    UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 204, 45)];
+//    [view addSubview:label];
+//    if (section == 0) {
+//        [label setText:@"Get Points"];
+//    }else{
+//        [label setText:@"Rewards"];
+//    }
+//    
+//    return view;
+//}
 
 - (int) numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 2;
+    return 1;
 }
 
 - (int) tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section == 1) {
-        return [menuOne count];
-    }
-    return [menuTwo count];
+    return [menuOne count];
 }
 
 - (UITableViewCell *) tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -85,11 +82,8 @@
     }
     
     [cell.textLabel setTextColor:[UIColor whiteColor]];
-    if (indexPath.section == 1) {
-        cell.textLabel.text = [menuOne objectAtIndex:indexPath.row];
-    }else{
-        cell.textLabel.text = [menuTwo objectAtIndex:indexPath.row];
-    }
+    [cell.textLabel setFont:[UIFont fontWithName:@"HelveticaNeue-Light" size:30.0f]];
+    cell.textLabel.text = [menuOne objectAtIndex:indexPath.row];
 
     
     return cell;

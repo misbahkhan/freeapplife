@@ -18,5 +18,7 @@
 @property (strong, nonatomic) IBOutlet UIProgressView *progress;
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
 @property (strong, nonatomic) UILabel *pointsLabel; 
+@property (weak, nonatomic) IBOutlet UISegmentedControl *videos;
+
 
 @end

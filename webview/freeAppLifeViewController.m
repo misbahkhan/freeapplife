@@ -17,6 +17,7 @@
 #import <StoreKit/StoreKit.h>
 #import "offerPopUp.h"
 #import "customPopUp.h"
+#import "videoViewController.h"
 
 @interface freeAppLifeViewController ()
 {
@@ -49,6 +50,7 @@
     BOOL loggedIn;
     BOOL redirectedToPage;
     BOOL liked;
+    videoViewController *videovc;
 }
 
 @end
@@ -150,6 +152,21 @@
 
 }
 
+- (IBAction)videos:(id)sender {
+    if([_videos selectedSegmentIndex] == 0){
+        [videovc.view removeFromSuperview];
+    }else{
+        if(videovc == nil){
+            videovc = [self.storyboard instantiateViewControllerWithIdentifier:@"video"];   
+        }
+        CGRect newFrame = CGRectMake(0, 73, 320, 523);
+        videovc.view.frame = newFrame;
+        [self.view addSubview:videovc.view];
+        [self addChildViewController:videovc];
+        [videovc didMoveToParentViewController:self];
+    }
+}
+
 - (void) dataUpdated:(id)sender
 {
     _pointsLabel.text = [sharedInstance currentPoints];
@@ -169,6 +186,7 @@
         NSDictionary *twitter = [[NSDictionary alloc] initWithObjectsAndKeys:@"popup", @"link", @"25", @"points", @"WATCH", @"description", @"Add a backup Email Address", @"name", @"https://freeapplife.com/fal/png/mail_icon.png", @"image", @"custom", @"type", @"", @"html", @"158", @"height", @"email", @"meta", nil];
         [social addObject:twitter];
     }
+    
 }
 
 - (void)refresh:(UIRefreshControl *)refreshControl {
@@ -275,7 +293,7 @@
 
 - (void) featuredImage
 {
-    UIButton *featured = [[UIButton alloc] initWithFrame:CGRectMake((screenWidth/2)-140, 44, 280, 100)];
+    UIButton *featured = [[UIButton alloc] initWithFrame:CGRectMake((screenWidth/2)-140, 73, 280, 100)];
     [self.view addSubview:featured];
     
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://freeapplife.com/fal/png/featured.png"]];
@@ -332,6 +350,7 @@
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){
             NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+//            NSLog(@"%@", strData); 
             NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
             // This will get the NSURLResponse into NSHTTPURLResponse format
             NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;

@@ -13,12 +13,13 @@
 #import "TWTSideMenuViewController.h"
 #import "mainViewController.h"
 #import "menuViewController.h"
+#import "freeAppLifeViewController.h"
 
 @interface freeAppLifeAppDelegate ()
 
 @property (nonatomic, strong) TWTSideMenuViewController *sideMenuViewController;
 @property (nonatomic, strong) menuViewController *menuViewController;
-@property (nonatomic, strong) mainViewController *mainViewController;
+@property (nonatomic, strong) freeAppLifeViewController *mainViewController;
 
 @end
 
@@ -32,31 +33,15 @@
      UIRemoteNotificationTypeAlert|
      UIRemoteNotificationTypeSound];
     
-
-    UIStoryboard *mainStoryboard = [UIStoryboard storyboardWithName:@"Main_iPhone" bundle: nil];
-    self.menuViewController = (menuViewController *)[mainStoryboard instantiateViewControllerWithIdentifier: @"menu"];
     
-    
-    self.mainViewController = [[mainViewController alloc] initWithNibName:nil bundle:nil];
-    
-    // create a new side menu
-    self.sideMenuViewController = [[TWTSideMenuViewController alloc] initWithMenuViewController:self.menuViewController mainViewController:[[UINavigationController alloc] initWithRootViewController:self.mainViewController]];
-    
-    // specify the shadow color to use behind the main view controller when it is scaled down.
-    self.sideMenuViewController.shadowColor = [UIColor blackColor];
-    
-    // specify a UIOffset to offset the open position of the menu
-    self.sideMenuViewController.edgeOffset = UIOffsetMake(18.0f, 0.0f);
-    
-    // specify a scale to zoom the interface — the scale is 0.0 (scaled to 0% of it's size) to 1.0 (not scaled at all). The example here specifies that it zooms so that the main view is 56.34% of it's size in open mode.
-    self.sideMenuViewController.zoomScale = 0.5634f;
-    
-    // set the side menu controller as the root view controller
-    self.window.rootViewController = self.sideMenuViewController;
-
-    
-    
-    
+    [PFCloud callFunctionInBackground:@"averageStars"
+                       withParameters:@{@"movie": @"The Matrix"}
+                                block:^(NSNumber *ratings, NSError *error) {
+                                    if (!error) {
+                                        NSLog(@"%d", ratings);
+                                        // ratings is 4.5
+                                    }
+                                }];
     
     
 //	application.applicationIconBadgeNumber = 0;
