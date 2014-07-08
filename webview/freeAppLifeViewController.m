@@ -119,10 +119,10 @@
     }
     _tableView.frame = CGRectMake(_tableView.frame.origin.x, _tableView.frame.origin.y, _tableView.frame.size.width, screenHeight-_tableView.frame.origin.y-heightSubtractor);
     
-    UIWebView *pixel = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 240)];
-    [pixel loadHTMLString:@"<!-- Facebook Conversion Code for FreeAppLife --><script type=\"text/javascript\">var fb_param = {};fb_param.pixel_id = '6010056835246';fb_param.value = '0.01';fb_param.currency = 'USD';(function(){var fpw = document.createElement('script');fpw.async = true;fpw.src = '//connect.facebook.net/en_US/fp.js';var ref = document.getElementsByTagName('script')[0];ref.parentNode.insertBefore(fpw, ref);})();</script><noscript><img height=\"1\" width=\"1\" alt=\"\" style=\"display:none\" src=\"https://www.facebook.com/offsite_event.php?id=6010056835246&amp;value=0.01&amp;currency=USD\"/></noscript>" baseURL:nil];
-    [pixel setHidden:YES];
-    [self.view addSubview:pixel];
+//    UIWebView *pixel = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, 320, 240)];
+//    [pixel loadHTMLString:@"<!-- Facebook Conversion Code for FreeAppLife --><script type=\"text/javascript\">var fb_param = {};fb_param.pixel_id = '6010056835246';fb_param.value = '0.01';fb_param.currency = 'USD';(function(){var fpw = document.createElement('script');fpw.async = true;fpw.src = '//connect.facebook.net/en_US/fp.js';var ref = document.getElementsByTagName('script')[0];ref.parentNode.insertBefore(fpw, ref);})();</script><noscript><img height=\"1\" width=\"1\" alt=\"\" style=\"display:none\" src=\"https://www.facebook.com/offsite_event.php?id=6010056835246&amp;value=0.01&amp;currency=USD\"/></noscript>" baseURL:nil];
+//    [pixel setHidden:YES];
+//    [self.view addSubview:pixel];
     
     fblikealert = [[CustomIOS7AlertView alloc] init];
     
@@ -237,7 +237,7 @@
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){
             NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-//            NSLog(@"%@", strData);
+            NSLog(@"%@", strData);
             NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
             if([json objectForKey:@"status"]){
                 referralAlert = [[UIAlertView alloc] initWithTitle:@"Get More Points!" message:@"If you were referred to FreeAppLife by a friend, input their referral code now to ensure that you both benefit. As a bonus, you'll start with 50 points!" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Add!", nil];
@@ -332,6 +332,7 @@
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){
             NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+            NSLog(@"%@", strData);
             NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
             // This will get the NSURLResponse into NSHTTPURLResponse format
             NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
