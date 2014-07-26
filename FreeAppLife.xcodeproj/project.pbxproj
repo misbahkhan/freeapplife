@@ -33,6 +33,9 @@
 		31AE575018D6E42C004F8D4C /* AppIcon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 31AE574E18D6E42C004F8D4C /* AppIcon@2x.png */; };
 		31BF322918CE67FB0050AB5C /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D05D7E411897A522006593A9 /* FacebookSDK.framework */; };
 		D030791A1909EA2F0058013B /* ps4.png in Resources */ = {isa = PBXBuildFile; fileRef = D03079191909EA2F0058013B /* ps4.png */; };
+		D03283E11970A7AA00D36218 /* goneFreeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D03283E01970A7AA00D36218 /* goneFreeViewController.m */; };
+		D03283E71970B19B00D36218 /* fire@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D03283E51970B19B00D36218 /* fire@2x.png */; };
+		D032840E1970F61000D36218 /* fire.png in Resources */ = {isa = PBXBuildFile; fileRef = D032840D1970F61000D36218 /* fire.png */; };
 		D03762AB18C1689000791FB7 /* checked2.png in Resources */ = {isa = PBXBuildFile; fileRef = D03762AA18C1689000791FB7 /* checked2.png */; };
 		D03762AD18C1694600791FB7 /* checked2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D03762AC18C1694600791FB7 /* checked2@2x.png */; };
 		D03762B018C16A1000791FB7 /* machine2.png in Resources */ = {isa = PBXBuildFile; fileRef = D03762AE18C16A1000791FB7 /* machine2.png */; };
@@ -67,6 +70,8 @@
 		D0AD77C2191AF50300027597 /* close.png in Resources */ = {isa = PBXBuildFile; fileRef = D0AD77C0191AF50300027597 /* close.png */; };
 		D0AD77C3191AF50300027597 /* close@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D0AD77C1191AF50300027597 /* close@2x.png */; };
 		D0AD77C6191AFF7000027597 /* popUp.m in Sources */ = {isa = PBXBuildFile; fileRef = D0AD77C5191AFF7000027597 /* popUp.m */; };
+		D0BAF73A1974A160007D9E74 /* goneFreeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D0BAF7391974A160007D9E74 /* goneFreeCell.m */; };
+		D0BAF781197735C7007D9E74 /* topBariPad.png in Resources */ = {isa = PBXBuildFile; fileRef = D0BAF780197735C7007D9E74 /* topBariPad.png */; };
 		D0C7530A18CC6B5300BDD9A6 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D0C7530918CC6B5300BDD9A6 /* Main_iPhone.storyboard */; };
 		D0CF33DC1918155E003708B9 /* cellView.m in Sources */ = {isa = PBXBuildFile; fileRef = D0CF33DB1918155E003708B9 /* cellView.m */; };
 		D0E0DA54191EED47008D98E2 /* rewardPopUp.m in Sources */ = {isa = PBXBuildFile; fileRef = D0E0DA53191EED47008D98E2 /* rewardPopUp.m */; };
@@ -96,7 +101,6 @@
 		D0E923C11968228600F71BFC /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0E923C01968228600F71BFC /* StoreKit.framework */; };
 		D0E923C31968232800F71BFC /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D0E923C21968232800F71BFC /* Parse.framework */; };
 		D0EEFE5418EE6CB100779B69 /* Main_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D0EEFE5318EE6CB100779B69 /* Main_iPad.storyboard */; };
-		D0EEFE5618EE7C7100779B69 /* topBariPad.png in Resources */ = {isa = PBXBuildFile; fileRef = D0EEFE5518EE7C7100779B69 /* topBariPad.png */; };
 		D0FB51ED18C0055E009C92D7 /* topBar.m in Sources */ = {isa = PBXBuildFile; fileRef = D0FB51EC18C0055E009C92D7 /* topBar.m */; };
 		D0FB51F018C04977009C92D7 /* CustomIOS7AlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = D0FB51EF18C04977009C92D7 /* CustomIOS7AlertView.m */; };
 		D0FB51F318C08867009C92D7 /* rightLine.m in Sources */ = {isa = PBXBuildFile; fileRef = D0FB51F218C08867009C92D7 /* rightLine.m */; };
@@ -146,6 +150,10 @@
 		31AE574E18D6E42C004F8D4C /* AppIcon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "AppIcon@2x.png"; path = "webview/AppIcon@2x.png"; sourceTree = "<group>"; };
 		D02DF302193AADB500B702F5 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
 		D03079191909EA2F0058013B /* ps4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ps4.png; sourceTree = "<group>"; };
+		D03283DF1970A7AA00D36218 /* goneFreeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = goneFreeViewController.h; sourceTree = "<group>"; };
+		D03283E01970A7AA00D36218 /* goneFreeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = goneFreeViewController.m; sourceTree = "<group>"; };
+		D03283E51970B19B00D36218 /* fire@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fire@2x.png"; sourceTree = "<group>"; };
+		D032840D1970F61000D36218 /* fire.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fire.png; sourceTree = "<group>"; };
 		D03762AA18C1689000791FB7 /* checked2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checked2.png; sourceTree = "<group>"; };
 		D03762AC18C1694600791FB7 /* checked2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checked2@2x.png"; sourceTree = "<group>"; };
 		D03762AE18C16A1000791FB7 /* machine2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = machine2.png; sourceTree = "<group>"; };
@@ -188,6 +196,9 @@
 		D0AD77C1191AF50300027597 /* close@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "close@2x.png"; sourceTree = "<group>"; };
 		D0AD77C4191AFF7000027597 /* popUp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = popUp.h; sourceTree = "<group>"; };
 		D0AD77C5191AFF7000027597 /* popUp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = popUp.m; sourceTree = "<group>"; };
+		D0BAF7381974A160007D9E74 /* goneFreeCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = goneFreeCell.h; sourceTree = "<group>"; };
+		D0BAF7391974A160007D9E74 /* goneFreeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = goneFreeCell.m; sourceTree = "<group>"; };
+		D0BAF780197735C7007D9E74 /* topBariPad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = topBariPad.png; sourceTree = "<group>"; };
 		D0C7530918CC6B5300BDD9A6 /* Main_iPhone.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main_iPhone.storyboard; sourceTree = "<group>"; };
 		D0CF33DA1918155E003708B9 /* cellView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cellView.h; sourceTree = "<group>"; };
 		D0CF33DB1918155E003708B9 /* cellView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = cellView.m; sourceTree = "<group>"; };
@@ -222,7 +233,6 @@
 		D0E923C01968228600F71BFC /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		D0E923C21968232800F71BFC /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
 		D0EEFE5318EE6CB100779B69 /* Main_iPad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main_iPad.storyboard; sourceTree = "<group>"; };
-		D0EEFE5518EE7C7100779B69 /* topBariPad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = topBariPad.png; path = webview/topBariPad.png; sourceTree = "<group>"; };
 		D0FB51EB18C0055E009C92D7 /* topBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = topBar.h; sourceTree = "<group>"; };
 		D0FB51EC18C0055E009C92D7 /* topBar.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = topBar.m; sourceTree = "<group>"; };
 		D0FB51EE18C04977009C92D7 /* CustomIOS7AlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomIOS7AlertView.h; sourceTree = "<group>"; };
@@ -326,8 +336,8 @@
 			isa = PBXGroup;
 			children = (
 				313304B21882441800F7DB73 /* freeAppLifeAppDelegate.h */,
-				313304B31882441800F7DB73 /* freeAppLifeAppDelegate.m */,
 				3168FB9018865ACA00BC13C7 /* popup.xib */,
+				313304B31882441800F7DB73 /* freeAppLifeAppDelegate.m */,
 				D0EEFE5318EE6CB100779B69 /* Main_iPad.storyboard */,
 				D0C7530918CC6B5300BDD9A6 /* Main_iPhone.storyboard */,
 				3168FB8D18865A2800BC13C7 /* popView.h */,
@@ -340,6 +350,8 @@
 				D05D7E471897B65E006593A9 /* rewardCell.m */,
 				D062DC061938294F00E86241 /* offerCell.h */,
 				D062DC071938294F00E86241 /* offerCell.m */,
+				D0BAF7381974A160007D9E74 /* goneFreeCell.h */,
+				D0BAF7391974A160007D9E74 /* goneFreeCell.m */,
 				D06AD77918FF677600A742BF /* lazyImage.h */,
 				D06AD77A18FF677600A742BF /* lazyImage.m */,
 				D0E0DA55191F101A008D98E2 /* offerPopUp.h */,
@@ -356,6 +368,8 @@
 				313304BC1882441800F7DB73 /* freeAppLifeViewController.m */,
 				317675CC188B20FA00DCF1C9 /* rewardsViewController.h */,
 				317675CD188B20FA00DCF1C9 /* rewardsViewController.m */,
+				D03283DF1970A7AA00D36218 /* goneFreeViewController.h */,
+				D03283E01970A7AA00D36218 /* goneFreeViewController.m */,
 				D03762D018C1754600791FB7 /* socialViewController.h */,
 				D03762D118C1754600791FB7 /* socialViewController.m */,
 				D05D7E431897A576006593A9 /* settingsViewController.h */,
@@ -407,6 +421,8 @@
 		D03762BE18C1719400791FB7 /* Images */ = {
 			isa = PBXGroup;
 			children = (
+				D032840D1970F61000D36218 /* fire.png */,
+				D03283E51970B19B00D36218 /* fire@2x.png */,
 				D0E923AE19680E0700F71BFC /* message.png */,
 				D0E923AF19680E0700F71BFC /* message@2x.png */,
 				D0E923AA19680DFC00F71BFC /* friends.png */,
@@ -427,7 +443,7 @@
 				D06AD78519011C3400A742BF /* fal icon small.png */,
 				D06AD78119011B4800A742BF /* ipad fal icon.png */,
 				D06AD78319011C0400A742BF /* fal icon.png */,
-				D0EEFE5518EE7C7100779B69 /* topBariPad.png */,
+				D0BAF780197735C7007D9E74 /* topBariPad.png */,
 				31AE574B18D6E153004F8D4C /* LaunchImage.png */,
 				31AE574D18D6E42C004F8D4C /* AppIcon.png */,
 				31AE574E18D6E42C004F8D4C /* AppIcon@2x.png */,
@@ -584,7 +600,6 @@
 				D06AD78019011B3900A742BF /* fal retina ipad.png in Resources */,
 				D0E923AD19680DFC00F71BFC /* friends@2x.png in Resources */,
 				D0E923A719680DA500F71BFC /* invite@2x.png in Resources */,
-				D0EEFE5618EE7C7100779B69 /* topBariPad.png in Resources */,
 				D0AD77C3191AF50300027597 /* close@2x.png in Resources */,
 				D03762B518C16A6300791FB7 /* present@2x.png in Resources */,
 				D06AD78219011B4800A742BF /* ipad fal icon.png in Resources */,
@@ -596,6 +611,7 @@
 				D03762B118C16A1000791FB7 /* machine2@2x.png in Resources */,
 				31AE574F18D6E42C004F8D4C /* AppIcon.png in Resources */,
 				D0C7530A18CC6B5300BDD9A6 /* Main_iPhone.storyboard in Resources */,
+				D03283E71970B19B00D36218 /* fire@2x.png in Resources */,
 				31AE574C18D6E153004F8D4C /* LaunchImage.png in Resources */,
 				D03762AB18C1689000791FB7 /* checked2.png in Resources */,
 				313304BF1882441800F7DB73 /* Images.xcassets in Resources */,
@@ -611,6 +627,8 @@
 				D0E923AC19680DFC00F71BFC /* friends.png in Resources */,
 				D0E923A619680DA500F71BFC /* invite.png in Resources */,
 				3168FB9118865ACA00BC13C7 /* popup.xib in Resources */,
+				D032840E1970F61000D36218 /* fire.png in Resources */,
+				D0BAF781197735C7007D9E74 /* topBariPad.png in Resources */,
 				31AE575018D6E42C004F8D4C /* AppIcon@2x.png in Resources */,
 				D03762BD18C170BC00791FB7 /* EmailLayer.png in Resources */,
 				D03762B018C16A1000791FB7 /* machine2.png in Resources */,
@@ -643,6 +661,7 @@
 				313304B41882441800F7DB73 /* freeAppLifeAppDelegate.m in Sources */,
 				D0CF33DC1918155E003708B9 /* cellView.m in Sources */,
 				D0AD77C6191AFF7000027597 /* popUp.m in Sources */,
+				D03283E11970A7AA00D36218 /* goneFreeViewController.m in Sources */,
 				D0E0DA57191F101A008D98E2 /* offerPopUp.m in Sources */,
 				D03762D218C1754600791FB7 /* socialViewController.m in Sources */,
 				D0E0DA54191EED47008D98E2 /* rewardPopUp.m in Sources */,
@@ -655,6 +674,7 @@
 				D05D7E451897A576006593A9 /* settingsViewController.m in Sources */,
 				D0FB51F018C04977009C92D7 /* CustomIOS7AlertView.m in Sources */,
 				D0E0DA5A192015A6008D98E2 /* customPopUp.m in Sources */,
+				D0BAF73A1974A160007D9E74 /* goneFreeCell.m in Sources */,
 				D0FB51ED18C0055E009C92D7 /* topBar.m in Sources */,
 				D06AD77B18FF677600A742BF /* lazyImage.m in Sources */,
 			);
@@ -800,7 +820,7 @@
 					"$(PROJECT_DIR)/webview/Flurry",
 				);
 				PRODUCT_NAME = FreeAppLife;
-				PROVISIONING_PROFILE = "0BFB53F9-A980-48D0-8C4A-485A734870C4";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};
@@ -810,8 +830,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: TechKnowledgeG LLC";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TechKnowledgeG LLC";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/misbahkhan/Desktop/webview,
@@ -829,7 +849,7 @@
 					"$(PROJECT_DIR)/webview/Flurry",
 				);
 				PRODUCT_NAME = FreeAppLife;
-				PROVISIONING_PROFILE = "6C351AA0-85D8-47FF-8B5A-35D162EA63DA";
+				PROVISIONING_PROFILE = "552057B6-B712-4D50-85D8-F6F9EED878D8";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};

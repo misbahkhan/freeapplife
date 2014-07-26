@@ -14,6 +14,7 @@
 #import <CommonCrypto/CommonDigest.h>
 #import <Social/Social.h>
 #import <Accounts/Accounts.h>
+#import <Parse/Parse.h>
 
 @implementation API
 {
@@ -220,6 +221,12 @@
             NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
 //            NSLog(@"user: %@", strData);
             _userData = [json mutableCopy];
+            
+            PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+            NSString *channel = [NSString stringWithFormat:@"ref_%@", [json objectForKey:@"referral_code"]];
+            [currentInstallation addUniqueObject:channel forKey:@"channels"];
+            [currentInstallation saveInBackground];
+            
 //            if(![_userData isEqual:json]){
                 [[NSNotificationCenter defaultCenter] postNotificationName:_notificationName object:self];
             if([[json objectForKey:@"maint_mode"] boolValue] == TRUE) {

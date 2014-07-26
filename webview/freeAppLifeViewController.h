@@ -11,7 +11,7 @@
 #import "CustomIOS7AlertView.h"
 #import <StoreKit/StoreKit.h>
 
-@interface freeAppLifeViewController : UIViewController <UIWebViewDelegate, UITabBarDelegate, NSURLConnectionDataDelegate, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate,CustomIOS7AlertViewDelegate,SKStoreProductViewControllerDelegate>
+@interface freeAppLifeViewController : UIViewController <UIWebViewDelegate, UITabBarDelegate, NSURLConnectionDataDelegate, UITableViewDataSource, UITableViewDelegate, UIAlertViewDelegate,CustomIOS7AlertViewDelegate,SKStoreProductViewControllerDelegate, UIScrollViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UIWebView *webView;
 @property (weak, nonatomic) IBOutlet UIView *waitView;

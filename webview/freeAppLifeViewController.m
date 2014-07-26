@@ -49,6 +49,7 @@
     BOOL loggedIn;
     BOOL redirectedToPage;
     BOOL liked;
+    UIButton *featured;
 }
 
 @end
@@ -275,7 +276,7 @@
 
 - (void) featuredImage
 {
-    UIButton *featured = [[UIButton alloc] initWithFrame:CGRectMake((screenWidth/2)-140, 44, 280, 100)];
+    featured = [[UIButton alloc] initWithFrame:CGRectMake((screenWidth/2)-140, 44, 280, 100)];
     [self.view addSubview:featured];
     
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://freeapplife.com/fal/png/featured.png"]];
@@ -324,15 +325,15 @@
     NSString *postString = [NSString stringWithFormat:@"userID=%@&idfa=%@", [sharedInstance md5ForString: [sharedInstance serialNumber]], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
     
     #ifdef DEBUG
-        NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"offersSorted" andBody:postString];
+        NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"offersTest" andBody:postString];
     #else
-        NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"offersSorted" andBody:postString];
+        NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"offersTest" andBody:postString];
     #endif
     
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         if([data length] > 0){
             NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-            NSLog(@"%@", strData);
+//            NSLog(@"%@", strData);
             NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
             // This will get the NSURLResponse into NSHTTPURLResponse format
             NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
@@ -366,24 +367,6 @@
                 [self pendingOffers];
             }else{
                 refreshing = FALSE;
-            }
-        }
-    }];
-}
-
-- (void) goneFreeList {
-    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"goneFreeList" andBody:nil];
-    
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-        if([data length] > 0){
-            NSDictionary *dataDictionary = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-            NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
-            int responseStatusCode = (int)[httpResponse statusCode];
-            if(responseStatusCode == 200){
-//                NSMutableArray *tmp = [[NSMutableArray alloc] initWithArray:[dataDictionary objectForKey:@"goneFree"]];
-//                NSLog(@"%@", dataDictionary);
-            }else{
-//                refreshing = FALSE;
             }
         }
     }];
@@ -595,6 +578,28 @@
     }
 }
 
+- (void) scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    NSString *deviceType = [UIDevice currentDevice].model;
+    
+    if(![deviceType isEqualToString:@"iPad"]){
+        float off = scrollView.contentOffset.y;
+        
+        CGRect oldFrame = featured.frame;
+        
+        if(off < 1 && off > -100){
+            oldFrame.origin.y = 44 - (100 + (int)off);
+            featured.frame = oldFrame;
+        }else if(off > 1){
+            oldFrame.origin.y = -100;
+            featured.frame = oldFrame;
+        }else if(off < -99){
+            oldFrame.origin.y = 44;
+            featured.frame = oldFrame;
+        }
+    }
+}
+
 - (void) productViewControllerDidFinish:(SKStoreProductViewController *)viewController
 {
     [offerView afterMessage];
@@ -609,9 +614,19 @@
         NSError *error = NULL;
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"itunes.apple.com" options:NSRegularExpressionCaseInsensitive error:&error];
         NSUInteger regexNums = [regex numberOfMatchesInString:[[request URL] absoluteString] options:0 range:NSMakeRange(0, [[[request URL] absoluteString] length])];
+
+        NSRegularExpression *regex2 = [NSRegularExpression regularExpressionWithPattern:@"&uo=4&at=11lJ78" options:NSRegularExpressionCaseInsensitive error:&error];
+        NSUInteger regexNums2 = [regex2 numberOfMatchesInString:[[request URL] absoluteString] options:0 range:NSMakeRange(0, [[[request URL] absoluteString] length])];
+
         if(regexNums > 0){
-            [offerView afterMessage];
-            return YES;
+            if(regexNums2 > 0){
+                [offerView afterMessage];
+                return YES;
+            }
+            NSString *newURL = [request.URL absoluteString];
+            newURL = [newURL stringByAppendingString:@"&uo=4&at=11lJ78"];
+            [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:newURL]]];
+            return NO;
         }
         redirects++;
         [offerView.progress setProgress:redirects*0.1];

@@ -10,6 +10,7 @@
 #import "CustomIOS7AlertView.h"
 #import "API.h"
 #import "rewardCell.h"
+#import <Parse/Parse.h>
 
 @interface settingsViewController ()
 {
@@ -24,6 +25,7 @@
     CGRect screenRect;
     CGFloat screenWidth;
     CGFloat screenHeight;
+    IBOutlet UISwitch *goneFreeSwitch;
 }
 
 @end
@@ -49,7 +51,7 @@
     screenRect = [[UIScreen mainScreen] bounds];
     screenWidth = screenRect.size.width;
     screenHeight = screenRect.size.height;
-    float y = 100;
+    float y = 150;
     history = [[UITableView alloc] initWithFrame:CGRectMake(0, y, screenWidth, screenHeight-150)];
     history.delegate = self;
     history.dataSource = self;
@@ -67,6 +69,19 @@
     [self.view addSubview:refresh];
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dataUpdated:) name:[sharedInstance notificationName] object:nil];
+    
+}
+
+- (IBAction)setSwitch:(id)sender {
+    if(goneFreeSwitch.on){
+        PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+        [currentInstallation addUniqueObject:@"GoneFree" forKey:@"channels"];
+        [currentInstallation saveInBackground];
+    }else{
+        PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+        [currentInstallation removeObject:@"GoneFree" forKey:@"channels"];
+        [currentInstallation saveInBackground];
+    }
 }
 
 - (void) dataUpdated:(id)sender
@@ -134,6 +149,10 @@
 {
     [sharedInstance user];
     [self getHistory];
+    NSArray *subscribedChannels = [PFInstallation currentInstallation].channels;
+    if([subscribedChannels containsObject:@"GoneFree"]){
+        [goneFreeSwitch setOn:YES];
+    }
 }
 
 

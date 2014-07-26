@@ -23,10 +23,12 @@
                                 </connections>
                             </webView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="102" sectionHeaderHeight="1" sectionFooterHeight="1" id="4hS-nz-yE7">
-                                <rect key="frame" x="0.0" y="144" width="320" height="512"/>
+                                <rect key="frame" x="0.0" y="44" width="320" height="524"/>
                                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <inset key="insetFor6xAndEarlier" minX="0.0" minY="0.0" maxX="0.0" maxY="-88"/>
+                                <inset key="contentInset" minX="0.0" minY="100" maxX="0.0" maxY="0.0"/>
+                                <inset key="scrollIndicatorInsets" minX="0.0" minY="100" maxX="0.0" maxY="0.0"/>
                                 <sections/>
                                 <connections>
                                     <outlet property="dataSource" destination="vXZ-lx-hvc" id="uAM-Wx-iwz"/>
@@ -60,12 +62,75 @@
                         <segue destination="vXZ-lx-hvc" kind="relationship" relationship="viewControllers" id="u8y-7z-XTC"/>
                         <segue destination="cQ2-QP-Voh" kind="relationship" relationship="viewControllers" id="zTu-Ri-Mnf"/>
                         <segue destination="VLK-Pe-G7l" kind="relationship" relationship="viewControllers" id="bp9-wS-aNh"/>
+                        <segue destination="xo2-h2-sem" kind="relationship" relationship="viewControllers" id="Pla-38-7Qk"/>
                         <segue destination="a50-cd-YEe" kind="relationship" relationship="viewControllers" id="kF7-gV-EHy"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="kxh-uC-APv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="73" y="1025"/>
+            <point key="canvasLocation" x="84" y="1025"/>
+        </scene>
+        <!--Gone Free View Controller - Gone Free-->
+        <scene sceneID="fVb-HX-ZfC">
+            <objects>
+                <viewController id="xo2-h2-sem" customClass="goneFreeViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="KQB-f7-LHg">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="Kno-ha-7Sr">
+                                <rect key="frame" x="0.0" y="44" width="320" height="524"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <inset key="contentInset" minX="0.0" minY="150" maxX="0.0" maxY="44"/>
+                                <inset key="scrollIndicatorInsets" minX="0.0" minY="150" maxX="0.0" maxY="44"/>
+                                <connections>
+                                    <outlet property="dataSource" destination="xo2-h2-sem" id="CVp-Uv-hUh"/>
+                                    <outlet property="delegate" destination="xo2-h2-sem" id="Oqb-5H-PYm"/>
+                                </connections>
+                            </tableView>
+                            <view contentMode="scaleToFill" id="CLf-Aj-Z4I">
+                                <rect key="frame" x="0.0" y="44" width="320" height="150"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <subviews>
+                                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="TJE-FZ-BKt">
+                                        <rect key="frame" x="29" y="126" width="247" height="16"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <attributedString key="attributedText">
+                                            <fragment content="Enable notifications for Gone Free">
+                                                <attributes>
+                                                    <color key="NSColor" cocoaTouchSystemColor="darkTextColor"/>
+                                                    <font key="NSFont" size="15" name="HelveticaNeue-Light"/>
+                                                    <paragraphStyle key="NSParagraphStyle" alignment="left" lineBreakMode="wordWrapping" baseWritingDirection="natural"/>
+                                                </attributes>
+                                            </fragment>
+                                        </attributedString>
+                                        <nil key="highlightedColor"/>
+                                    </label>
+                                    <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" id="PFT-RO-Fm5">
+                                        <rect key="frame" x="251" y="119" width="51" height="31"/>
+                                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                        <connections>
+                                            <action selector="switched:" destination="xo2-h2-sem" eventType="valueChanged" id="tYm-tM-V9s"/>
+                                        </connections>
+                                    </switch>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                            </view>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <tabBarItem key="tabBarItem" title="Gone Free" image="fire.png" id="Lit-Qq-XEw"/>
+                    <connections>
+                        <outlet property="goneFreeTable" destination="Kno-ha-7Sr" id="gd2-Wd-LJA"/>
+                        <outlet property="notif_toggle" destination="PFT-RO-Fm5" id="6tT-Qy-0YR"/>
+                        <outlet property="topView" destination="CLf-Aj-Z4I" id="6Ba-bJ-tHS"/>
+                        <outlet property="updates" destination="TJE-FZ-BKt" id="g2t-ZP-BZk"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nFv-R9-Crq" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="474" y="341"/>
         </scene>
         <!--Settings View Controller - Settings-->
         <scene sceneID="r3h-qR-DBN">
@@ -75,18 +140,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
-                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="F4D-IO-OKY">
-                                <rect key="frame" x="20" y="39" width="135" height="30"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <state key="normal" title="Restore v2 Account">
-                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
-                                </state>
-                                <connections>
-                                    <action selector="restore:" destination="a50-cd-YEe" eventType="touchUpInside" id="qcc-Bo-1zD"/>
-                                </connections>
-                            </button>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Redemption History (tap to copy)" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="TB7-0z-Q36">
-                                <rect key="frame" x="15" y="64" width="291" height="43"/>
+                                <rect key="frame" x="15" y="114" width="291" height="43"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
@@ -102,12 +157,26 @@
                                     <action selector="troubleshoot:" destination="a50-cd-YEe" eventType="touchUpInside" id="Bxz-bW-6Bl"/>
                                 </connections>
                             </button>
+                            <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="vKF-ha-xUo">
+                                <rect key="frame" x="251" y="77" width="51" height="31"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <connections>
+                                    <action selector="setSwitch:" destination="a50-cd-YEe" eventType="valueChanged" id="ceJ-8l-SAF"/>
+                                </connections>
+                            </switch>
+                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enable notifications for Gone Free" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="dK1-qB-sym">
+                                <rect key="frame" x="20" y="82" width="223" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
                     <tabBarItem key="tabBarItem" title="Settings" image="machine2.png" id="HGT-YI-D7V"/>
                     <connections>
-                        <outlet property="restore_button" destination="F4D-IO-OKY" id="hjC-FG-yPX"/>
+                        <outlet property="goneFreeSwitch" destination="vKF-ha-xUo" id="lx2-vM-I5g"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="BpM-1E-gla" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -123,7 +192,7 @@
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4RJ-Mq-wC6">
-                                <rect key="frame" x="13" y="133" width="293" height="38"/>
+                                <rect key="frame" x="13" y="103" width="293" height="38"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                 <state key="normal" image="ReferLayer_inf.png">
@@ -134,7 +203,7 @@
                                 </connections>
                             </button>
                             <textField opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" minimumFontSize="17" id="BRo-Pk-BF6">
-                                <rect key="frame" x="54" y="133" width="179" height="38"/>
+                                <rect key="frame" x="54" y="103" width="179" height="38"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <textInputTraits key="textInputTraits"/>
@@ -143,14 +212,14 @@
                                 </connections>
                             </textField>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="[tap to copy]" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="mHm-98-Lu6">
-                                <rect key="frame" x="113" y="141" width="101" height="21"/>
+                                <rect key="frame" x="113" y="111" width="101" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="aLt-D9-4DR">
-                                <rect key="frame" x="13" y="169" width="293" height="30"/>
+                                <rect key="frame" x="13" y="139" width="293" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="About your referral code.">
                                     <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
@@ -160,7 +229,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="j9A-Gw-eRp">
-                                <rect key="frame" x="21" y="287" width="195" height="30"/>
+                                <rect key="frame" x="21" y="257" width="195" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <inset key="imageEdgeInsets" minX="-25" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <state key="normal" title="iMessage / Text" image="message.png">
@@ -176,7 +245,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Oya-jX-Opv">
-                                <rect key="frame" x="13" y="325" width="103" height="32"/>
+                                <rect key="frame" x="13" y="295" width="103" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <inset key="titleEdgeInsets" minX="25" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <state key="normal" title="Email" image="email.png">
@@ -188,7 +257,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="6av-eY-MUk">
-                                <rect key="frame" x="13" y="365" width="105" height="26"/>
+                                <rect key="frame" x="13" y="335" width="105" height="26"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <inset key="titleEdgeInsets" minX="25" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <state key="normal" title="Tweet" image="twitter.png">
@@ -200,7 +269,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="4Tl-5Y-xwB">
-                                <rect key="frame" x="24" y="207" width="200" height="32"/>
+                                <rect key="frame" x="24" y="177" width="200" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <inset key="titleEdgeInsets" minX="25" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <inset key="imageEdgeInsets" minX="-15" minY="0.0" maxX="0.0" maxY="0.0"/>
@@ -213,7 +282,7 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="JEq-Mr-BWT">
-                                <rect key="frame" x="13" y="247" width="168" height="32"/>
+                                <rect key="frame" x="13" y="217" width="168" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <inset key="titleEdgeInsets" minX="25" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 <state key="normal" title="Invite Friends" image="invite.png">
@@ -225,13 +294,13 @@
                                 </connections>
                             </button>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="You have referred  people." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="u4r-uF-jfg">
-                                <rect key="frame" x="43" y="414" width="234" height="21"/>
+                                <rect key="frame" x="43" y="384" width="234" height="21"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Earn Unlimited Bonus Points" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="YOl-Oo-vd1">
-                                <rect key="frame" x="45" y="69" width="231" height="64"/>
+                                <rect key="frame" x="45" y="39" width="231" height="64"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <fontDescription key="fontDescription" name="HelveticaNeue-Thin" family="Helvetica Neue" pointSize="19"/>
                                 <color key="textColor" red="0.0" green="0.47843137250000001" blue="1" alpha="1" colorSpace="calibratedRGB"/>
@@ -338,6 +407,7 @@
         <image name="checked2.png" width="21" height="30"/>
         <image name="email.png" width="32" height="32"/>
         <image name="facebook.png" width="17" height="32"/>
+        <image name="fire.png" width="52" height="52"/>
         <image name="group2.png" width="29" height="30"/>
         <image name="invite.png" width="32" height="32"/>
         <image name="machine2.png" width="31" height="30"/>
