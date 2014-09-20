@@ -23,11 +23,28 @@
 {
     [continueButton setUserInteractionEnabled:NO];
     [continueButton setTitle:@"Loading" forState:UIControlStateNormal];
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://freeapplife.com/api/redeem"]];
-    [request setAllHTTPHeaderFields:@{@"User-Agent": @"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"}];
-    [request setHTTPMethod:@"POST"];
-    NSString *postString = [NSString stringWithFormat:@"userID=%@&rewardID=%@", [sharedInstance serialNumber], [_data objectForKey:@"SecretID"]];
-    [request setHTTPBody:[postString dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    NSString *postString = [NSString stringWithFormat:@"userID=%@&rewardID=%@", [sharedInstance userID], [_data objectForKey:@"SecretID"]];
+    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"redeem" andBody:postString];
+    
+//    [NSURLConnection sendAsynchronousRequest:request3 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+//        if([data length] > 0){
+//            videoCode = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+//        }
+//    }];
+//    
+    
+    
+    
+//    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"https://freeapplife.com/api/redeem"]];
+//    [request setAllHTTPHeaderFields:@{@"User-Agent": @"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"}];
+//    [request setHTTPMethod:@"POST"];
+//    NSString *postString = [NSString stringWithFormat:@"userID=%@&rewardID=%@", [sharedInstance userID], [_data objectForKey:@"SecretID"]];
+//    [request setHTTPBody:[postString dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    
+    
+    
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
         int responseStatusCode = [httpResponse statusCode];

@@ -11,6 +11,7 @@
 #import "API.h"
 #import "rewardCell.h"
 #import <Parse/Parse.h>
+#import "amazonPopUp.h"
 
 @interface settingsViewController ()
 {
@@ -86,6 +87,15 @@
 
 - (void) dataUpdated:(id)sender
 {
+    if([[sharedInstance userData] objectForKey:@"result"]){
+        if ([[sharedInstance userData][@"result"] isEqualToString:@"config"]) {
+            if (self.isViewLoaded && self.view.window){
+                UIViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"config"];
+                 [self presentViewController:vc animated:NO completion:nil];
+            }
+        }
+    }
+
     _pointsLabel.text = [sharedInstance currentPoints];
 //    historyData = [[sharedInstance userData] objectForKey:@"reward_history"];
 //    [history reloadData];
@@ -99,7 +109,7 @@
 }
 
 - (void) getHistory {
-    NSString *postString = [NSString stringWithFormat:@"userID=%@",[sharedInstance md5ForString:[sharedInstance serialNumber]]];
+    NSString *postString = [NSString stringWithFormat:@"userID=%@",[sharedInstance userID]];
     NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"rewardHistory" andBody:postString];
     
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
@@ -125,8 +135,16 @@
 
 - (void) tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSString *reward = [[historyData objectAtIndex:indexPath.row] objectForKey:@"reward"];
     UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
     pasteboard.string = [[historyData objectAtIndex:indexPath.row] objectForKey:@"code"];
+    
+    if ([reward rangeOfString:@"Amazon"].location != NSNotFound) {
+        NSDictionary *data = [historyData objectAtIndex:indexPath.row];
+        amazonPopUp *amazon = [[amazonPopUp alloc] initWithData:data];
+        [amazon show];
+    }
+    
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -138,8 +156,16 @@
                                       reuseIdentifier:@"rewardCell"];
     }
     
-    cell.textLabel.text = [NSString stringWithFormat:@"%@ (-%@)", [[historyData objectAtIndex:indexPath.row] objectForKey:@"code"], [[historyData objectAtIndex:indexPath.row] objectForKey:@"points"]];
-    cell.detailTextLabel.text = [[historyData objectAtIndex:indexPath.row] objectForKey:@"reward"];
+    NSString *reward = [[historyData objectAtIndex:indexPath.row] objectForKey:@"reward"];
+
+    if ([reward rangeOfString:@"Amazon"].location == NSNotFound) {
+        cell.textLabel.text = [NSString stringWithFormat:@"%@ (-%@)", [[historyData objectAtIndex:indexPath.row] objectForKey:@"code"], [[historyData objectAtIndex:indexPath.row] objectForKey:@"points"]];
+        cell.detailTextLabel.text = [[historyData objectAtIndex:indexPath.row] objectForKey:@"reward"];
+    } else {
+        cell.textLabel.text = [NSString stringWithFormat:@"%@ (-%@)", [[historyData objectAtIndex:indexPath.row] objectForKey:@"reward"], [[historyData objectAtIndex:indexPath.row] objectForKey:@"points"]];
+        cell.detailTextLabel.text = @"Tap to open";
+    }
+
 //    cell.image.image = nil;
 //    cell.data = [historyData objectAtIndex:indexPath.row];
     return cell;
@@ -167,87 +193,6 @@
 {
     [textField resignFirstResponder];
     return YES;
-}
-
-- (IBAction)restore:(id)sender
-{
-    CustomIOS7AlertView *alert = [[CustomIOS7AlertView alloc] init];
-    
-    UIView *restoreView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 280, 230)];
-    [restoreView setBackgroundColor:[UIColor clearColor]];
-    
-    UILabel *restoreViewTitle = [[UILabel alloc] initWithFrame:CGRectMake(20, 10, 240, 100)];
-    [restoreViewTitle setText:@"To restore your points from your previous FAL 2.0 account, type in your crednetials below!"];
-    [restoreViewTitle setNumberOfLines:4];
-    [restoreViewTitle setTextAlignment:NSTextAlignmentCenter];
-    
-    email = [[UITextField alloc] initWithFrame:CGRectMake(20, 110, 240, 32)];
-    [email setBorderStyle:UITextBorderStyleRoundedRect];
-    [email setDelegate:self];
-    [email setPlaceholder:@"Email Address"];
-    
-    password = [[UITextField alloc] initWithFrame:CGRectMake(20, 152, 240, 32)];
-    [password setBorderStyle:UITextBorderStyleRoundedRect];
-    [password setSecureTextEntry:YES];
-    [password setDelegate:self];
-    [password setPlaceholder:@"Password"];
-    
-    [restoreView addSubview:restoreViewTitle];
-    [restoreView addSubview:email];
-    [restoreView addSubview:password]; 
-    
-    [alert setDelegate:self];
-    [alert setContainerView:restoreView];
-    [alert setButtonTitles:[NSMutableArray arrayWithObjects:@"Cancel", @"Migrate", nil]];
-    [alert show];
-    
-    [alert setOnButtonTouchUpInside:^(CustomIOS7AlertView *alertView, int buttonIndex) {
-        if(buttonIndex == 1){
-//            NSLog(@"migrate");
-//            NSLog(@"%@", [email text]);
-//            NSLog(@"%@", [password text]);
-            NSString *postString = [NSString stringWithFormat:@"userID=%@&email=%@&password=%@",[sharedInstance md5ForString:[sharedInstance serialNumber]], [email text], [password text]];
-            NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"regainData" andBody:postString];
-            
-            [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-                NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-//                NSLog(@"%@", response);
-                NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-//                NSLog(@"user: %@", strData);
-                
-                NSHTTPURLResponse* httpResponse = (NSHTTPURLResponse*)response;
-                int responseStatusCode = [httpResponse statusCode];
-//                NSLog(@"%d", responseStatusCode);
-                
-                if(responseStatusCode == 204){
-                    UILabel *error = [[UILabel alloc] initWithFrame:CGRectMake(20, 180, 240, 50)];
-                    [error setText:@"Error, wrong credentials or already migrated."];
-                    [error setTextAlignment:NSTextAlignmentCenter];
-                    [error setNumberOfLines:2];
-                    [restoreView addSubview:error];
-                    [alertView setContainerView:restoreView];
-                }
-                
-                if([data length] > 0){
-                    if ([[json objectForKey:@"status"] isEqualToString:@"Failed"] || responseStatusCode == 204) {
-                        UILabel *error = [[UILabel alloc] initWithFrame:CGRectMake(20, 180, 240, 50)];
-                        [error setText:@"Error, wrong credentials or already migrated."];
-                        [error setTextAlignment:NSTextAlignmentCenter];
-                        [error setNumberOfLines:2];
-                        [restoreView addSubview:error];
-                        [alertView setContainerView:restoreView];
-                    }else{
-                        [alertView close];
-                        [sharedInstance user];
-                        [restore_button setHidden:YES];
-                    }
-                }
-
-            }];
-        }else{
-            
-        }
-    }];
 }
 
 - (IBAction)troubleshoot:(id)sender {

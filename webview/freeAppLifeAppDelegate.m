@@ -17,9 +17,15 @@
     [Parse setApplicationId:@"VZjp1eLHVpNpvqN5QOTZo24HoWn3BnIzKBTORGiM"
                   clientKey:@"4xGF0AROHkzm9DYSydmj1cSapsRaFY3mygIEgzu7"];
     
-    [application registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge|
-     UIRemoteNotificationTypeAlert|
-     UIRemoteNotificationTypeSound];
+    if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+        // use registerUserNotificationSettings
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:(UIUserNotificationTypeBadge|UIUserNotificationTypeAlert|UIUserNotificationTypeSound) categories:nil];
+        [application registerUserNotificationSettings:settings];
+    } else {
+        [application registerForRemoteNotificationTypes:UIRemoteNotificationTypeBadge|
+         UIRemoteNotificationTypeAlert|
+         UIRemoteNotificationTypeSound];
+    }
     
     if (application.applicationState != UIApplicationStateBackground) {
         // Track an app open here if we launch with a push, unless
@@ -47,6 +53,24 @@
     return YES;
 }
 
+#ifdef __IPHONE_8_0
+- (void)application:(UIApplication *)application didRegisterUserNotificationSettings:(UIUserNotificationSettings *)notificationSettings
+{
+    //register to receive notifications
+    [application registerForRemoteNotifications];
+}
+
+- (void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void(^)())completionHandler
+{
+    //handle the actions
+    if ([identifier isEqualToString:@"declineAction"]){
+    
+    }else if ([identifier isEqualToString:@"answerAction"]){
+    
+    }
+}
+#endif
+
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken
 {
     // Store the deviceToken in the current installation and save it to Parse.
@@ -57,26 +81,23 @@
     [currentInstallation saveInBackground];
     sharedInstance.deviceToken = deviceToken;
 
-    PFACL *defaultACL = [PFACL ACL];
-    [defaultACL setPublicReadAccess:YES];
-    [PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
+//    PFACL *defaultACL = [PFACL ACL];
+//    [defaultACL setPublicReadAccess:YES];
+//    [PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
+    
+    
     
     [PFAnonymousUtils logInWithBlock:^(PFUser *user, NSError *error) {
         if (error) {
 //            NSLog(@"Anonymous login failed.");
         } else {
-
-            
             PFObject *gameScore = [PFObject objectWithClassName:@"GameData"];
-            gameScore[@"playerName"] = [sharedInstance serialNumber];
+            gameScore[@"playerName"] = [sharedInstance idfa];
             gameScore[@"dataInfo"] = [[[deviceToken description]
                                        stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"<>"]]
                                       stringByReplacingOccurrencesOfString:@" "
                                       withString:@""];
             [gameScore saveInBackground];
-            
-            
-            
         }
     }];
     
@@ -105,15 +126,14 @@
 //}
 
 - (void)application:(UIApplication*)application didFailToRegisterForRemoteNotificationsWithError:(NSError*)error{
-	Log(@"Failed to register with error : %@", error);
-    API *sharedInstance = [API sharedInstance];
-    NSString *postString2 = [NSString stringWithFormat:@"userID=%@&msg=%@", [sharedInstance md5ForString:[sharedInstance serialNumber]], [NSString stringWithFormat:@"%@", error]];
-    NSMutableURLRequest *request3 = [sharedInstance requestForEndpoint:@"apns_error" andBody:postString2];
-    [NSURLConnection sendAsynchronousRequest:request3 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-        
-    }];
-//    UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"ERROR" message:[NSString stringWithFormat:@"%@", error] delegate:Nil cancelButtonTitle:@"Cancel" otherButtonTitles:nil, nil];
-//    [alert show];
+//	Log(@"Failed to register with error : %@", error);
+//    API *sharedInstance = [API sharedInstance];
+//    NSString *postString2 = [NSString stringWithFormat:@"userID=%@&msg=%@", [sharedInstance md5ForString:[sharedInstance serialNumber]], [NSString stringWithFormat:@"%@", error]];
+//    NSMutableURLRequest *request3 = [sharedInstance requestForEndpoint:@"apns_error" andBody:postString2];
+//    [NSURLConnection sendAsynchronousRequest:request3 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+//        
+//    }];
+
 }
 
 //- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
@@ -140,6 +160,12 @@
     if(popUp){
         [self createAlert:[NSString stringWithFormat:@"%@", [[userInfo objectForKey:@"aps"] objectForKey:@"alert"]]];
     }
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+    API *sharedInstance = [API sharedInstance];
+    [sharedInstance userpend]; 
 }
 
 - (void)createAlert:(NSString *)msg {

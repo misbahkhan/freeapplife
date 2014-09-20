@@ -35,7 +35,6 @@
 		D030791A1909EA2F0058013B /* ps4.png in Resources */ = {isa = PBXBuildFile; fileRef = D03079191909EA2F0058013B /* ps4.png */; };
 		D03283E11970A7AA00D36218 /* goneFreeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D03283E01970A7AA00D36218 /* goneFreeViewController.m */; };
 		D03283E71970B19B00D36218 /* fire@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D03283E51970B19B00D36218 /* fire@2x.png */; };
-		D032840E1970F61000D36218 /* fire.png in Resources */ = {isa = PBXBuildFile; fileRef = D032840D1970F61000D36218 /* fire.png */; };
 		D03762AB18C1689000791FB7 /* checked2.png in Resources */ = {isa = PBXBuildFile; fileRef = D03762AA18C1689000791FB7 /* checked2.png */; };
 		D03762AD18C1694600791FB7 /* checked2@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D03762AC18C1694600791FB7 /* checked2@2x.png */; };
 		D03762B018C16A1000791FB7 /* machine2.png in Resources */ = {isa = PBXBuildFile; fileRef = D03762AE18C16A1000791FB7 /* machine2.png */; };
@@ -51,6 +50,8 @@
 		D05D7E451897A576006593A9 /* settingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D05D7E441897A576006593A9 /* settingsViewController.m */; };
 		D05D7E481897B65E006593A9 /* rewardCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D05D7E471897B65E006593A9 /* rewardCell.m */; };
 		D05D7E4A189880ED006593A9 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D05D7E49189880ED006593A9 /* Social.framework */; };
+		D0624E6A198AFF3A007AD059 /* fire.png in Resources */ = {isa = PBXBuildFile; fileRef = D0624E69198AFF3A007AD059 /* fire.png */; };
+		D0624E6D198B3FEF007AD059 /* amazonPopUp.m in Sources */ = {isa = PBXBuildFile; fileRef = D0624E6C198B3FEF007AD059 /* amazonPopUp.m */; };
 		D062DC081938294F00E86241 /* offerCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D062DC071938294F00E86241 /* offerCell.m */; };
 		D066162B18CAAA620022B8DB /* topBar.png in Resources */ = {isa = PBXBuildFile; fileRef = D066162A18CAAA620022B8DB /* topBar.png */; };
 		D066162D18CBF70D0022B8DB /* button.png in Resources */ = {isa = PBXBuildFile; fileRef = D066162C18CBF70D0022B8DB /* button.png */; };
@@ -70,6 +71,12 @@
 		D0AD77C2191AF50300027597 /* close.png in Resources */ = {isa = PBXBuildFile; fileRef = D0AD77C0191AF50300027597 /* close.png */; };
 		D0AD77C3191AF50300027597 /* close@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D0AD77C1191AF50300027597 /* close@2x.png */; };
 		D0AD77C6191AFF7000027597 /* popUp.m in Sources */ = {isa = PBXBuildFile; fileRef = D0AD77C5191AFF7000027597 /* popUp.m */; };
+		D0AF32C619C7B7AE0001CA21 /* config.xib in Resources */ = {isa = PBXBuildFile; fileRef = D0AF32C519C7B7AE0001CA21 /* config.xib */; };
+		D0AF32C919C7B97D0001CA21 /* configPopUp.m in Sources */ = {isa = PBXBuildFile; fileRef = D0AF32C819C7B97D0001CA21 /* configPopUp.m */; };
+		D0AF32CC19C7CCE40001CA21 /* configViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D0AF32CB19C7CCE40001CA21 /* configViewController.m */; };
+		D0AF32DB19C9B6230001CA21 /* installbutton.png in Resources */ = {isa = PBXBuildFile; fileRef = D0AF32D919C9B6230001CA21 /* installbutton.png */; };
+		D0AF32DC19C9B6230001CA21 /* installbutton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D0AF32DA19C9B6230001CA21 /* installbutton@2x.png */; };
+		D0AF32E019C9B9450001CA21 /* ios8f.png in Resources */ = {isa = PBXBuildFile; fileRef = D0AF32DF19C9B9450001CA21 /* ios8f.png */; };
 		D0BAF73A1974A160007D9E74 /* goneFreeCell.m in Sources */ = {isa = PBXBuildFile; fileRef = D0BAF7391974A160007D9E74 /* goneFreeCell.m */; };
 		D0BAF781197735C7007D9E74 /* topBariPad.png in Resources */ = {isa = PBXBuildFile; fileRef = D0BAF780197735C7007D9E74 /* topBariPad.png */; };
 		D0C7530A18CC6B5300BDD9A6 /* Main_iPhone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = D0C7530918CC6B5300BDD9A6 /* Main_iPhone.storyboard */; };
@@ -153,7 +160,6 @@
 		D03283DF1970A7AA00D36218 /* goneFreeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = goneFreeViewController.h; sourceTree = "<group>"; };
 		D03283E01970A7AA00D36218 /* goneFreeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = goneFreeViewController.m; sourceTree = "<group>"; };
 		D03283E51970B19B00D36218 /* fire@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "fire@2x.png"; sourceTree = "<group>"; };
-		D032840D1970F61000D36218 /* fire.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fire.png; sourceTree = "<group>"; };
 		D03762AA18C1689000791FB7 /* checked2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = checked2.png; sourceTree = "<group>"; };
 		D03762AC18C1694600791FB7 /* checked2@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "checked2@2x.png"; sourceTree = "<group>"; };
 		D03762AE18C16A1000791FB7 /* machine2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = machine2.png; sourceTree = "<group>"; };
@@ -174,6 +180,9 @@
 		D05D7E461897B65E006593A9 /* rewardCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rewardCell.h; sourceTree = "<group>"; };
 		D05D7E471897B65E006593A9 /* rewardCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = rewardCell.m; sourceTree = "<group>"; };
 		D05D7E49189880ED006593A9 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
+		D0624E69198AFF3A007AD059 /* fire.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fire.png; sourceTree = "<group>"; };
+		D0624E6B198B3FEF007AD059 /* amazonPopUp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = amazonPopUp.h; sourceTree = "<group>"; };
+		D0624E6C198B3FEF007AD059 /* amazonPopUp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = amazonPopUp.m; sourceTree = "<group>"; };
 		D062DC061938294F00E86241 /* offerCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = offerCell.h; sourceTree = "<group>"; };
 		D062DC071938294F00E86241 /* offerCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = offerCell.m; sourceTree = "<group>"; };
 		D066162A18CAAA620022B8DB /* topBar.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = topBar.png; path = webview/topBar.png; sourceTree = "<group>"; };
@@ -196,6 +205,14 @@
 		D0AD77C1191AF50300027597 /* close@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "close@2x.png"; sourceTree = "<group>"; };
 		D0AD77C4191AFF7000027597 /* popUp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = popUp.h; sourceTree = "<group>"; };
 		D0AD77C5191AFF7000027597 /* popUp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = popUp.m; sourceTree = "<group>"; };
+		D0AF32C519C7B7AE0001CA21 /* config.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = config.xib; sourceTree = "<group>"; };
+		D0AF32C719C7B97D0001CA21 /* configPopUp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = configPopUp.h; sourceTree = "<group>"; };
+		D0AF32C819C7B97D0001CA21 /* configPopUp.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = configPopUp.m; sourceTree = "<group>"; };
+		D0AF32CA19C7CCE40001CA21 /* configViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = configViewController.h; sourceTree = "<group>"; };
+		D0AF32CB19C7CCE40001CA21 /* configViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = configViewController.m; sourceTree = "<group>"; };
+		D0AF32D919C9B6230001CA21 /* installbutton.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = installbutton.png; sourceTree = "<group>"; };
+		D0AF32DA19C9B6230001CA21 /* installbutton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "installbutton@2x.png"; sourceTree = "<group>"; };
+		D0AF32DF19C9B9450001CA21 /* ios8f.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = ios8f.png; sourceTree = "<group>"; };
 		D0BAF7381974A160007D9E74 /* goneFreeCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = goneFreeCell.h; sourceTree = "<group>"; };
 		D0BAF7391974A160007D9E74 /* goneFreeCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = goneFreeCell.m; sourceTree = "<group>"; };
 		D0BAF780197735C7007D9E74 /* topBariPad.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = topBariPad.png; sourceTree = "<group>"; };
@@ -338,8 +355,11 @@
 				313304B21882441800F7DB73 /* freeAppLifeAppDelegate.h */,
 				3168FB9018865ACA00BC13C7 /* popup.xib */,
 				313304B31882441800F7DB73 /* freeAppLifeAppDelegate.m */,
+				D0AF32C519C7B7AE0001CA21 /* config.xib */,
 				D0EEFE5318EE6CB100779B69 /* Main_iPad.storyboard */,
 				D0C7530918CC6B5300BDD9A6 /* Main_iPhone.storyboard */,
+				D0AF32CA19C7CCE40001CA21 /* configViewController.h */,
+				D0AF32CB19C7CCE40001CA21 /* configViewController.m */,
 				3168FB8D18865A2800BC13C7 /* popView.h */,
 				3168FB8E18865A2800BC13C7 /* popView.m */,
 				D05278E418B94DB40065D401 /* API.h */,
@@ -358,8 +378,12 @@
 				D0E0DA56191F101A008D98E2 /* offerPopUp.m */,
 				D0E0DA52191EED47008D98E2 /* rewardPopUp.h */,
 				D0E0DA53191EED47008D98E2 /* rewardPopUp.m */,
+				D0624E6B198B3FEF007AD059 /* amazonPopUp.h */,
+				D0624E6C198B3FEF007AD059 /* amazonPopUp.m */,
 				D0E0DA58192015A6008D98E2 /* customPopUp.h */,
 				D0E0DA59192015A6008D98E2 /* customPopUp.m */,
+				D0AF32C719C7B97D0001CA21 /* configPopUp.h */,
+				D0AF32C819C7B97D0001CA21 /* configPopUp.m */,
 				D0AD77C4191AFF7000027597 /* popUp.h */,
 				D0AD77C5191AFF7000027597 /* popUp.m */,
 				D0FB51EE18C04977009C92D7 /* CustomIOS7AlertView.h */,
@@ -421,7 +445,10 @@
 		D03762BE18C1719400791FB7 /* Images */ = {
 			isa = PBXGroup;
 			children = (
-				D032840D1970F61000D36218 /* fire.png */,
+				D0AF32DF19C9B9450001CA21 /* ios8f.png */,
+				D0AF32D919C9B6230001CA21 /* installbutton.png */,
+				D0AF32DA19C9B6230001CA21 /* installbutton@2x.png */,
+				D0624E69198AFF3A007AD059 /* fire.png */,
 				D03283E51970B19B00D36218 /* fire@2x.png */,
 				D0E923AE19680E0700F71BFC /* message.png */,
 				D0E923AF19680E0700F71BFC /* message@2x.png */,
@@ -593,9 +620,11 @@
 				D0E923B019680E0700F71BFC /* message.png in Resources */,
 				D073963A195A786000D3727C /* ReferLayer_inf.png in Resources */,
 				D06AD78819011CF600A742BF /* new ipad fal.png in Resources */,
+				D0AF32DC19C9B6230001CA21 /* installbutton@2x.png in Resources */,
 				D0EEFE5418EE6CB100779B69 /* Main_iPad.storyboard in Resources */,
 				D066162D18CBF70D0022B8DB /* button.png in Resources */,
 				D030791A1909EA2F0058013B /* ps4.png in Resources */,
+				D0AF32C619C7B7AE0001CA21 /* config.xib in Resources */,
 				D0E923A219680DA500F71BFC /* email.png in Resources */,
 				D06AD78019011B3900A742BF /* fal retina ipad.png in Resources */,
 				D0E923AD19680DFC00F71BFC /* friends@2x.png in Resources */,
@@ -617,6 +646,7 @@
 				313304BF1882441800F7DB73 /* Images.xcassets in Resources */,
 				D06AD78619011C3400A742BF /* fal icon small.png in Resources */,
 				D0E923B119680E0700F71BFC /* message@2x.png in Resources */,
+				D0AF32E019C9B9450001CA21 /* ios8f.png in Resources */,
 				D03762CF18C173C000791FB7 /* ReferLayer.png in Resources */,
 				D0E923A919680DA500F71BFC /* twitter@2x.png in Resources */,
 				D066162B18CAAA620022B8DB /* topBar.png in Resources */,
@@ -627,8 +657,8 @@
 				D0E923AC19680DFC00F71BFC /* friends.png in Resources */,
 				D0E923A619680DA500F71BFC /* invite.png in Resources */,
 				3168FB9118865ACA00BC13C7 /* popup.xib in Resources */,
-				D032840E1970F61000D36218 /* fire.png in Resources */,
 				D0BAF781197735C7007D9E74 /* topBariPad.png in Resources */,
+				D0624E6A198AFF3A007AD059 /* fire.png in Resources */,
 				31AE575018D6E42C004F8D4C /* AppIcon@2x.png in Resources */,
 				D03762BD18C170BC00791FB7 /* EmailLayer.png in Resources */,
 				D03762B018C16A1000791FB7 /* machine2.png in Resources */,
@@ -637,6 +667,7 @@
 				31AE574A18D6E14E004F8D4C /* AppIcon.png in Resources */,
 				313304AE1882441800F7DB73 /* InfoPlist.strings in Resources */,
 				D0E923A419680DA500F71BFC /* facebook.png in Resources */,
+				D0AF32DB19C9B6230001CA21 /* installbutton.png in Resources */,
 				D06AD790190202B800A742BF /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -664,10 +695,13 @@
 				D03283E11970A7AA00D36218 /* goneFreeViewController.m in Sources */,
 				D0E0DA57191F101A008D98E2 /* offerPopUp.m in Sources */,
 				D03762D218C1754600791FB7 /* socialViewController.m in Sources */,
+				D0624E6D198B3FEF007AD059 /* amazonPopUp.m in Sources */,
 				D0E0DA54191EED47008D98E2 /* rewardPopUp.m in Sources */,
+				D0AF32C919C7B97D0001CA21 /* configPopUp.m in Sources */,
 				317675CE188B20FA00DCF1C9 /* rewardsViewController.m in Sources */,
 				D062DC081938294F00E86241 /* offerCell.m in Sources */,
 				3168FB8F18865A2800BC13C7 /* popView.m in Sources */,
+				D0AF32CC19C7CCE40001CA21 /* configViewController.m in Sources */,
 				313304B01882441800F7DB73 /* main.m in Sources */,
 				D05D7E481897B65E006593A9 /* rewardCell.m in Sources */,
 				D05278E618B94DB40065D401 /* API.m in Sources */,
@@ -801,8 +835,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Tanner Marsh (M5RP2TNR22)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tanner Marsh (M5RP2TNR22)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/misbahkhan/Desktop/webview,
@@ -830,8 +864,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Distribution: TechKnowledgeG LLC";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: TechKnowledgeG LLC";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					/Users/misbahkhan/Desktop/webview,
@@ -849,7 +883,7 @@
 					"$(PROJECT_DIR)/webview/Flurry",
 				);
 				PRODUCT_NAME = FreeAppLife;
-				PROVISIONING_PROFILE = "552057B6-B712-4D50-85D8-F6F9EED878D8";
+				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				WRAPPER_EXTENSION = app;
 			};

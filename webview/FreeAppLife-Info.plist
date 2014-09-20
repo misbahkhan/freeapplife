@@ -43,20 +43,24 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.92</string>
+	<string>5.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>None</string>
+			<key>CFBundleURLName</key>
+			<string>com.freeapplife.Activate</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>fb676776645708419</string>
+				<string>fal</string>
 			</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>1.0</string>
+	<string>5.0</string>
 	<key>FacebookAppID</key>
 	<string>676776645708419</string>
 	<key>LSRequiresIPhoneOS</key>

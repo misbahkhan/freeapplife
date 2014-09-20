@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="kil-ib-KpY">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6245" systemVersion="13E28" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" initialViewController="kil-ib-KpY">
     <dependencies>
-        <deployment defaultVersion="1536" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
     </dependencies>
     <scenes>
-        <!--Free App Life View Controller - Get Points-->
+        <!--Get Points-->
         <scene sceneID="ufC-wZ-h7g">
             <objects>
                 <viewController id="vXZ-lx-hvc" customClass="freeAppLifeViewController" sceneMemberID="viewController">
@@ -48,6 +47,53 @@
             </objects>
             <point key="canvasLocation" x="474" y="1025"/>
         </scene>
+        <!--Config View Controller-->
+        <scene sceneID="eiE-PC-VvY">
+            <objects>
+                <viewController storyboardIdentifier="config" id="3a8-ck-uxW" customClass="configViewController" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Jh1-CA-eUx">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button hidden="YES" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" id="Llh-2p-h8Y">
+                                <rect key="frame" x="20" y="420" width="280" height="74"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" image="installbutton.png">
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="install:" destination="3a8-ck-uxW" eventType="touchUpInside" id="UkC-g9-KmJ"/>
+                                </connections>
+                            </button>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" id="FEJ-nW-Fb8">
+                                <rect key="frame" x="150" y="447" width="20" height="20"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </activityIndicatorView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="ios8f.png" id="TRa-gH-CoF">
+                                <rect key="frame" x="30" y="52" width="260" height="130"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="11" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="hoh-Qf-uqM">
+                                <rect key="frame" x="31" y="165" width="258" height="237"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <string key="text">Due to our strict security, we require that you install a temporary profile that will associate your device with its proper account. This is for your protection and will ensure that you retain your points, even if you restore! None of your settings will be modified and we won't collect any data beyond basic device information. Install to enjoy the benefits of FreeAppLife.</string>
+                                <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                                <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <connections>
+                        <outlet property="activity" destination="FEJ-nW-Fb8" id="8tP-H0-szW"/>
+                        <outlet property="installbutton" destination="Llh-2p-h8Y" id="X2Q-n0-slm"/>
+                        <segue destination="kil-ib-KpY" kind="modal" identifier="main" modalTransitionStyle="crossDissolve" animates="NO" id="2V6-nC-zTx"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="oXa-xW-iH3" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-348" y="1025"/>
+        </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="agz-NU-rLP">
             <objects>
@@ -70,7 +116,7 @@
             </objects>
             <point key="canvasLocation" x="84" y="1025"/>
         </scene>
-        <!--Gone Free View Controller - Gone Free-->
+        <!--Gone Free-->
         <scene sceneID="fVb-HX-ZfC">
             <objects>
                 <viewController id="xo2-h2-sem" customClass="goneFreeViewController" sceneMemberID="viewController">
@@ -132,7 +178,7 @@
             </objects>
             <point key="canvasLocation" x="474" y="341"/>
         </scene>
-        <!--Settings View Controller - Settings-->
+        <!--Settings-->
         <scene sceneID="r3h-qR-DBN">
             <objects>
                 <viewController id="a50-cd-YEe" customClass="settingsViewController" sceneMemberID="viewController">
@@ -183,7 +229,7 @@
             </objects>
             <point key="canvasLocation" x="1231" y="1025"/>
         </scene>
-        <!--Social View Controller - Social-->
+        <!--Social-->
         <scene sceneID="smf-77-Te9">
             <objects>
                 <viewController id="VLK-Pe-G7l" customClass="socialViewController" sceneMemberID="viewController">
@@ -324,7 +370,7 @@
             </objects>
             <point key="canvasLocation" x="1599" y="1025"/>
         </scene>
-        <!--Rewards View Controller - Rewards-->
+        <!--Rewards-->
         <scene sceneID="DGa-9o-jJn">
             <objects>
                 <viewController id="cQ2-QP-Voh" customClass="rewardsViewController" sceneMemberID="viewController">
@@ -407,9 +453,11 @@
         <image name="checked2.png" width="21" height="30"/>
         <image name="email.png" width="32" height="32"/>
         <image name="facebook.png" width="17" height="32"/>
-        <image name="fire.png" width="52" height="52"/>
+        <image name="fire.png" width="32" height="32"/>
         <image name="group2.png" width="29" height="30"/>
+        <image name="installbutton.png" width="280" height="74"/>
         <image name="invite.png" width="32" height="32"/>
+        <image name="ios8f.png" width="600" height="300"/>
         <image name="machine2.png" width="31" height="30"/>
         <image name="message.png" width="32" height="30"/>
         <image name="present.png" width="26" height="30"/>

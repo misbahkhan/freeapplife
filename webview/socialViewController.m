@@ -154,6 +154,15 @@
 
 - (void) dataUpdated:(id)sender
 {
+    if([[sharedInstance userData] objectForKey:@"result"]){
+        if ([[sharedInstance userData][@"result"] isEqualToString:@"config"]) {
+            if (self.isViewLoaded && self.view.window){
+                UIViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"config"];
+                [self presentViewController:vc animated:NO completion:nil];
+            }
+        }
+    }
+
     _pointsLabel.text = [sharedInstance currentPoints];
     [code setText:[[sharedInstance userData] objectForKey:@"referral_code"]];
     [referrals_number setText:[NSString stringWithFormat:@"You have referred %d people.", [[[sharedInstance userData] objectForKey:@"referrals_count"] intValue]]];

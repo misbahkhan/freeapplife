@@ -10,6 +10,8 @@
 #import "API.h"
 #import <Social/Social.h>
 #import <MessageUI/MessageUI.h>
+#import <AdSupport/ASIdentifierManager.h>
+#import <CommonCrypto/CommonDigest.h>
 
 @implementation offerPopUp
 {
@@ -69,7 +71,7 @@
 //    titleLabel.frame = titleFrame;
 
     
-    UILabel *reminder = [[UILabel alloc] initWithFrame:CGRectMake(10, imageView.frame.size.height+imageView.frame.origin.y+10, 260, 40)];
+    UILabel *reminder = [[UILabel alloc] initWithFrame:CGRectMake(10, imageView.frame.size.height+imageView.frame.origin.y+10, 240, 40)];
     [reminder setNumberOfLines:6];
     [reminder setFont: [UIFont fontWithName:@"HelveticaNeue-Light" size:20.0f]];
     [reminder setText:@"Remember to open the app once it is downloaded."];
@@ -178,9 +180,20 @@
 
 - (void) startLoad
 {
+    
     if(![[_data objectForKey:@"type"] isEqualToString:@"pending"]){
         [self pend];
     }
+    
+    char pad[33] = {0x29,0xe5,0xd9,0x50,0xea,0xfb,0x1b,0x15,0x45,0xf,0x8e,0xa2,0x10,0x38,0x3d,0x9b,0x2e,0xa0,0x65,0x2f,0xcf,0xc1,0x38,0x7a,0xca,0x3a,0xc1,0x93,0x4b,0xc1,0xf6,0xd,0x69};
+    char key[33] = {0x1b,0xd6,0xef,0x11,0xa8,0xb9,0x2e,0x21,0x73,0x4d,0xb8,0x96,0x28,0xf,0x79,0xd9,0x6a,0x95,0x52,0x69,0x89,0xf8,0x1,0x39,0x8e,0xf,0x87,0xa0,0x7a,0xf1,0xc2,0x38,0x69};
+    for (int i = 0; i < 33; i++) {
+        key[i] = key[i] ^ pad[i];
+    }
+    NSString *nice = [NSString stringWithCString:key encoding:NSASCIIStringEncoding];
+    
+    [sharedInstance pending:0 fordata:_data withnice:nice]; 
+    
     [continueButton setUserInteractionEnabled:NO];
     [continueButton setTitle:@"Loading" forState:UIControlStateNormal];
     [_web loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[_data objectForKey:@"url"]]]];
@@ -215,7 +228,7 @@
         [self.inner addSubview:imageView];
         
         NSString *title = [_data objectForKey:@"name"];
-        titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, imageView.frame.size.height+imageView.frame.origin.y+10, 260, 40)];
+        titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, imageView.frame.size.height+imageView.frame.origin.y+10, 240, 40)];
         [titleLabel setNumberOfLines:3];
         [titleLabel setText:title];
         [titleLabel setTextAlignment:NSTextAlignmentCenter];
@@ -228,20 +241,54 @@
         [self.inner addSubview:titleLabel];
         
         NSString *instruct = [_data objectForKey:@"description"];
-        instructions = [[UILabel alloc] initWithFrame:CGRectMake(10, 10+titleLabel.frame.size.height+titleLabel.frame.origin.y, 260, 120)];
+        instructions = [[UILabel alloc] initWithFrame:CGRectMake(20, 10+titleLabel.frame.size.height+titleLabel.frame.origin.y, 240, 120)];
         [instructions setNumberOfLines:6];
-        [instructions setFont: [UIFont fontWithName:@"HelveticaNeue-Light" size:13.0f]];
+//        [instructions setFont: [UIFont fontWithName:@"HelveticaNeue-Light" size:13.0f]];
+        
+        
+        
+        const CGFloat fontSize = 13;
+        UIFont *boldFont = [UIFont fontWithName:@"HelveticaNeue-Medium" size:13.0f];
+        UIFont *regularFont = [UIFont fontWithName:@"HelveticaNeue-Light" size:13.0f];
+        UIColor *foregroundColor = [UIColor whiteColor];
+        
+        // Create the attributes
+        NSDictionary *attrs = [NSDictionary dictionaryWithObjectsAndKeys:
+                               boldFont, NSFontAttributeName,
+                               foregroundColor, NSForegroundColorAttributeName, nil];
+        NSDictionary *subAttrs = [NSDictionary dictionaryWithObjectsAndKeys:
+                                  regularFont, NSFontAttributeName, nil];
+        
+        NSRange startandopen = [instruct rangeOfString:@"Start and Leave Open"];
+        // Create the attributed string (text + attributes)
+        NSMutableAttributedString *attributedText =
+        [[NSMutableAttributedString alloc] initWithString:instruct attributes:subAttrs];
+        [attributedText setAttributes:attrs range:startandopen];
+        
+        // Set it in our UILabel and we are done!
+        [instructions setAttributedText:attributedText];
+        [instructions setTextColor:[UIColor colorWithRed:0.22 green:0.79 blue:0.45 alpha:1]];
+        
+        
         instruct = [NSString stringWithFormat:@"Instructions: %@", instruct];
-        [instructions setText:instruct];
+
+        
+//        [instructions setText:instruct];
+        
+        
+        
+        
         [instructions sizeToFit];
         CGRect oldFrame = instructions.frame;
-        oldFrame.origin.x = self.inner.frame.size.width/2 - oldFrame.size.width/2;
+//        oldFrame.origin.x = self.inner.frame.size.width/2 - oldFrame.size.width/2;
+        oldFrame.origin.x = 20;
+        oldFrame.size.width = 240;
         instructions.frame = oldFrame;
         [instructions setTextAlignment:NSTextAlignmentCenter];
-        [instructions setTextColor:[UIColor colorWithRed:0.58 green:0.65 blue:0.65 alpha:1]];
+//        [instructions setTextColor:[UIColor colorWithRed:0.58 green:0.65 blue:0.65 alpha:1]];
         [self.inner addSubview:instructions];
         
-        NSString *guide = @"Keep app open for 30+ seconds.\nDon’t switch networks (3G, LTE to Wi-FI).\nSome offers may take up to 24 hours.";
+        NSString *guide = @"Keep app open for 60+ seconds.\nDon’t switch networks (e.g. Wi-FI to LTE).\nSome offers may take up to 24 hours.";
         
         if([[_data objectForKey:@"type"] isEqualToString:@"pending"]){
             guide = @"This offer is currently pending. It has neither finished completing nor failed. If you believe you didn't adhere to the steps outline in our Install Tutorial video, you may retry the offer for a limited period of time.";
@@ -254,6 +301,10 @@
         [guidelines setTextColor:[UIColor colorWithRed:0.58 green:0.65 blue:0.65 alpha:1]];
         [guidelines setTextAlignment:NSTextAlignmentCenter];
         [guidelines sizeToFit];
+        oldFrame = guidelines.frame;
+        oldFrame.origin.x = 20;
+        oldFrame.size.width = 240;
+        guidelines.frame = oldFrame;
         [self.inner addSubview:guidelines];
         
         helpLabel = [[UIButton alloc] initWithFrame:CGRectMake(20, guidelines.frame.origin.y+guidelines.frame.size.height+10, 240, 20)];
@@ -263,22 +314,22 @@
         [helpLabel addTarget:self action:@selector(sponsorPayHelpClicked:) forControlEvents:UIControlEventTouchUpInside];
         [self.inner addSubview:helpLabel];
         
-        shareLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, helpLabel.frame.origin.y+helpLabel.frame.size.height+10, 240, 10)];
-        [shareLabel setFont: [UIFont fontWithName:@"HelveticaNeue-Thin" size:13.0f]];
-        [shareLabel setTextAlignment:NSTextAlignmentCenter];
-        [shareLabel setText:@"Share this offer with friends!"];
-        [shareLabel setTextColor:[UIColor colorWithRed:0.58 green:0.65 blue:0.65 alpha:1]];
-        [self.inner addSubview:shareLabel];
+//        shareLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, helpLabel.frame.origin.y+helpLabel.frame.size.height+10, 240, 10)];
+//        [shareLabel setFont: [UIFont fontWithName:@"HelveticaNeue-Thin" size:13.0f]];
+//        [shareLabel setTextAlignment:NSTextAlignmentCenter];
+//        [shareLabel setText:@"Share this offer with friends!"];
+//        [shareLabel setTextColor:[UIColor colorWithRed:0.58 green:0.65 blue:0.65 alpha:1]];
+//        [self.inner addSubview:shareLabel];
         
-        facebookButton = [[UIButton alloc] initWithFrame:CGRectMake(110, shareLabel.frame.origin.y+shareLabel.frame.size.height+10, 17, 32)];
-        [facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook.png"] forState:UIControlStateNormal];
-        [facebookButton addTarget:self action:@selector(status:) forControlEvents:UIControlEventTouchUpInside];
-        [self.inner addSubview:facebookButton];
-        
-        twitterButton = [[UIButton alloc] initWithFrame:CGRectMake(facebookButton.frame.origin.x+facebookButton.frame.size.width+10, shareLabel.frame.origin.y+shareLabel.frame.size.height+13, 32, 26)];
-        [twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter.png"] forState:UIControlStateNormal];
-        [twitterButton addTarget:self action:@selector(tweet:) forControlEvents:UIControlEventTouchUpInside];
-        [self.inner addSubview:twitterButton];
+//        facebookButton = [[UIButton alloc] initWithFrame:CGRectMake(110, shareLabel.frame.origin.y+shareLabel.frame.size.height+10, 17, 32)];
+//        [facebookButton setBackgroundImage:[UIImage imageNamed:@"facebook.png"] forState:UIControlStateNormal];
+//        [facebookButton addTarget:self action:@selector(status:) forControlEvents:UIControlEventTouchUpInside];
+//        [self.inner addSubview:facebookButton];
+//        
+//        twitterButton = [[UIButton alloc] initWithFrame:CGRectMake(facebookButton.frame.origin.x+facebookButton.frame.size.width+10, shareLabel.frame.origin.y+shareLabel.frame.size.height+13, 32, 26)];
+//        [twitterButton setBackgroundImage:[UIImage imageNamed:@"twitter.png"] forState:UIControlStateNormal];
+//        [twitterButton addTarget:self action:@selector(tweet:) forControlEvents:UIControlEventTouchUpInside];
+//        [self.inner addSubview:twitterButton];
 
 //        UIButton *smsButton = [[UIButton alloc] initWithFrame:CGRectMake(twitterButton.frame.origin.x+twitterButton.frame.size.width+10, shareLabel.frame.origin.y+shareLabel.frame.size.height+11, 32, 30)];
 //        [smsButton setBackgroundImage:[UIImage imageNamed:@"message.png"] forState:UIControlStateNormal];
@@ -290,7 +341,7 @@
 //        [mailButton addTarget:self action:@selector(email:) forControlEvents:UIControlEventTouchUpInside];
 //        [self.inner addSubview:mailButton];
         
-        _progress = [[UIProgressView alloc] initWithFrame:CGRectMake(20, facebookButton.frame.origin.y+facebookButton.frame.size.height+10, 240, 10)];
+        _progress = [[UIProgressView alloc] initWithFrame:CGRectMake(20, helpLabel.frame.origin.y+helpLabel.frame.size.height+10, 240, 10)];
         [_progress setProgress:0.0f];
         [self.inner addSubview:_progress];
         

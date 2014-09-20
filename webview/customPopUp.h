@@ -12,6 +12,7 @@
 
 @property (nonatomic, strong) UIWebView *web;
 
-- (void) hide; 
+- (void) hide;
+
 
 @end

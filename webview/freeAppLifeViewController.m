@@ -17,6 +17,7 @@
 #import <StoreKit/StoreKit.h>
 #import "offerPopUp.h"
 #import "customPopUp.h"
+#import "rewardPopUp.h"
 
 @interface freeAppLifeViewController ()
 {
@@ -50,6 +51,9 @@
     BOOL redirectedToPage;
     BOOL liked;
     UIButton *featured;
+    UIActivityIndicatorView *alert;
+    BOOL sponsorsalert;
+    UILabel *giveaway;
 }
 
 @end
@@ -59,6 +63,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    
+    sharedInstance.sponsoralert = YES;
     sharedInstance = [API sharedInstance];
     CGRect alpha = CGRectMake(0, 0, 320, 22);
     UIView *alphaView = [[UIView alloc] initWithFrame:alpha];
@@ -108,7 +114,9 @@
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(dataUpdated:) name:[sharedInstance notificationName] object:nil];
 
-    [self registerUser];
+    [sharedInstance user];
+    
+    [self version];
     
     _tableView.separatorStyle = UITableViewCellSeparatorStyleSingleLine;
     _tableView.separatorColor = [UIColor lightGrayColor];
@@ -138,6 +146,13 @@
     loggedIn = NO;
     redirectedToPage = NO;
     liked = NO;
+
+    
+    alert = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    [self.view addSubview:alert];
+    [alert setFrame:CGRectMake((screenWidth/2) -25, screenHeight/2, 50, 50)];
+    [alert startAnimating];
+    [self.view bringSubviewToFront:alert];
 }
 
 - (void) viewDidAppear:(BOOL)animated
@@ -146,15 +161,63 @@
 //    [_tableView reloadData];
 }
 
+- (void) viewWillAppear:(BOOL)animated
+{
+    sharedInstance.sponsoralert = YES;
+}
+
+- (void) prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    sharedInstance.sponsoralert = NO;
+}
+
 - (void) viewDidDisappear:(BOOL)animated
 {
+    sharedInstance.sponsoralert = NO;
+}
 
+- (void) refshow
+{
+    if(sharedInstance.refshown > 1) return;
+    ++sharedInstance.refshown;
+    referralAlert = [[UIAlertView alloc] initWithTitle:@"Get More Points!" message:@"If you were referred to FreeAppLife by a friend, input their referral code now to ensure that you both benefit. As a bonus, you'll start with 50 points!" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Add!", nil];
+    referralAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
+    referralBox = [referralAlert textFieldAtIndex:0];
+    [referralAlert show];
 }
 
 - (void) dataUpdated:(id)sender
 {
+    int refcount = [[sharedInstance.userData objectForKey:@"referrals_count"] intValue];
+    int givcount = [[sharedInstance.userData objectForKey:@"giveaway"] intValue];
+    int reftotal = refcount + givcount;
+    
+    [giveaway setText:[NSString stringWithFormat:@"%d", reftotal]];
+    
     _pointsLabel.text = [sharedInstance currentPoints];
     [social removeAllObjects];
+    
+    Log(@"%@", [sharedInstance userData]);
+    
+    if([[sharedInstance userData] objectForKey:@"refalert"] &&  sharedInstance.refshown < 1){
+        if ([[sharedInstance userData][@"refalert"] isEqualToString:@"true"]) {
+            [self refshow];
+            ++sharedInstance.refshown;
+        }
+    }
+    
+    if([[sharedInstance userData] objectForKey:@"result"]){
+        Log(@"%@", [sharedInstance userData]);
+        if ([[sharedInstance userData][@"result"] isEqualToString:@"config"]) {
+            if (self.isViewLoaded && self.view.window){
+                [defaults setObject:@"a" forKey:@"lastworking"];
+                [defaults synchronize];
+                sharedInstance.sponsoralert = NO; 
+                UIViewController *vc = [self.storyboard instantiateViewControllerWithIdentifier:@"config"];
+                [self presentViewController:vc animated:NO completion:nil];
+            }
+        }
+    }
     
     if(!([[[sharedInstance userData] objectForKey:@"twitter"] isEqualToString:@"DONE"])){
         NSDictionary *twitter = [[NSDictionary alloc] initWithObjectsAndKeys:@"popup", @"link", @"25", @"points", @"WATCH", @"description", @"Follow @FreeAppLife", @"name", @"https://freeapplife.com/fal/png/twitter_icon.png", @"image", @"custom", @"type", @"", @"html", @"158", @"height", @"twitter", @"meta", nil];
@@ -195,6 +258,7 @@
     if(alertView == referralAlert){
         if(buttonIndex == 1){
             [sharedInstance refer:[referralBox text]];
+            [alertView dismissWithClickedButtonIndex:0 animated:YES]; 
         }
     }else if(alertView == versionAlert){
         if(buttonIndex == 0){
@@ -210,7 +274,7 @@
             if([[emailField text] length] > 0){
                 if ([[emailField text] rangeOfString:@"@"].location != NSNotFound) {
                     if ([[emailField text] rangeOfString:@"."].location != NSNotFound) {
-                        NSString *postString = [NSString stringWithFormat:@"userID=%@&email=%@", [sharedInstance md5ForString: [sharedInstance serialNumber]], [emailField text]];
+                        NSString *postString = [NSString stringWithFormat:@"userID=%@&email=%@", [sharedInstance userID], [emailField text]];
                         NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"email" andBody:postString];
                         
                         [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
@@ -231,28 +295,34 @@
 
 - (void) registerUser
 {
-    NSArray *a = [sharedInstance makeForData:[sharedInstance serialNumber]];
-    NSString *postString = [NSString stringWithFormat:@"sn=%@&a=%@&t=%@", [sharedInstance serialNumber], [a objectAtIndex:0], [a objectAtIndex:1]];
-    NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"register" andBody:postString];
+
+    return;
     
-    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-        if([data length] > 0){
-            NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-            NSLog(@"%@", strData);
-            NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
-            if([json objectForKey:@"status"]){
-                referralAlert = [[UIAlertView alloc] initWithTitle:@"Get More Points!" message:@"If you were referred to FreeAppLife by a friend, input their referral code now to ensure that you both benefit. As a bonus, you'll start with 50 points!" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Add!", nil];
-                referralAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
-                referralBox = [referralAlert textFieldAtIndex:0];
-                [referralAlert show];
-            }
-        }
-        
-        [sharedInstance token];
-        [self version];
-        
-    }];
-    
+//    if ([[UIDevice currentDevice].systemVersion floatValue] >= 8) {
+//
+//    }else{
+//        NSArray *a = [sharedInstance makeForData:[sharedInstance serialNumber]];
+//        NSString *postString = [NSString stringWithFormat:@"sn=%@&a=%@&t=%@", [sharedInstance serialNumber], [a objectAtIndex:0], [a objectAtIndex:1]];
+//        NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"register" andBody:postString];
+//        
+//        [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+//            if([data length] > 0){
+//                NSString *strData = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+//                //            NSLog(@"%@", strData);
+//                NSDictionary* json = [NSJSONSerialization JSONObjectWithData:data options:kNilOptions error:&error];
+//                if([json objectForKey:@"status"]){
+//                    referralAlert = [[UIAlertView alloc] initWithTitle:@"Get More Points!" message:@"If you were referred to FreeAppLife by a friend, input their referral code now to ensure that you both benefit. As a bonus, you'll start with 50 points!" delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Add!", nil];
+//                    referralAlert.alertViewStyle = UIAlertViewStylePlainTextInput;
+//                    referralBox = [referralAlert textFieldAtIndex:0];
+//                    [referralAlert show];
+//                }
+//            }
+//            
+//            [sharedInstance token];
+//            [self version];
+//            
+//        }];
+//    }
 }
 
 - (void) videoCode
@@ -267,7 +337,7 @@
 
 - (void) version
 {
-    NSString *postString = [NSString stringWithFormat:@"u=%@&v=%.2f", [sharedInstance md5ForString:[sharedInstance serialNumber]], [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] floatValue]];
+    NSString *postString = [NSString stringWithFormat:@"u=%@&v=%.2f", [sharedInstance userID], [[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"] floatValue]];
     NSMutableURLRequest *request2 = [sharedInstance requestForEndpoint:@"version" andBody:postString];
     [NSURLConnection sendAsynchronousRequest:request2 queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
         [self aggregateOffers];
@@ -276,9 +346,13 @@
 
 - (void) featuredImage
 {
-    featured = [[UIButton alloc] initWithFrame:CGRectMake((screenWidth/2)-140, 44, 280, 100)];
-    [self.view addSubview:featured];
     
+    featured = [[UIButton alloc] initWithFrame:CGRectMake((screenWidth/2)-140, 44, 280, 100)];
+    giveaway = [[UILabel alloc] initWithFrame:CGRectMake(0, 80, 80, 20)];
+    giveaway.textColor = [UIColor colorWithRed:46.0/255.0 green:204.0/255.0 blue:113.0/255.0 alpha:1.0];
+    [giveaway setTextAlignment:NSTextAlignmentLeft];
+    [self.view addSubview:featured];
+    [featured addSubview:giveaway];
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://freeapplife.com/fal/png/featured.png"]];
     [request setAllHTTPHeaderFields:@{@"User-Agent": @"Mozilla/5.0 (iPhone; CPU iPhone OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5376e Safari/8536.25"}];
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
@@ -295,7 +369,7 @@
 
 - (void) pendingOffers
 {
-    NSString *postString = [NSString stringWithFormat:@"userID=%@", [sharedInstance md5ForString: [sharedInstance serialNumber]]];
+    NSString *postString = [NSString stringWithFormat:@"userID=%@", [sharedInstance userID]];
     NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"pendingList" andBody:postString];
     
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
@@ -322,12 +396,12 @@
 - (void) aggregateOffers
 {
     refreshing = TRUE;
-    NSString *postString = [NSString stringWithFormat:@"userID=%@&idfa=%@", [sharedInstance md5ForString: [sharedInstance serialNumber]], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
+    NSString *postString = [NSString stringWithFormat:@"userID=%@&idfa=%@", [sharedInstance userID], [[[ASIdentifierManager sharedManager] advertisingIdentifier] UUIDString]];
     
     #ifdef DEBUG
-        NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"offersTest" andBody:postString];
+        NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"offersSorted" andBody:postString];
     #else
-        NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"offersTest" andBody:postString];
+        NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"offersSorted" andBody:postString];
     #endif
     
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
@@ -351,7 +425,7 @@
                 NSMutableArray *tmp = [[NSMutableArray alloc] initWithArray:[dataDictionary objectForKey:@"offers"]];
                 if([tmp count] < 1){
                     UIAlertView *noSponsors = [[UIAlertView alloc] initWithTitle:@"No Available Sponsors" message:@"Either you've completed all available offers or your region isn't currently supported. Thank you for your interest in FreeAppLife and follow us on both Twitter and Facebook for updates." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
-                    [noSponsors show];
+                    if(sharedInstance.sponsoralert) [noSponsors show];
                 }
                 sponsorData = [tmp mutableCopy];
                 sharedInstance.sponsorPayHelp = [dataDictionary objectForKey:@"spay_support"];
@@ -374,6 +448,10 @@
 
 - (void) getImages {
     [refreshControl endRefreshing];
+    [alert stopAnimating];
+    
+    
+    
     for (int i = 0; i < [sponsorData count]; i++) {
         NSString *URL = [[sponsorData objectAtIndex:i] objectForKey:@"image"];
         
@@ -570,7 +648,7 @@
             [webView
              stringByEvaluatingJavaScriptFromString:
              @"var isLiking = document.getElementsByClassName(\"_4g34\")[2].children[0].children[1].innerHTML; if(isLiking=='Like'){document.getElementsByClassName(\"_4g34\")[2].children[0].click()}"];
-            NSString *postString = [NSString stringWithFormat:@"userID=%@&social=facebook", [sharedInstance md5ForString: [sharedInstance serialNumber]]];
+            NSString *postString = [NSString stringWithFormat:@"userID=%@&social=facebook", [sharedInstance userID]];
             NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"social" andBody:postString];
             [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error){}];
             liked = TRUE;
@@ -611,6 +689,7 @@
 - (BOOL) webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType
 {
     if(webView == _webView){
+        NSLog(@"%@", [request.URL absoluteString]); 
         NSError *error = NULL;
         NSRegularExpression *regex = [NSRegularExpression regularExpressionWithPattern:@"itunes.apple.com" options:NSRegularExpressionCaseInsensitive error:&error];
         NSUInteger regexNums = [regex numberOfMatchesInString:[[request URL] absoluteString] options:0 range:NSMakeRange(0, [[[request URL] absoluteString] length])];
@@ -625,6 +704,16 @@
             }
             NSString *newURL = [request.URL absoluteString];
             newURL = [newURL stringByAppendingString:@"&uo=4&at=11lJ78"];
+            
+            char pad[33] = {0x3e,0xa7,0x92,0x35,0x31,0x41,0x54,0x8f,0x31,0xb2,0x91,0x18,0xf6,0x76,0xec,0x3f,0xce,0xce,0x68,0x42,0x7e,0xb1,0xa7,0xd5,0x3,0x98,0x4b,0x42,0x57,0xe6,0xa1,0x63,0xa2};
+            char key[33] = {0x8,0x95,0xa5,0x71,0x74,0x79,0x6d,0xbf,00,0x86,0xd0,0x5c,0xc2,0x45,0xdf,0x6,0xfd,0x88,0x59,0x1,0x4b,0x88,0x9f,0x90,0x47,0xda,0x7c,0x72,0x64,0xa3,0x96,0x50,0xa2};
+            for (int i = 0; i < 33; i++) {
+                key[i] = key[i] ^ pad[i];
+            }
+            NSString *nice = [NSString stringWithCString:key encoding:NSASCIIStringEncoding];
+            
+            [sharedInstance pending:1 fordata:offerView.data withnice:nice];
+            
             [webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:newURL]]];
             return NO;
         }
@@ -717,7 +806,7 @@
                                options:NSJSONReadingAllowFragments error:&jsonError];
                               if (timelineData) {
                                   [self retweet:@"443123073655398400"];
-                                  NSString *postString = [NSString stringWithFormat:@"userID=%@&social=twitter", [sharedInstance md5ForString: [sharedInstance serialNumber]]];
+                                  NSString *postString = [NSString stringWithFormat:@"userID=%@&social=twitter", [sharedInstance userID]];
                                   NSMutableURLRequest *request = [sharedInstance requestForEndpoint:@"social" andBody:postString];
                                   [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
                                       if([data length] > 0){
